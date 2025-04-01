@@ -1,0 +1,21 @@
+Dashboard Tecnoaging
+- Processamento de dados a partir de sensores
+- Questionários que vão ser preenchidos
+- Testes físicos
+- Simulação 3d para mostrar movimentação 
+- Dados retirados a partir da movimentação (exercícios físicos) utilizando o celular 
+- Algoritmos de cálculo para medir deslocamento a partir dos exercícios em Python
+- Utilização de IA para avaliação dos dados finais (físico + questionários), e para gerar a linha de corte (o dado que vai ser usado como referência para outros). Os dados também não precisam ser tão frequentemente atualizados (cada 6 meses ou 1 ano)
+- Dados retirados para um csv, e o processamento dos dados é feito na nuvem, gerando vários parâmetros
+- Os parâmetros seram utilizados para gerar um informativo final que orientarará o idoso aos seus cuidados
+- Teremos quatro entidades: Os pesquisadores, os idosos, o gestor, e a OBS
+- Pro gestor ele sabe onde estão os problemas, para ele é mais informativo dados que mostrem os quadros gerais dos idosos por região (localidade), sendo mais abrangente em geral. Para ele é melhor saber onde estão os maiores focos (por região) de problemas dos idosos
+- É importante o idoso ter ideia do core geral, mas não fazer um overload de informações para idoso, número de horas que ele ficou com comportamento sedentário, e um score geral, o que era esperado dele em comparação com a média da OMS, fazer um gráfico de curva de crescimento (talvez melhor baseado nos próprios dados coletados e análisados pela IA). E no final apenas ter um feedback visual do que ele precisa melhorar. "Um score final comparado com alguma coisa e um joinha no final, e logo após um 'procure um agente de saúde'". 
+- As informações para os idosos deve ser simples, objetiva e não comprometedora
+- Para o OBS, no teste de IVCF-20, é interessante ver os dados (pontuação) por domínio, gráfico em barra ou outro tipo de gráfico por proporção
+- Ainda sobre o teste de IVCF-20, o domínio responde a pergunta de onde eu tenho que atuar
+- No teste de IVCF-20, para o idoso, talvez seria melhor uma visualização em termômetro que tenha separações visuais (por cores)
+- MEEM, visualizado por escolaridade, mostra o rastreamento de demência (quanto mais baixo mais perto da demência)
+- PFS, score geral para o idoso, e para o OBS os três dados mais detalhados, pois eles precisam saber onde eles vão intervir
+- Talvez a gente precise ter os dados fakeados pela falta inicial deles, para montar o sistema
+      - (Do IVCF-20 existem dados)

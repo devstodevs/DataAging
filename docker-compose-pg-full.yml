@@ -1,0 +1,37 @@
+services:
+  pgtecnoaging:
+    image: postgres:16-alpine
+    container_name: pgtenoaging
+    hostname: pgtecnoaging
+    environment:
+      PGPORT: 5432
+      POSTGRES_DB: pgtecnoaging
+      POSTGRES_USER: tecnoaging
+      POSTGRES_PASSWORD: "tecnoaging"
+    ports:
+      - 55432:5432
+    volumes:
+      - ./pgtecnoaging/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./pgtecnoaging/init-pg-tecnoaging.sql:/tmp/init-pg-tecnoaging.sql
+    networks:
+      - dataging
+  pgdataging:
+    image: postgres:17-alpine
+    container_name: pgdataging
+    hostname: pgdataging
+    environment:
+      POSTGRES_DB: pgdataging
+      POSTGRES_USER: dataging
+      POSTGRES_PASSWORD: "dataging"
+    ports:
+      - 55434:5434
+    volumes:
+      - ./projetodw/projetodw.sh:/docker-entrypoint-initdb.d/projetodw.sh
+      - ./projetodw/projetodw-full.sql:/tmp/projetodw-full.sql
+    networks:
+      - projetodw_bd3
+
+networks:
+  dataging:
+    name: "dataging"
+    driver: bridge

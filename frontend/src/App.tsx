@@ -1,12 +1,8 @@
-import './App.css'
+import "./App.css";
+import ComponentExamples from "./pages/ComponentExamples";
 
 function App() {
-
-  return (
-    <>
-      <h1>Hello World!</h1>
-    </>
-  )
+  return <ComponentExamples />;
 }
 
-export default App
+export default App;

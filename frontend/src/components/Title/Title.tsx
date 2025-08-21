@@ -16,7 +16,7 @@ const Title: React.FC<TitleProps> = ({
   const baseStyle: React.CSSProperties = {
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif",
-    fontWeight: level === "h1" ? "700" : "600", // Bold for h1, SemiBold for h2
+    fontWeight: level === "h1" ? "700" : "600",
     color: "#000000",
     fontSize: level === "h1" ? "32px" : "24px",
     lineHeight: "1.2",

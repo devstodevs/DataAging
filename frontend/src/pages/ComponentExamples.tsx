@@ -4,6 +4,7 @@ import ButtonExamples from "../components/Examples/Button/ButtonExamples";
 import InputExamples from "../components/Examples/Input/InputExamples";
 import ModalExamples from "../components/Examples/Modal/ModalExamples";
 import TitleExamples from "../components/Examples/Title/TitleExamples";
+import SubtitleExamples from "../components/Examples/Subtitle/SubtitleExamples";
 
 interface TabProps {
   label: string;
@@ -45,6 +46,11 @@ const ComponentExamples: React.FC = () => {
   const tabs = [
     { id: "card", label: "Card Component", component: CardExamples },
     { id: "title", label: "Title Component", component: TitleExamples },
+    {
+      id: "subtitle",
+      label: "Subtitle Component",
+      component: SubtitleExamples,
+    },
     { id: "button", label: "Button Component", component: ButtonExamples },
     { id: "input", label: "Input Component", component: InputExamples },
     { id: "modal", label: "Modal Component", component: ModalExamples },

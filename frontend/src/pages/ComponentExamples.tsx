@@ -57,8 +57,10 @@ const ComponentExamples: React.FC = () => {
       }}
     >
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <h1 style={{ marginBottom: "32px", color: "#1F2937" }}>
-          Component Examples
+        <h1
+          style={{ marginBottom: "32px", color: "#1F2937", fontSize: "1.7rem" }}
+        >
+          🔍 Component Examples 🔍
         </h1>
 
         {/* Tabs */}
@@ -83,7 +85,14 @@ const ComponentExamples: React.FC = () => {
         {/* Tab Content */}
         {tabs.map((tab) => (
           <TabContent key={tab.id} isActive={activeTab === tab.id}>
-            <h2 style={{ marginBottom: "24px", color: "#374151" }}>
+            <h2
+              style={{
+                marginBottom: "24px",
+                color: "#374151",
+                fontSize: "1.3rem",
+                fontWeight: "500",
+              }}
+            >
               {tab.label} Examples
             </h2>
             <tab.component />

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import Card from "../components/Card/Card";
-import Title from "../components/Title/Title";
-import Subtitle from "../components/Subtitle/Subtitle";
-import Input from "../components/Input/Input";
-import Alert from "../components/Alert/Alert";
-import Button from "../components/Button/Button";
-import SecondaryLink from "../components/SecondaryLink/SecondaryLink";
+import Card from "../components/base/Card/Card";
+import Title from "../components/base/Title/Title";
+import Subtitle from "../components/base/Subtitle/Subtitle";
+import Input from "../components/base/Input/Input";
+import Alert from "../components/base/Alert/Alert";
+import Button from "../components/base/Button/Button";
+import SecondaryLink from "../components/base/SecondaryLink/SecondaryLink";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState("");

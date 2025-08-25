@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ExampleContainer from "../ExampleContainer";
-import Alert from "../../Alert/Alert";
+import Alert from "../../base/Alert/Alert";
 
 const AlertExamples: React.FC = () => {
     const [showDismissible, setShowDismissible] = useState(true);

@@ -1,5 +1,5 @@
 import React from "react";
-import Card from "../../Card/Card";
+import Card from "../../base/Card/Card";
 
 const BasicCard: React.FC = () => {
   return (

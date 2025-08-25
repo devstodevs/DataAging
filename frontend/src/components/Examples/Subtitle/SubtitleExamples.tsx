@@ -1,7 +1,7 @@
 import React from "react";
 import ExampleContainer from "../ExampleContainer";
-import Subtitle from "../../Subtitle/Subtitle";
-import Title from "../../Title/Title";
+import Subtitle from "../../base/Subtitle/Subtitle";
+import Title from "../../base/Title/Title";
 
 const SubtitleExamples: React.FC = () => {
   return (

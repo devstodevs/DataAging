@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ExampleContainer from "../ExampleContainer";
-import Button from "../../Button/Button";
+import Button from "../../base/Button/Button";
 
 const ButtonExamples: React.FC = () => {
   const [loadingState, setLoadingState] = useState(false);

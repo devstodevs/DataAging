@@ -16,6 +16,8 @@ export interface SecondaryLinkProps {
     rel?: string;
     /** Se o link está desabilitado */
     disabled?: boolean;
+    /** Cor customizada do link */
+    color?: string;
 }
 
 const SecondaryLink: React.FC<SecondaryLinkProps> = ({
@@ -26,6 +28,7 @@ const SecondaryLink: React.FC<SecondaryLinkProps> = ({
     target,
     rel,
     disabled = false,
+    color,
 }) => {
     const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
         if (disabled) {
@@ -40,11 +43,14 @@ const SecondaryLink: React.FC<SecondaryLinkProps> = ({
 
     const linkClasses = `secondary-link ${disabled ? 'secondary-link--disabled' : ''} ${className}`.trim();
 
+    const customStyle = color ? { color } : {};
+
     return (
         <a
             href={disabled ? undefined : href}
             onClick={handleClick}
             className={linkClasses}
+            style={customStyle}
             target={target}
             rel={rel}
             tabIndex={disabled ? -1 : 0}

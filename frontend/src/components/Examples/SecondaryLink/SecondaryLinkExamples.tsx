@@ -40,6 +40,50 @@ const SecondaryLinkExamples: React.FC = () => {
             </ExampleContainer>
 
             <ExampleContainer
+                title="Cores Customizadas"
+                description="SecondaryLinks com diferentes cores usando a prop color"
+                size="medium"
+            >
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", textAlign: "center" }}>
+                    <div>
+                        <SecondaryLink href="#" color="#3b82f6">
+                            Link azul (primário)
+                        </SecondaryLink>
+                    </div>
+
+                    <div>
+                        <SecondaryLink href="#" color="#10b981">
+                            Link verde (sucesso)
+                        </SecondaryLink>
+                    </div>
+
+                    <div>
+                        <SecondaryLink href="#" color="#f59e0b">
+                            Link amarelo (aviso)
+                        </SecondaryLink>
+                    </div>
+
+                    <div>
+                        <SecondaryLink href="#" color="#ef4444">
+                            Link vermelho (erro)
+                        </SecondaryLink>
+                    </div>
+
+                    <div>
+                        <SecondaryLink href="#" color="#8b5cf6">
+                            Link roxo (personalizado)
+                        </SecondaryLink>
+                    </div>
+
+                    <div>
+                        <SecondaryLink href="#" color="#374151">
+                            Link cinza escuro
+                        </SecondaryLink>
+                    </div>
+                </div>
+            </ExampleContainer>
+
+            <ExampleContainer
                 title="Contexto de Login/Autenticação"
                 description="SecondaryLinks em formulários de login e autenticação"
                 size="medium"

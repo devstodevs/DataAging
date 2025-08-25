@@ -5,6 +5,7 @@ import InputExamples from "../components/Examples/Input/InputExamples";
 import ModalExamples from "../components/Examples/Modal/ModalExamples";
 import TitleExamples from "../components/Examples/Title/TitleExamples";
 import SubtitleExamples from "../components/Examples/Subtitle/SubtitleExamples";
+import AlertExamples from "../components/Examples/Alert/AlertExamples";
 
 interface TabProps {
   label: string;
@@ -13,7 +14,7 @@ interface TabProps {
   onClick: () => void;
 }
 
-const Tab: React.FC<TabProps> = ({ label, children, isActive, onClick }) => (
+const Tab: React.FC<TabProps> = ({ label, isActive, onClick }) => (
   <button
     onClick={onClick}
     style={{
@@ -53,6 +54,7 @@ const ComponentExamples: React.FC = () => {
     },
     { id: "button", label: "Button Component", component: ButtonExamples },
     { id: "input", label: "Input Component", component: InputExamples },
+    { id: "alert", label: "Alert Component", component: AlertExamples },
     { id: "modal", label: "Modal Component", component: ModalExamples },
   ];
 

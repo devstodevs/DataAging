@@ -1,0 +1,78 @@
+.secondary-link {
+    /* Texto sem sublinhado por padrão */
+    text-decoration: none;
+
+    /* Cor primária do tema - usando cinza médio para não competir com títulos */
+    color: #6b7280;
+
+    /* Peso Medium/SemiBold */
+    font-weight: 500;
+
+    /* Tamanho pequeno mas legível */
+    font-size: 14px;
+
+    /* Cursor pointer para indicar interatividade */
+    cursor: pointer;
+
+    /* Transição suave para mudanças de estado */
+    transition: all 0.2s ease-in-out;
+
+    /* Display inline para comportar-se como texto */
+    display: inline;
+
+    /* Focus state claro para acessibilidade */
+    outline: none;
+    border-radius: 2px;
+}
+
+/* Estado hover - ganha sublinhado */
+.secondary-link:hover:not(.secondary-link--disabled) {
+    text-decoration: underline;
+    color: #4b5563;
+}
+
+/* Estado pressed/active - texto mais escuro */
+.secondary-link:active:not(.secondary-link--disabled) {
+    color: #374151;
+}
+
+/* Estado focus - contorno claro para acessibilidade via teclado */
+.secondary-link:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Estado disabled */
+.secondary-link--disabled {
+    color: #9ca3af;
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+.secondary-link--disabled:hover {
+    text-decoration: none;
+    color: #9ca3af;
+}
+
+/* Variação para temas escuros */
+@media (prefers-color-scheme: dark) {
+    .secondary-link {
+        color: #9ca3af;
+    }
+
+    .secondary-link:hover:not(.secondary-link--disabled) {
+        color: #d1d5db;
+    }
+
+    .secondary-link:active:not(.secondary-link--disabled) {
+        color: #f3f4f6;
+    }
+
+    .secondary-link--disabled {
+        color: #6b7280;
+    }
+
+    .secondary-link--disabled:hover {
+        color: #6b7280;
+    }
+}

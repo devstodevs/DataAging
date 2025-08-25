@@ -6,6 +6,7 @@ import ModalExamples from "../components/Examples/Modal/ModalExamples";
 import TitleExamples from "../components/Examples/Title/TitleExamples";
 import SubtitleExamples from "../components/Examples/Subtitle/SubtitleExamples";
 import AlertExamples from "../components/Examples/Alert/AlertExamples";
+import SecondaryLinkExamples from "../components/Examples/SecondaryLink/SecondaryLinkExamples";
 
 interface TabProps {
   label: string;
@@ -55,6 +56,7 @@ const ComponentExamples: React.FC = () => {
     { id: "button", label: "Button Component", component: ButtonExamples },
     { id: "input", label: "Input Component", component: InputExamples },
     { id: "alert", label: "Alert Component", component: AlertExamples },
+    { id: "secondarylink", label: "SecondaryLink Component", component: SecondaryLinkExamples },
     { id: "modal", label: "Modal Component", component: ModalExamples },
   ];
 

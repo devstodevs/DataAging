@@ -89,13 +89,22 @@ const InputExamples: React.FC = () => {
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
             <Input
-              label="Senha"
+              label="Senha (Ícone à Esquerda)"
               placeholder="Digite sua senha"
               value={password}
               onChange={setPassword}
               type="password"
               required
               iconPosition="left"
+            />
+            <Input
+              label="Senha (Ícone à Direita)"
+              placeholder="Digite sua senha"
+              value={password}
+              onChange={setPassword}
+              type="password"
+              required
+              iconPosition="right"
             />
           </div>
         </div>
@@ -122,7 +131,6 @@ const InputExamples: React.FC = () => {
                 <path d="m21 21-4.35-4.35" />
               </svg>
             }
-            iconPosition="left"
             onIconClick={() => alert("Pesquisando por: " + search)}
           />
         </div>

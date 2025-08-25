@@ -129,10 +129,20 @@ const Input: React.FC<InputProps> = ({
     return <Element {...commonProps}>{config.icon}</Element>;
   };
 
+  const hasPasswordIcon = type === "password";
+  const passwordIconOnLeft = hasPasswordIcon && iconPosition === "left";
+  const passwordIconOnRight = hasPasswordIcon && iconPosition === "right";
+
+  const hasRightIcon = passwordIconOnRight ||
+    (iconPosition === "right" && (icon || (showValidationIcons && (success || error)))) ||
+    (showValidationIcons && (success || error));
+  const hasLeftIcon = passwordIconOnLeft || (iconPosition === "left" && icon && type !== "password");
+
   const finalInputClasses = buildClassNames(
     inputClasses,
     disabled && "disabled",
-    iconPosition === "left" && "icon-left",
+    hasLeftIcon && "icon-left",
+    hasRightIcon && "has-right-icon",
     className
   );
 
@@ -148,8 +158,8 @@ const Input: React.FC<InputProps> = ({
       <div className="input-wrapper">
         {iconPosition === "left" && (
           <>
-            {renderIcon("password")}
-            {renderIcon("custom")}
+            {type === "password" && renderIcon("password")}
+            {type !== "password" && renderIcon("custom")}
           </>
         )}
 
@@ -171,12 +181,25 @@ const Input: React.FC<InputProps> = ({
           className={finalInputClasses}
         />
 
+        {/* Right side icons */}
         {iconPosition === "right" && (
           <>
-            {renderIcon("password")}
+            {type === "password" && renderIcon("password")}
+            {type !== "password" && (
+              <>
+                {renderIcon("success")}
+                {renderIcon("error")}
+                {renderIcon("custom")}
+              </>
+            )}
+          </>
+        )}
+
+        {/* Validation icons for non-password fields when iconPosition is not explicitly right */}
+        {type !== "password" && iconPosition !== "right" && (
+          <>
             {renderIcon("success")}
             {renderIcon("error")}
-            {renderIcon("custom")}
           </>
         )}
       </div>

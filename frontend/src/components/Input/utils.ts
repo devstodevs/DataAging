@@ -5,7 +5,7 @@ export const shouldShowValidationIcons = (
     type: string,
     value: string
 ): boolean =>
-    !isSpecialInputType(type) && value.length > 0;
+    !isSpecialInputType(type) && type !== "password" && value.length > 0;
 
 export const generateInputId = (id?: string, name?: string): string =>
     id || name || `input-${Math.random().toString(36).substr(2, 9)}`;

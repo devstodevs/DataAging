@@ -97,6 +97,15 @@
   padding-right: 44px;
 }
 
+.input-field[type="password"]:not(.icon-left) {
+  padding-right: 44px !important;
+}
+
+.input-field[type="password"].icon-left {
+  padding-left: 44px !important;
+  padding-right: 16px !important;
+}
+
 .input-field[type="number"].has-right-icon,
 .input-field[type="date"].has-right-icon {
   padding-right: 60px;

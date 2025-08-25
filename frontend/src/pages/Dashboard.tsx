@@ -1,9 +1,9 @@
 import React from "react";
 import { Activity, Battery, User, Brain, BarChart3 } from "lucide-react";
-import Title from "../components/Title/Title";
-import Subtitle from "../components/Subtitle/Subtitle";
-import TestCard from "../components/TestCard/TestCard";
-import HighlightsCard from "../components/HighlightsCard/HighlightsCard";
+import Title from "../components/base/Title/Title";
+import Subtitle from "../components/base/Subtitle/Subtitle";
+import TestCard from "../components/compound/TestCard/TestCard";
+import HighlightsCard from "../components/compound/HighlightsCard/HighlightsCard";
 
 const Dashboard: React.FC = () => {
     const clinicalTests = [

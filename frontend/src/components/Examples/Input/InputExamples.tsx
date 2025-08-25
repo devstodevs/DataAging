@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ExampleContainer from "../ExampleContainer";
-import Input from "../../Input/Input";
+import Input from "../../base/Input/Input";
 
 const InputExamples: React.FC = () => {
   const [email, setEmail] = useState("");

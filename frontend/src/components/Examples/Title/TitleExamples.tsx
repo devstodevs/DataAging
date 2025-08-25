@@ -1,6 +1,6 @@
 import React from "react";
 import ExampleContainer from "../ExampleContainer";
-import Title from "../../Title/Title";
+import Title from "../../base/Title/Title";
 
 const TitleExamples: React.FC = () => {
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ExampleContainer from "../ExampleContainer";
-import SecondaryLink from "../../SecondaryLink/SecondaryLink";
+import SecondaryLink from "../../base/SecondaryLink/SecondaryLink";
 
 const SecondaryLinkExamples: React.FC = () => {
     const [clickCount, setClickCount] = useState(0);

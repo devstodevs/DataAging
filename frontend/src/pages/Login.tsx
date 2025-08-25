@@ -40,19 +40,9 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div
-            style={{
-                minHeight: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#F9FAFB",
-                padding: "20px",
-            }}
-        >
+        <div className="h-full flex flex-col items-center justify-center bg-gray-50 p-5">
             {/* Título Principal */}
-            <div style={{ marginBottom: "32px" }}>
+            <div className="mb-8">
                 <Title level="h1" align="center">
                     Entrar na Plataforma
                 </Title>

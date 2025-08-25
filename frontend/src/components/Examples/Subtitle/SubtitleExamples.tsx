@@ -84,8 +84,8 @@ const SubtitleExamples: React.FC = () => {
         size="large"
       >
         <Subtitle>
-          Este é um exemplo de subtítulo com múltiplas linhas de texto. 
-          Ele demonstra como o componente se comporta com conteúdo mais extenso 
+          Este é um exemplo de subtítulo com múltiplas linhas de texto.
+          Ele demonstra como o componente se comporta com conteúdo mais extenso
           e como a quebra de linha funciona naturalmente.
         </Subtitle>
       </ExampleContainer>
@@ -103,9 +103,9 @@ const SubtitleExamples: React.FC = () => {
             Digite seu email para receber um link de redefinição de senha
           </Subtitle>
         </div>
-        <div style={{ 
-          padding: "16px", 
-          backgroundColor: "#F9FAFB", 
+        <div style={{
+          padding: "16px",
+          backgroundColor: "#F9FAFB",
           borderRadius: "6px",
           border: "1px solid #E5E7EB"
         }}>

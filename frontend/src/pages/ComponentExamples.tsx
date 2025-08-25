@@ -61,27 +61,14 @@ const ComponentExamples: React.FC = () => {
   ];
 
   return (
-    <div
-      style={{
-        padding: "20px",
-        backgroundColor: "#F3F4F6",
-        minHeight: "100vh",
-      }}
-    >
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <h1
-          style={{ marginBottom: "32px", color: "#1F2937", fontSize: "1.7rem" }}
-        >
+    <div className="h-full p-5 bg-gray-100 overflow-auto">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="mb-8 text-gray-800 text-3xl font-semibold">
           🔍 Component Examples 🔍
         </h1>
 
         {/* Tabs */}
-        <div
-          style={{
-            borderBottom: "1px solid #E5E7EB",
-            marginBottom: "24px",
-          }}
-        >
+        <div className="border-b border-gray-200 mb-6">
           {tabs.map((tab) => (
             <Tab
               key={tab.id}
@@ -97,14 +84,7 @@ const ComponentExamples: React.FC = () => {
         {/* Tab Content */}
         {tabs.map((tab) => (
           <TabContent key={tab.id} isActive={activeTab === tab.id}>
-            <h2
-              style={{
-                marginBottom: "24px",
-                color: "#374151",
-                fontSize: "1.3rem",
-                fontWeight: "500",
-              }}
-            >
+            <h2 className="mb-6 text-gray-700 text-xl font-medium">
               {tab.label} Examples
             </h2>
             <tab.component />

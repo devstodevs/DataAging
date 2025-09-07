@@ -3,7 +3,7 @@ import "./CEPInput.css";
 import BaseInput from "../BaseInput";
 import { getMaskConfig } from "../shared";
 
-export interface CepInputProps {
+export interface CEPInputProps {
   label?: string;
   placeholder?: string;
   value?: string;
@@ -22,7 +22,7 @@ export interface CepInputProps {
   disableSuccessValidation?: boolean;
 }
 
-const CepInput: React.FC<CepInputProps> = ({
+const CEPInput: React.FC<CEPInputProps> = ({
   placeholder,
   autoComplete = "postal-code",
   ...props
@@ -46,4 +46,4 @@ const CepInput: React.FC<CepInputProps> = ({
   );
 };
 
-export default CepInput;
+export default CEPInput;

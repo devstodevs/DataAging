@@ -2,122 +2,116 @@ import React, { useState } from "react";
 import Card from "../components/base/Card/Card";
 import Title from "../components/base/Title/Title";
 import Subtitle from "../components/base/Subtitle/Subtitle";
-import Input from "../components/base/Input/Input";
+import { EmailInput, PasswordInput } from "../components/base/Input";
 import Alert from "../components/base/Alert/Alert";
 import Button from "../components/base/Button/Button";
 import SecondaryLink from "../components/base/SecondaryLink/SecondaryLink";
 
 const Login: React.FC = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-    const validateEmail = (email: string) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    };
+  // Email validation is now handled by EmailInput component
 
-    const isEmailValid = email.length > 0 && validateEmail(email);
-    const isEmailError = email.length > 0 && !validateEmail(email);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError("");
-        setIsLoading(true);
+    // Simular uma tentativa de login que falha para demonstrar o estado de erro
+    setTimeout(() => {
+      setError("E-mail ou senha inválidos");
+      setIsLoading(false);
+    }, 1000);
+  };
 
-        // Simular uma tentativa de login que falha para demonstrar o estado de erro
-        setTimeout(() => {
-            setError("E-mail ou senha inválidos");
-            setIsLoading(false);
-        }, 1000);
-    };
+  const handleForgotPassword = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    // implementar a lógica para recuperação de senha
+    console.log("Esqueceu a senha clicado");
+  };
 
-    const handleForgotPassword = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.preventDefault();
-        // implementar a lógica para recuperação de senha
-        console.log("Esqueceu a senha clicado");
-    };
+  return (
+    <div className="h-full flex flex-col items-center justify-center bg-gray-50 p-5">
+      {/* Título Principal */}
+      <div className="mb-8">
+        <Title level="h1" align="center">
+          Entrar na Plataforma
+        </Title>
+      </div>
 
-    return (
-        <div className="h-full flex flex-col items-center justify-center bg-gray-50 p-5">
-            {/* Título Principal */}
-            <div className="mb-8">
-                <Title level="h1" align="center">
-                    Entrar na Plataforma
-                </Title>
-            </div>
-
-            {/* Card Principal */}
-            <Card maxWidth="400px">
-                <div style={{ marginBottom: "24px", textAlign: "center" }}>
-                    <div style={{ marginBottom: "8px" }}>
-                        <Title size="small" align="left">
-                            Bem-vindo de volta
-                        </Title>
-                    </div>
-                    <Subtitle align="left">
-                        Digite suas credenciais para acessar sua conta
-                    </Subtitle>
-                </div>
-
-                {/* Formulário */}
-                <form onSubmit={handleSubmit}>
-                    {/* Campo de E-mail */}
-                    <div style={{ marginBottom: "16px" }}>
-                        <Input
-                            label="E-mail"
-                            placeholder="exemplo@dominio.com"
-                            value={email}
-                            onChange={setEmail}
-                            type="email"
-                            required
-                            error={isEmailError ? "E-mail inválido" : undefined}
-                            success={isEmailValid}
-                        />
-                    </div>
-
-                    {/* Campo de Senha */}
-                    <div style={{ marginBottom: "16px" }}>
-                        <Input
-                            label="Senha"
-                            placeholder="Digite sua senha"
-                            value={password}
-                            onChange={setPassword}
-                            type="password"
-                            required
-                            iconPosition="right"
-                        />
-                    </div>
-
-                    {/* Link Esqueceu a Senha */}
-                    <div style={{ marginBottom: "16px", textAlign: "center" }}>
-                        <SecondaryLink href="#" color="#374151" onClick={handleForgotPassword}>
-                            Esqueceu sua senha?
-                        </SecondaryLink>
-                    </div>
-
-                    {/* Alerta de Erro */}
-                    {error && (
-                        <div style={{ marginBottom: "16px" }}>
-                            <Alert type="error" message={error} />
-                        </div>
-                    )}
-
-                    {/* Botão de Submissão */}
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        fullWidth
-                        loading={isLoading}
-                        disabled={!email || !password}
-                    >
-                        Entrar
-                    </Button>
-                </form>
-            </Card>
+      {/* Card Principal */}
+      <Card maxWidth="400px">
+        <div style={{ marginBottom: "24px", textAlign: "center" }}>
+          <div style={{ marginBottom: "8px" }}>
+            <Title size="small" align="left">
+              Bem-vindo de volta
+            </Title>
+          </div>
+          <Subtitle align="left">
+            Digite suas credenciais para acessar sua conta
+          </Subtitle>
         </div>
-    );
+
+        {/* Formulário */}
+        <form onSubmit={handleSubmit}>
+          {/* Campo de E-mail */}
+          <div style={{ marginBottom: "16px" }}>
+            <EmailInput
+              label="E-mail"
+              placeholder="exemplo@dominio.com"
+              value={email}
+              onChange={setEmail}
+              required
+            />
+          </div>
+
+          {/* Campo de Senha */}
+          <div style={{ marginBottom: "16px" }}>
+            <PasswordInput
+              label="Senha"
+              placeholder="Digite sua senha"
+              value={password}
+              onChange={setPassword}
+              required
+              iconPosition="right"
+            />
+          </div>
+
+          {/* Link Esqueceu a Senha */}
+          <div style={{ marginBottom: "16px", textAlign: "center" }}>
+            <SecondaryLink
+              href="#"
+              color="#374151"
+              onClick={handleForgotPassword}
+            >
+              Esqueceu sua senha?
+            </SecondaryLink>
+          </div>
+
+          {/* Alerta de Erro */}
+          {error && (
+            <div style={{ marginBottom: "16px" }}>
+              <Alert type="error" message={error} />
+            </div>
+          )}
+
+          {/* Botão de Submissão */}
+          <Button
+            type="submit"
+            variant="primary"
+            fullWidth
+            loading={isLoading}
+            disabled={!email || !password}
+          >
+            Entrar
+          </Button>
+        </form>
+      </Card>
+    </div>
+  );
 };
 
 export default Login;

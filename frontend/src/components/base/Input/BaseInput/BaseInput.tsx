@@ -1,16 +1,19 @@
 import React from "react";
-import "./Input.css";
-import { useInput } from "./useInput";
-import { getMaskConfig } from "./masks";
-import { ICONS } from "./icons";
-import { generateInputId, buildClassNames, isSpecialInputType, shouldShowValidationIcons } from "./utils";
+import "./BaseInput.css";
+import { useInput } from "../shared";
+import {
+  generateInputId,
+  buildClassNames,
+  shouldShowValidationIcons,
+} from "../shared";
+import { ICONS } from "../shared";
 
-export interface InputProps {
+export interface BaseInputProps {
   label?: string;
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
-  type?: "text" | "email" | "password" | "tel" | "date" | "number";
+  type?: string;
   disabled?: boolean;
   required?: boolean;
   error?: string;
@@ -25,10 +28,21 @@ export interface InputProps {
   maxLength?: number;
   minLength?: number;
   pattern?: string;
-  mask?: "phone" | "cpf" | "cnpj" | "cep" | "currency";
+  min?: string | number;
+  max?: string | number;
+  step?: number;
+  mask?: string;
+  // Custom validation function
+  customValidation?: (value: string) => boolean;
+  // Custom error message
+  customErrorMessage?: string;
+  // Whether to show validation icons
+  showValidationIcons?: boolean;
+  // Whether to disable success validation (hide success icon and styling)
+  disableSuccessValidation?: boolean;
 }
 
-const Input: React.FC<InputProps> = ({
+const BaseInput: React.FC<BaseInputProps> = ({
   label,
   placeholder,
   value = "",
@@ -48,20 +62,19 @@ const Input: React.FC<InputProps> = ({
   maxLength,
   minLength,
   pattern,
+  min,
+  max,
+  step,
   mask,
+  customValidation,
+  customErrorMessage,
+  showValidationIcons,
+  disableSuccessValidation = false,
 }) => {
   const inputId = generateInputId(id, name);
-  const maskConfig = mask ? getMaskConfig(mask) : null;
-  const finalPlaceholder = maskConfig?.placeholder || placeholder;
-  const isSpecialType = isSpecialInputType(type);
   const hasValue = value.length > 0;
-  const showValidationIcons = shouldShowValidationIcons(type, value);
-
-  const finalMaxLength =
-    maxLength ||
-    (maskConfig && !isSpecialType
-      ? maskConfig.maxFormattedLength || maskConfig.placeholder.length
-      : undefined);
+  const shouldShowIcons =
+    showValidationIcons ?? shouldShowValidationIcons(type, value);
 
   const {
     handleChange,
@@ -71,7 +84,7 @@ const Input: React.FC<InputProps> = ({
     getInputType,
     inputClasses,
     showPassword,
-    isValid,
+    isValid: maskValid,
   } = useInput({
     value,
     onChange,
@@ -83,7 +96,12 @@ const Input: React.FC<InputProps> = ({
     iconPosition,
   });
 
-  const renderIcon = (iconType: "password" | "success" | "error" | "custom") => {
+  // Use custom validation if provided, otherwise use mask validation
+  const isValid = customValidation ? customValidation(value) : maskValid;
+
+  const renderIcon = (
+    iconType: "password" | "success" | "error" | "custom"
+  ) => {
     const iconProps = {
       password: {
         condition: type === "password",
@@ -94,13 +112,17 @@ const Input: React.FC<InputProps> = ({
         icon: showPassword ? ICONS.eyeClosed : ICONS.eyeOpen,
       },
       success: {
-        condition: (success || isValid) && !error && showValidationIcons,
+        condition:
+          (success || isValid) &&
+          !error &&
+          shouldShowIcons &&
+          !disableSuccessValidation,
         element: "div" as const,
         className: "input-icon success-icon",
         icon: ICONS.success,
       },
       error: {
-        condition: (error || (hasValue && !isValid && mask)) && showValidationIcons,
+        condition: (error || (hasValue && !isValid)) && shouldShowIcons,
         element: "div" as const,
         className: "input-icon error-icon",
         icon: ICONS.error,
@@ -133,10 +155,16 @@ const Input: React.FC<InputProps> = ({
   const passwordIconOnLeft = hasPasswordIcon && iconPosition === "left";
   const passwordIconOnRight = hasPasswordIcon && iconPosition === "right";
 
-  const hasRightIcon = passwordIconOnRight ||
-    (iconPosition === "right" && (icon || (showValidationIcons && (success || error)))) ||
-    (showValidationIcons && (success || error));
-  const hasLeftIcon = passwordIconOnLeft || (iconPosition === "left" && icon && type !== "password");
+  const hasRightIcon =
+    passwordIconOnRight ||
+    (iconPosition === "right" &&
+      (icon ||
+        (shouldShowIcons &&
+          ((success && !disableSuccessValidation) || error)))) ||
+    (shouldShowIcons && ((success && !disableSuccessValidation) || error));
+  const hasLeftIcon =
+    passwordIconOnLeft ||
+    (iconPosition === "left" && icon && type !== "password");
 
   const finalInputClasses = buildClassNames(
     inputClasses,
@@ -145,6 +173,13 @@ const Input: React.FC<InputProps> = ({
     hasRightIcon && "has-right-icon",
     className
   );
+
+  const getErrorMessage = () => {
+    if (error) return error;
+    if (customErrorMessage && hasValue && !isValid) return customErrorMessage;
+    if (mask && hasValue && !isValid) return `Formato inválido para ${mask}`;
+    return null;
+  };
 
   return (
     <div className="input-container">
@@ -171,13 +206,16 @@ const Input: React.FC<InputProps> = ({
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          placeholder={finalPlaceholder}
+          placeholder={placeholder}
           disabled={disabled}
           required={required}
           autoComplete={autoComplete}
-          maxLength={finalMaxLength}
+          maxLength={maxLength}
           minLength={minLength}
           pattern={pattern}
+          min={min}
+          max={max}
+          step={step}
           className={finalInputClasses}
         />
 
@@ -204,13 +242,11 @@ const Input: React.FC<InputProps> = ({
         )}
       </div>
 
-      {(error || (hasValue && !isValid && mask && !isSpecialType)) && (
-        <div className="input-error">
-          {error || `Formato inválido para ${mask}`}
-        </div>
+      {getErrorMessage() && (
+        <div className="input-error">{getErrorMessage()}</div>
       )}
     </div>
   );
 };
 
-export default Input;
+export default BaseInput;

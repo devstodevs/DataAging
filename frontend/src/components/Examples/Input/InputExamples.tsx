@@ -1,6 +1,16 @@
 import React, { useState } from "react";
 import ExampleContainer from "../ExampleContainer";
-import Input from "../../base/Input/Input";
+import {
+  TextInput,
+  EmailInput,
+  PasswordInput,
+  PhoneInput,
+  CepInput,
+  DateInput,
+  NumberInput,
+  DocumentInput,
+  CurrencyInput,
+} from "../../base/Input";
 
 const InputExamples: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -14,15 +24,6 @@ const InputExamples: React.FC = () => {
   const [cnpj, setCnpj] = useState("");
   const [number, setNumber] = useState("");
   const [currency, setCurrency] = useState("");
-
-  // Validation functions
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const isEmailValid = email.length > 0 && validateEmail(email);
-  const isEmailError = email.length > 0 && !validateEmail(email);
 
   return (
     <ExampleContainer
@@ -38,7 +39,7 @@ const InputExamples: React.FC = () => {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-            <Input
+            <TextInput
               label="Nome Completo"
               placeholder="Digite seu nome completo"
               value={name}
@@ -46,21 +47,18 @@ const InputExamples: React.FC = () => {
               required
             />
 
-            <Input
+            <PhoneInput
               label="Telefone"
               value={phone}
               onChange={setPhone}
-              type="tel"
-              mask="phone"
               required
             />
 
-            <Input
+            <DateInput
               label="Data de Nascimento"
               placeholder="Selecione uma data"
               value={date}
               onChange={setDate}
-              type="date"
             />
           </div>
         </div>
@@ -69,15 +67,12 @@ const InputExamples: React.FC = () => {
           <h3 style={{ marginBottom: "16px", color: "#374151" }}>
             Email com Validação
           </h3>
-          <Input
+          <EmailInput
             label="E-mail"
             placeholder="exemplo@dominio.com"
             value={email}
             onChange={setEmail}
-            type="email"
             required
-            error={isEmailError ? "E-mail inválido" : undefined}
-            success={isEmailValid}
           />
         </div>
 
@@ -88,21 +83,19 @@ const InputExamples: React.FC = () => {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-            <Input
+            <PasswordInput
               label="Senha (Ícone à Esquerda)"
               placeholder="Digite sua senha"
               value={password}
               onChange={setPassword}
-              type="password"
               required
               iconPosition="left"
             />
-            <Input
+            <PasswordInput
               label="Senha (Ícone à Direita)"
               placeholder="Digite sua senha"
               value={password}
               onChange={setPassword}
-              type="password"
               required
               iconPosition="right"
             />
@@ -113,7 +106,7 @@ const InputExamples: React.FC = () => {
           <h3 style={{ marginBottom: "16px", color: "#374151" }}>
             Busca com Ícone
           </h3>
-          <Input
+          <TextInput
             label="Pesquisar"
             placeholder="Digite para pesquisar..."
             value={search}
@@ -132,6 +125,7 @@ const InputExamples: React.FC = () => {
               </svg>
             }
             onIconClick={() => alert("Pesquisando por: " + search)}
+            disableSuccessValidation
           />
         </div>
 
@@ -142,25 +136,36 @@ const InputExamples: React.FC = () => {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-            <Input
+            <TextInput
               label="Campo Desabilitado"
               placeholder="Este campo está desabilitado"
               value="Valor fixo"
               disabled
             />
 
-            <Input
+            <TextInput
               label="Campo com Erro"
               placeholder="Digite algo"
               value=""
               error="Este campo é obrigatório"
             />
 
-            <Input
+            <TextInput
               label="Campo Válido"
               placeholder="Digite algo"
               value="Valor válido"
               success
+            />
+
+            <EmailInput
+              label="Email sem Validação de Sucesso"
+              placeholder="exemplo@dominio.com"
+              value="test@example.com"
+            />
+
+            <PhoneInput
+              label="Telefone sem Validação de Sucesso"
+              value="(11) 99999-9999"
             />
           </div>
         </div>
@@ -172,53 +177,45 @@ const InputExamples: React.FC = () => {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-            <Input
+            <NumberInput
               label="Número"
               placeholder="Digite um número"
-              type="number"
               value={number}
               onChange={setNumber}
-              minLength={1}
-              maxLength={10}
+              min={1}
+              max={9999999999}
             />
 
-            <Input
+            <DocumentInput
               label="CPF"
               value={cpf}
               onChange={setCpf}
-              mask="cpf"
+              documentType="cpf"
               required
             />
 
-            <Input
-              label="CEP"
-              value={cep}
-              onChange={setCep}
-              mask="cep"
-              required
-            />
+            <CepInput label="CEP" value={cep} onChange={setCep} required />
 
-            <Input
+            <DocumentInput
               label="CNPJ"
               value={cnpj}
               onChange={setCnpj}
-              mask="cnpj"
+              documentType="cnpj"
               required
             />
 
-            <Input
+            <CurrencyInput
               label="Valor"
               value={currency}
               onChange={setCurrency}
-              mask="currency"
               required
             />
 
-            <Input
+            <TextInput
               label="URL"
               placeholder="https://exemplo.com"
-              type="text"
               autoComplete="url"
+              disableSuccessValidation
             />
           </div>
         </div>

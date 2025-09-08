@@ -1,0 +1,58 @@
+.radar-chart {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.radar-chart__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.radar-chart__container {
+  width: 100%;
+}
+
+.radar-chart__tooltip {
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.radar-chart__tooltip-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 4px 0;
+}
+
+.radar-chart__tooltip-value {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .radar-chart {
+    padding: 20px;
+  }
+
+  .radar-chart__title {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .radar-chart {
+    padding: 16px;
+  }
+}

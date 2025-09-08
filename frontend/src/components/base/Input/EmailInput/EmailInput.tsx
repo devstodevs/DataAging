@@ -1,27 +1,12 @@
 import React from "react";
 import "./EmailInput.css";
-import BaseInput from "../BaseInput";
+import BaseInput, { type BaseInputProps } from "../BaseInput";
 
-export interface EmailInputProps {
-  label?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (value: string) => void;
-  disabled?: boolean;
-  required?: boolean;
-  error?: string;
-  success?: boolean;
-  icon?: React.ReactNode;
-  iconPosition?: "left" | "right";
-  onIconClick?: () => void;
-  className?: string;
-  name?: string;
-  id?: string;
-  autoComplete?: string;
-  maxLength?: number;
-  minLength?: number;
-  disableSuccessValidation?: boolean;
-}
+export interface EmailInputProps
+  extends Omit<
+    BaseInputProps,
+    "type" | "customValidation" | "customErrorMessage"
+  > {}
 
 const EmailInput: React.FC<EmailInputProps> = ({
   placeholder = "Digite seu email",

@@ -1,25 +1,9 @@
 import React from "react";
 import "./PasswordInput.css";
-import BaseInput from "../BaseInput";
+import BaseInput, { type BaseInputProps } from "../BaseInput";
 
-export interface PasswordInputProps {
-  label?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (value: string) => void;
-  disabled?: boolean;
-  required?: boolean;
-  error?: string;
-  success?: boolean;
-  iconPosition?: "left" | "right";
-  className?: string;
-  name?: string;
-  id?: string;
-  autoComplete?: string;
-  maxLength?: number;
-  minLength?: number;
-  disableSuccessValidation?: boolean;
-}
+export interface PasswordInputProps
+  extends Omit<BaseInputProps, "type" | "icon" | "onIconClick"> {}
 
 const PasswordInput: React.FC<PasswordInputProps> = ({
   placeholder = "Digite sua senha",

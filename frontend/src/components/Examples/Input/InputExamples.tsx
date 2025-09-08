@@ -161,11 +161,13 @@ const InputExamples: React.FC = () => {
               label="Email sem Validação de Sucesso"
               placeholder="exemplo@dominio.com"
               value="test@example.com"
+              disableSuccessValidation
             />
 
             <PhoneInput
               label="Telefone sem Validação de Sucesso"
               value="(11) 99999-9999"
+              disableSuccessValidation
             />
           </div>
         </div>

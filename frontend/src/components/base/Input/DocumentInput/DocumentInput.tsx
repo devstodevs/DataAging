@@ -1,28 +1,16 @@
 import React from "react";
 import "./DocumentInput.css";
-import BaseInput from "../BaseInput";
+import BaseInput, { type BaseInputProps } from "../BaseInput";
 import { getMaskConfig } from "../shared";
 
 export type DocumentType = "cpf" | "cnpj";
 
-export interface DocumentInputProps {
-  label?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (value: string) => void;
+export interface DocumentInputProps
+  extends Omit<
+    BaseInputProps,
+    "type" | "mask" | "customErrorMessage" | "maxLength"
+  > {
   documentType?: DocumentType;
-  disabled?: boolean;
-  required?: boolean;
-  error?: string;
-  success?: boolean;
-  icon?: React.ReactNode;
-  iconPosition?: "left" | "right";
-  onIconClick?: () => void;
-  className?: string;
-  name?: string;
-  id?: string;
-  autoComplete?: string;
-  disableSuccessValidation?: boolean;
 }
 
 const DocumentInput: React.FC<DocumentInputProps> = ({

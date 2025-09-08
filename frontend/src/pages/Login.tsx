@@ -13,8 +13,6 @@ const Login: React.FC = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Email validation is now handled by EmailInput component
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");

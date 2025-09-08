@@ -1,26 +1,13 @@
 import React from "react";
 import "./CEPInput.css";
-import BaseInput from "../BaseInput";
+import BaseInput, { type BaseInputProps } from "../BaseInput";
 import { getMaskConfig } from "../shared";
 
-export interface CEPInputProps {
-  label?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (value: string) => void;
-  disabled?: boolean;
-  required?: boolean;
-  error?: string;
-  success?: boolean;
-  icon?: React.ReactNode;
-  iconPosition?: "left" | "right";
-  onIconClick?: () => void;
-  className?: string;
-  name?: string;
-  id?: string;
-  autoComplete?: string;
-  disableSuccessValidation?: boolean;
-}
+export interface CEPInputProps
+  extends Omit<
+    BaseInputProps,
+    "type" | "mask" | "customErrorMessage" | "maxLength"
+  > {}
 
 const CEPInput: React.FC<CEPInputProps> = ({
   placeholder,

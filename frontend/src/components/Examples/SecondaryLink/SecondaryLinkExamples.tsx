@@ -266,7 +266,7 @@ const SecondaryLinkExamples: React.FC = () => {
             </ExampleContainer>
 
             <ExampleContainer
-                title="Contexto de Sistema/Dashboard"
+                title="Contexto de Sistema/Home"
                 description="SecondaryLinks em interfaces de sistema e configurações"
                 size="large"
             >
@@ -288,8 +288,8 @@ const SecondaryLinkExamples: React.FC = () => {
                         <h4 style={{ margin: 0, color: "#111827", fontSize: "18px", fontWeight: "600" }}>
                             Configurações da Conta
                         </h4>
-                        <SecondaryLink href="/dashboard">
-                            ← Voltar ao dashboard
+                        <SecondaryLink href="/home">
+                            ← Voltar ao home
                         </SecondaryLink>
                     </div>
 

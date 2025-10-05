@@ -175,10 +175,10 @@ const ButtonExamples: React.FC = () => {
         size="medium"
       >
         <Button
-          href="/dashboard"
-          onClick={() => alert("Navigating to dashboard...")}
+          href="/home "
+          onClick={() => alert("Navigating to home...")}
         >
-          Ir para Dashboard
+          Ir para Home
         </Button>
       </ExampleContainer>
 

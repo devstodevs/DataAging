@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import CardExamples from "../components/Examples/Card/CardExamples";
-import ButtonExamples from "../components/Examples/Button/ButtonExamples";
-import InputExamples from "../components/Examples/Input/InputExamples";
-import ModalExamples from "../components/Examples/Modal/ModalExamples";
-import TitleExamples from "../components/Examples/Title/TitleExamples";
-import SubtitleExamples from "../components/Examples/Subtitle/SubtitleExamples";
-import AlertExamples from "../components/Examples/Alert/AlertExamples";
-import SecondaryLinkExamples from "../components/Examples/SecondaryLink/SecondaryLinkExamples";
+import CardExamples from "../../components/Examples/Card/CardExamples";
+import ButtonExamples from "../../components/Examples/Button/ButtonExamples";
+import InputExamples from "../../components/Examples/Input/InputExamples";
+import ModalExamples from "../../components/Examples/Modal/ModalExamples";
+import TitleExamples from "../../components/Examples/Title/TitleExamples";
+import SubtitleExamples from "../../components/Examples/Subtitle/SubtitleExamples";
+import AlertExamples from "../../components/Examples/Alert/AlertExamples";
+import SecondaryLinkExamples from "../../components/Examples/SecondaryLink/SecondaryLinkExamples";
 
 interface TabProps {
   label: string;

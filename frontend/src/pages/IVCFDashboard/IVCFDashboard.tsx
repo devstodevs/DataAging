@@ -38,12 +38,12 @@ import RadarChart from "../../components/compound/RadarChart/RadarChart";
 import LineChart from "../../components/compound/LineChart/LineChart";
 import type { DateRange } from "react-day-picker";
 
-interface TestDashboardProps {
+interface IVCFDashboardProps {
   testId?: string;
   onNavigate?: (page: string) => void;
 }
 
-const TestDashboard: React.FC<TestDashboardProps> = ({
+const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
   testId = "ivcf-20",
   onNavigate,
 }) => {
@@ -57,8 +57,6 @@ const TestDashboard: React.FC<TestDashboardProps> = ({
     administrativeUnit: "all",
     riskClassification: "all",
   });
-
-  const [loading, setLoading] = useState(false);
 
   // Dados mockados para demonstração
   const mockData = {
@@ -172,9 +170,9 @@ const TestDashboard: React.FC<TestDashboardProps> = ({
 
   const handleBack = () => {
     if (onNavigate) {
-      onNavigate("dashboard");
+      onNavigate("home");
     } else {
-      console.log("Voltando para dashboard...");
+      console.log("Voltando para home...");
     }
   };
 
@@ -465,4 +463,4 @@ const TestDashboard: React.FC<TestDashboardProps> = ({
   );
 };
 
-export default TestDashboard;
+export default IVCFDashboard;

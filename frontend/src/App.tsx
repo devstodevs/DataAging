@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { LogIn, FileText, LayoutDashboard, BarChart3, UserPlus } from "lucide-react";
 import "./App.css";
-import ComponentExamples from "./pages/ComponentExamples";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import TestDashboard from "./pages/TestDashboard";
-import RegisterUser from "./pages/RegisterUser";
+import ComponentExamples from "./pages/ComponentExamples/ComponentExamples";
+import Login from "./pages/Login/Login";
+import Home from "./pages/Home/Home";
+import IVCFDashboard from "./pages/IVCFDashboard";
+import RegisterUser from "./pages/Register/RegisterUser";
 
 function App() {
-  type PageType = "login" | "examples" | "dashboard" | "test-dashboard" | "register-user";
+  type PageType = "login" | "examples" | "home" | "ivcf-dashboard" | "register-user";
   
-  const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
+  const [currentPage, setCurrentPage] = useState<PageType>("home");
 
   const handleNavigate = (page: string) => {
     // Type-safe navigation handler that validates the page string
-    const validPages: PageType[] = ["login", "examples", "dashboard", "test-dashboard", "register-user"];
+    const validPages: PageType[] = ["login", "examples", "home", "ivcf-dashboard", "register-user"];
     if (validPages.includes(page as PageType)) {
       setCurrentPage(page as PageType);
     } else {
@@ -28,20 +28,20 @@ function App() {
         return <Login />;
       case "examples":
         return <ComponentExamples />;
-      case "dashboard":
-        return <Dashboard onNavigate={handleNavigate} />;
-      case "test-dashboard":
-        return <TestDashboard testId="ivcf-20" onNavigate={handleNavigate} />;
+      case "home":
+        return <Home onNavigate={handleNavigate} />;
+      case "ivcf-dashboard":
+        return <IVCFDashboard testId="ivcf-20" onNavigate={handleNavigate} />;
       case "register-user":
         return <RegisterUser />;
       default:
-        return <Dashboard />;
+        return <Home />;
     }
   };
 
   const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { id: "test-dashboard", label: "Teste IVCF-20", icon: BarChart3 },
+    { id: "home", label: "Home", icon: LayoutDashboard },
+    { id: "ivcf-dashboard", label: "Teste IVCF-20", icon: BarChart3 },
     { id: "register-user", label: "Cadastrar Usuário", icon: UserPlus },
     { id: "login", label: "Login", icon: LogIn },
     { id: "examples", label: "Exemplos", icon: FileText },

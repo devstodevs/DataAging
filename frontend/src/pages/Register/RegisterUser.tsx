@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import Card from "../components/base/Card";
-import Title from "../components/base/Title";
-import Tabs, { type Tab } from "../components/base/Tabs";
-import Select, { type SelectOption } from "../components/base/Select";
-import Button from "../components/base/Button";
-import TextInput from "../components/base/Input/TextInput";
-import DocumentInput from "../components/base/Input/DocumentInput";
-import PhoneInput from "../components/base/Input/PhoneInput";
-import CEPInput from "../components/base/Input/CepInput";
-import DateInput from "../components/base/Input/DateInput";
+import Card from "../../components/base/Card";
+import Title from "../../components/base/Title";
+import Tabs, { type Tab } from "../../components/base/Tabs";
+import Select, { type SelectOption } from "../../components/base/Select";
+import Button from "../../components/base/Button";
+import TextInput from "../../components/base/Input/TextInput";
+import DocumentInput from "../../components/base/Input/DocumentInput";
+import PhoneInput from "../../components/base/Input/PhoneInput";
+import CEPInput from "../../components/base/Input/CepInput";
+import DateInput from "../../components/base/Input/DateInput";
 import "./RegisterUser.css";
 
 interface FormData {

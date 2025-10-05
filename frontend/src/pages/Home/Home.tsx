@@ -1,15 +1,15 @@
 import React from "react";
 import { Activity, Battery, User, Brain, BarChart3 } from "lucide-react";
-import Title from "../components/base/Title/Title";
-import Subtitle from "../components/base/Subtitle/Subtitle";
-import TestCard from "../components/compound/TestCard/TestCard";
-import HighlightsCard from "../components/compound/HighlightsCard/HighlightsCard";
+import Title from "../../components/base/Title/Title";
+import Subtitle from "../../components/base/Subtitle/Subtitle";
+import TestCard from "../../components/compound/TestCard/TestCard";
+import HighlightsCard from "../../components/compound/HighlightsCard/HighlightsCard";
 
-interface DashboardProps {
+interface HomeProps {
   onNavigate?: (page: string) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
+const Home: React.FC<HomeProps> = ({ onNavigate }) => {
   const clinicalTests = [
     {
       id: "atividade-fisica",
@@ -107,7 +107,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 description={test.description}
                 onClick={() => {
                   if (test.id === "ivcf-20" && onNavigate) {
-                    onNavigate("test-dashboard");
+                    onNavigate("ivcf-dashboard");
                   } else {
                     console.log(`Navegando para: ${test.link}`);
                   }
@@ -126,4 +126,4 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   );
 };
 
-export default Dashboard;
+export default Home;

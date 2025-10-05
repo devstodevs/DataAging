@@ -1,20 +1,21 @@
 import { useState } from "react";
-import { LogIn, FileText, LayoutDashboard, BarChart3, UserPlus } from "lucide-react";
+import { LogIn, FileText, LayoutDashboard, BarChart3, UserPlus, Activity } from "lucide-react";
 import "./App.css";
 import ComponentExamples from "./pages/ComponentExamples/ComponentExamples";
 import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
 import IVCFDashboard from "./pages/IVCFDashboard";
 import RegisterUser from "./pages/Register/RegisterUser";
+import PhysicalActivityDashboard from "./pages/PhysicalActivityDashboard";
 
 function App() {
-  type PageType = "login" | "examples" | "home" | "ivcf-dashboard" | "register-user";
+  type PageType = "login" | "examples" | "home" | "ivcf-dashboard" | "register-user" | "physical-activity";
   
   const [currentPage, setCurrentPage] = useState<PageType>("home");
 
   const handleNavigate = (page: string) => {
     // Type-safe navigation handler that validates the page string
-    const validPages: PageType[] = ["login", "examples", "home", "ivcf-dashboard", "register-user"];
+    const validPages: PageType[] = ["login", "examples", "home", "ivcf-dashboard", "register-user", "physical-activity"];
     if (validPages.includes(page as PageType)) {
       setCurrentPage(page as PageType);
     } else {
@@ -34,6 +35,8 @@ function App() {
         return <IVCFDashboard testId="ivcf-20" onNavigate={handleNavigate} />;
       case "register-user":
         return <RegisterUser />;
+      case "physical-activity":
+        return <PhysicalActivityDashboard onNavigate={handleNavigate} />;
       default:
         return <Home />;
     }
@@ -42,6 +45,7 @@ function App() {
   const menuItems = [
     { id: "home", label: "Home", icon: LayoutDashboard },
     { id: "ivcf-dashboard", label: "Teste IVCF-20", icon: BarChart3 },
+    { id: "physical-activity", label: "Atividade Física", icon: Activity },
     { id: "register-user", label: "Cadastrar Usuário", icon: UserPlus },
     { id: "login", label: "Login", icon: LogIn },
     { id: "examples", label: "Exemplos", icon: FileText },

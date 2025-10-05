@@ -1,15 +1,26 @@
 import { useState } from "react";
-import { LogIn, FileText, LayoutDashboard, BarChart3 } from "lucide-react";
+import { LogIn, FileText, LayoutDashboard, BarChart3, UserPlus } from "lucide-react";
 import "./App.css";
 import ComponentExamples from "./pages/ComponentExamples";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import TestDashboard from "./pages/TestDashboard";
+import RegisterUser from "./pages/RegisterUser";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<
-    "login" | "examples" | "dashboard" | "test-dashboard"
-  >("dashboard");
+  type PageType = "login" | "examples" | "dashboard" | "test-dashboard" | "register-user";
+  
+  const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
+
+  const handleNavigate = (page: string) => {
+    // Type-safe navigation handler that validates the page string
+    const validPages: PageType[] = ["login", "examples", "dashboard", "test-dashboard", "register-user"];
+    if (validPages.includes(page as PageType)) {
+      setCurrentPage(page as PageType);
+    } else {
+      console.warn(`Invalid page: ${page}`);
+    }
+  };
 
   const renderPage = () => {
     switch (currentPage) {
@@ -18,9 +29,11 @@ function App() {
       case "examples":
         return <ComponentExamples />;
       case "dashboard":
-        return <Dashboard onNavigate={setCurrentPage} />;
+        return <Dashboard onNavigate={handleNavigate} />;
       case "test-dashboard":
-        return <TestDashboard testId="ivcf-20" onNavigate={setCurrentPage} />;
+        return <TestDashboard testId="ivcf-20" onNavigate={handleNavigate} />;
+      case "register-user":
+        return <RegisterUser />;
       default:
         return <Dashboard />;
     }
@@ -29,6 +42,7 @@ function App() {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "test-dashboard", label: "Teste IVCF-20", icon: BarChart3 },
+    { id: "register-user", label: "Cadastrar Usuário", icon: UserPlus },
     { id: "login", label: "Login", icon: LogIn },
     { id: "examples", label: "Exemplos", icon: FileText },
   ];
@@ -52,7 +66,7 @@ function App() {
               return (
                 <li key={item.id}>
                   <button
-                    onClick={() => setCurrentPage(item.id as string)}
+                    onClick={() => handleNavigate(item.id)}
                     className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
                       isActive
                         ? "bg-blue-50 text-blue-700 border border-blue-200"

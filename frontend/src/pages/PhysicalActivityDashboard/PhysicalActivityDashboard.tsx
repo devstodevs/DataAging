@@ -368,7 +368,7 @@ const PhysicalActivityDashboard: React.FC<PhysicalActivityDashboardProps> = ({
       {/* Tabela de Pacientes em Risco */}
       <Card className="table-card">
         <CardHeader>
-          <CardTitle>Pacientes em Risco</CardTitle>
+          <CardTitle>Lista de Pacientes</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>

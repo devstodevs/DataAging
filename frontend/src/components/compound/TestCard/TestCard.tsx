@@ -2,7 +2,7 @@ import React from "react";
 import { ArrowUpIcon } from "lucide-react";
 
 interface TestCardProps {
-    icon: ArrowUpIcon;
+    icon: typeof ArrowUpIcon;
     title: string;
     description: string;
     onClick: () => void;

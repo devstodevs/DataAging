@@ -14,7 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -36,6 +35,7 @@ import { DateRangePicker } from "../../components/ui/date-range-picker";
 import { cn } from "../../lib/utils";
 import Title from "../../components/base/Title";
 import KPICard from "../../components/compound/KPICard";
+import Alert from "../../components/base/Alert";
 import RadarChart from "../../components/compound/RadarChart/RadarChart";
 import LineChart from "../../components/compound/LineChart/LineChart";
 import type { DateRange } from "react-day-picker";
@@ -207,14 +207,10 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
       {/* Alerta de Pacientes Críticos */}
       {mockData.criticalPatients > 0 && (
         <div className="dashboard-alert">
-          <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Pacientes em Estado Crítico</AlertTitle>
-            <AlertDescription>
-              {mockData.criticalPatients} pacientes em estado crítico
-              identificados. Recomenda-se atenção imediata para estes casos.
-            </AlertDescription>
-          </Alert>
+          <Alert 
+            type="error" 
+            message={`${mockData.criticalPatients} pacientes em estado crítico identificados`}
+          />
         </div>
       )}
 

@@ -34,9 +34,12 @@ import {
 import { Badge } from "../../components/ui/badge";
 import { DateRangePicker } from "../../components/ui/date-range-picker";
 import { cn } from "../../lib/utils";
+import Title from "../../components/base/Title";
+import KPICard from "../../components/compound/KPICard";
 import RadarChart from "../../components/compound/RadarChart/RadarChart";
 import LineChart from "../../components/compound/LineChart/LineChart";
 import type { DateRange } from "react-day-picker";
+import "./IVCFDashboard.css";
 
 interface IVCFDashboardProps {
   testId?: string;
@@ -177,36 +180,33 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="ivcf-dashboard">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Voltar
-            </Button>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">
+      <div className="dashboard-header">
+        <div className="header-left">
+          <Button variant="outline" onClick={handleBack}>
+            <ArrowLeft />
+            Voltar
+          </Button>
+        </div>
+        
+        <div className="header-center">
+          <Title level="h1" className="dashboard-title">
             Dashboard {testId.toUpperCase()}
-          </h1>
-          <Button
-            onClick={handleExportReport}
-            className="flex items-center gap-2"
-          >
-            <Download className="h-4 w-4" />
+          </Title>
+        </div>
+        
+        <div className="header-right">
+          <Button onClick={handleExportReport}>
+            <Download />
             Exportar Relatório
           </Button>
         </div>
       </div>
 
-      <main className="p-4 lg:p-6 space-y-6">
-        {/* Alerta de Pacientes Críticos */}
-        {mockData.criticalPatients > 0 && (
+      {/* Alerta de Pacientes Críticos */}
+      {mockData.criticalPatients > 0 && (
+        <div className="dashboard-alert">
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Pacientes em Estado Crítico</AlertTitle>
@@ -215,22 +215,15 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
               identificados. Recomenda-se atenção imediata para estes casos.
             </AlertDescription>
           </Alert>
-        )}
+        </div>
+      )}
 
-        {/* Barra de Filtros */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Filtros</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div
-              className="grid gap-4 w-full"
-              style={{
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              }}
-            >
-              <div className="space-y-2 w-full">
-                <label className="text-sm font-medium">Período</label>
+      {/* Barra de Filtros */}
+      <Card className="filters-card">
+        <CardContent className="filters-content">
+          <div className="filters-grid">
+            <div className="filter-item">
+              <label className="filter-label">Período</label>
                 <DateRangePicker
                   value={filters.period}
                   onChange={(range) => handleFilterChange("period", range)}
@@ -239,15 +232,15 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
                 />
               </div>
 
-              <div className="space-y-2 w-full">
-                <label className="text-sm font-medium">Faixa Etária</label>
-                <Select
-                  value={filters.ageRange}
-                  onValueChange={(value) =>
-                    handleFilterChange("ageRange", value)
-                  }
-                >
-                  <SelectTrigger className="w-full">
+            <div className="filter-item">
+              <label className="filter-label">Faixa Etária</label>
+              <Select
+                value={filters.ageRange}
+                onValueChange={(value) =>
+                  handleFilterChange("ageRange", value)
+                }
+              >
+                <SelectTrigger className="filter-select">
                     <SelectValue placeholder="Todas" />
                   </SelectTrigger>
                   <SelectContent>
@@ -260,13 +253,13 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
                 </Select>
               </div>
 
-              <div className="space-y-2 w-full">
-                <label className="text-sm font-medium">Região/Bairro</label>
-                <Select
-                  value={filters.region}
-                  onValueChange={(value) => handleFilterChange("region", value)}
-                >
-                  <SelectTrigger className="w-full">
+            <div className="filter-item">
+              <label className="filter-label">Região/Bairro</label>
+              <Select
+                value={filters.region}
+                onValueChange={(value) => handleFilterChange("region", value)}
+              >
+                <SelectTrigger className="filter-select">
                     <SelectValue placeholder="Todas" />
                   </SelectTrigger>
                   <SelectContent>
@@ -279,17 +272,17 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
                 </Select>
               </div>
 
-              <div className="space-y-2 w-full">
-                <label className="text-sm font-medium">
-                  Unidade Administrativa
-                </label>
-                <Select
-                  value={filters.administrativeUnit}
-                  onValueChange={(value) =>
-                    handleFilterChange("administrativeUnit", value)
-                  }
-                >
-                  <SelectTrigger className="w-full">
+            <div className="filter-item">
+              <label className="filter-label">
+                Unidade Administrativa
+              </label>
+              <Select
+                value={filters.administrativeUnit}
+                onValueChange={(value) =>
+                  handleFilterChange("administrativeUnit", value)
+                }
+              >
+                <SelectTrigger className="filter-select">
                     <SelectValue placeholder="Todas" />
                   </SelectTrigger>
                   <SelectContent>
@@ -302,121 +295,96 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
                 </Select>
               </div>
 
-              <div className="space-y-2 w-full">
-                <label className="text-sm font-medium">
-                  Classificação de Risco
-                </label>
-                <RadioGroup
-                  value={filters.riskClassification}
-                  onValueChange={(value) =>
-                    handleFilterChange("riskClassification", value)
-                  }
-                  className="w-full"
-                >
-                  <div className="grid grid-cols-2 gap-2">
-                    {filterOptions.riskClassification.map((option) => (
-                      <div
-                        key={option.value}
-                        className="flex items-center space-x-2"
+            <div className="filter-item filter-item-full">
+              <label className="filter-label">
+                Classificação de Risco
+              </label>
+              <RadioGroup
+                value={filters.riskClassification}
+                onValueChange={(value) =>
+                  handleFilterChange("riskClassification", value)
+                }
+                className="radio-group-horizontal"
+              >
+                <div className="radio-options">
+                  {filterOptions.riskClassification.map((option) => (
+                    <div
+                      key={option.value}
+                      className="radio-option"
+                    >
+                      <RadioGroupItem
+                        value={option.value}
+                        id={option.value}
+                      />
+                      <label
+                        htmlFor={option.value}
+                        className="radio-label"
                       >
-                        <RadioGroupItem
-                          value={option.value}
-                          id={option.value}
-                        />
-                        <label
-                          htmlFor={option.value}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {option.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </RadioGroup>
-              </div>
+                        {option.label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* KPIs */}
+      <div className="kpis-grid">
+        <KPICard
+          title="Total de Idosos Avaliados"
+          value={mockData.kpis.totalElderly}
+          icon={<Users />}
+        />
+        <KPICard
+          title="Percentual de Idosos Frágeis"
+          value={`${mockData.kpis.fragilePercentage}%`}
+          trend="up"
+          icon={<TrendingUp />}
+        />
+        <KPICard
+          title="Média de Pontuação por Região"
+          value={mockData.kpis.averageScore}
+          icon={<BarChart3 />}
+        />
+      </div>
+
+      {/* Gráficos */}
+      <div className="charts-grid">
+        <Card className="chart-card">
+          <CardHeader>
+            <CardTitle>Distribuição por Domínio</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <RadarChart data={mockData.radarData} height={350} />
           </CardContent>
         </Card>
 
-        {/* KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total de Idosos Avaliados
-              </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {mockData.kpis.totalElderly}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Percentual de Idosos Frágeis
-              </CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {mockData.kpis.fragilePercentage}%
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Média de Pontuação por Região
-              </CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {mockData.kpis.averageScore}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Gráficos */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Distribuição por Domínio</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <RadarChart data={mockData.radarData} height={350} />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Evolução Mensal por Categoria</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <LineChart
-                data={mockData.lineData}
-                height={350}
-                lines={[
-                  { dataKey: "Robusto", name: "Robusto", color: "#f97316" },
-                  { dataKey: "Risco", name: "Risco", color: "#06b6d4" },
-                  { dataKey: "Frágil", name: "Frágil", color: "#8b5cf6" },
-                ]}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Lista de Pacientes */}
-        <Card>
+        <Card className="chart-card">
           <CardHeader>
-            <CardTitle>Lista de Pacientes</CardTitle>
+            <CardTitle>Evolução Mensal por Categoria</CardTitle>
           </CardHeader>
+          <CardContent>
+            <LineChart
+              data={mockData.lineData}
+              height={350}
+              lines={[
+                { dataKey: "Robusto", name: "Robusto", color: "#f97316" },
+                { dataKey: "Risco", name: "Risco", color: "#06b6d4" },
+                { dataKey: "Frágil", name: "Frágil", color: "#8b5cf6" },
+              ]}
+            />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Lista de Pacientes */}
+      <Card className="table-card">
+        <CardHeader>
+          <CardTitle>Lista de Pacientes</CardTitle>
+        </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
@@ -456,9 +424,8 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
                 ))}
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
-      </main>
+        </CardContent>
+      </Card>
     </div>
   );
 };

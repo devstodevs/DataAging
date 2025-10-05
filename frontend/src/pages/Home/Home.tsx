@@ -108,6 +108,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                 onClick={() => {
                   if (test.id === "ivcf-20" && onNavigate) {
                     onNavigate("ivcf-dashboard");
+                  } else if (test.id === "atividade-fisica" && onNavigate) {
+                    onNavigate("physical-activity");
                   } else {
                     console.log(`Navegando para: ${test.link}`);
                   }

@@ -5,5 +5,7 @@ pydantic
 pydantic-settings
 uvicorn
 sqlalchemy
-passlib[bcrypt]
+passlib
+bcrypt==4.0.1
 python-dateutil
+requests

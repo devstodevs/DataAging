@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional
+from typing import Optional, Literal
 from datetime import date
 from models.user import ProfileType
 
@@ -50,7 +50,7 @@ class UserCreateGestor(UserBase):
     """Schema for creating a Gestor user"""
     password: str = Field(..., min_length=6, max_length=100)
     matricula: str = Field(..., min_length=1, max_length=50)
-    profile_type: ProfileType = ProfileType.GESTOR
+    profile_type: Literal["gestor"] = "gestor"
 
 
 class UserCreateTecnico(UserBase):
@@ -59,7 +59,7 @@ class UserCreateTecnico(UserBase):
     registro_profissional: Optional[str] = Field(None, max_length=50)
     especialidade: Optional[str] = Field(None, max_length=100)
     unidade_lotacao_id: Optional[int] = None
-    profile_type: ProfileType = ProfileType.TECNICO
+    profile_type: Literal["tecnico"] = "tecnico"
 
 
 class UserUpdate(BaseModel):

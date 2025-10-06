@@ -18,6 +18,20 @@ app = FastAPI(
 app.include_router(auth_router, prefix=settings.API_V1_PREFIX, tags=["auth"])
 app.include_router(user_router, prefix=settings.API_V1_PREFIX, tags=["users"])
 
+#DEBUG
+@app.get("/debug/routes")
+async def list_routes():
+    routes = [
+        {
+            "path": route.path,
+            "methods": list(route.methods),
+            "name": route.name,
+            "endpoint": route.endpoint.__name__
+        }
+        for route in app.routes
+    ]
+    return routes
+
 
 @app.get("/")
 def root():

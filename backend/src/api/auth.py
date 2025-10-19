@@ -22,7 +22,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_PREFIX}/login")
 class Token(BaseModel):
     """Token response schema"""
     access_token: str
-    token_type: str
     user: UserResponse
 
 
@@ -84,7 +83,6 @@ def login(
     
     **Returns:**
     - access_token: JWT token for authentication
-    - token_type: "bearer"
     - user: User information (without password)
     
     **Raises:**

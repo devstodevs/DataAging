@@ -46,7 +46,7 @@ class AuthService:
             user: User object
             
         Returns:
-            Dictionary with access_token and token_type
+            Dictionary with access_token
         """
         access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
@@ -56,7 +56,6 @@ class AuthService:
         
         return {
             "access_token": access_token,
-            "token_type": "bearer"
         }
     
     @staticmethod

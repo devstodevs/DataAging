@@ -43,7 +43,6 @@ curl -X POST "http://localhost:8000/api/v1/login" \
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "token_type": "bearer",
   "user": {
     "id": 1,
     "nome_completo": "João Silva",
@@ -128,7 +127,6 @@ curl -X POST "http://localhost:8000/api/v1/login" \
 # Response includes access_token
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "token_type": "bearer",
   "user": {...}
 }
 ```
@@ -218,7 +216,6 @@ curl -X POST "http://localhost:8000/api/v1/login" \
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwMSIsInVzZXJfaWQiOjEsInByb2ZpbGVfdHlwZSI6Imdlc3RvciIsImV4cCI6MTY5ODM2MjQwMH0.abc123...",
-  "token_type": "bearer",
   "user": {...}
 }
 ```

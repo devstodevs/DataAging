@@ -1,0 +1,118 @@
+### DataAging API - Testes de Usuários
+@baseUrl = http://localhost:8000/api/v1
+
+### 1. Criar Usuário Gestor
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "profile_type": "gestor",
+  "nome_completo": "João Silva Gestor 2",
+  "cpf": "12345678902",
+  "telefone": "(11) 99999-9999",
+  "sexo": "M",
+  "data_nascimento": "1990-01-15",
+  "cep": "01234-567",
+  "logradouro": "Rua das Flores",
+  "numero": "123",
+  "complemento": "Apto 45",
+  "bairro": "Centro",
+  "municipio": "São Paulo",
+  "uf": "SP",
+  "matricula": "GEST002",
+  "password": "senha123"
+}
+
+### 2. Criar Usuário Técnico
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "profile_type": "tecnico",
+  "nome_completo": "Maria Santos Técnico",
+  "cpf": "98765432100",
+  "telefone": "(11) 88888-8888",
+  "sexo": "F",
+  "data_nascimento": "1985-05-20",
+  "cep": "04567-890",
+  "logradouro": "Av. Paulista",
+  "numero": "456",
+  "complemento": "Sala 12",
+  "bairro": "Bela Vista",
+  "municipio": "São Paulo",
+  "uf": "SP",
+  "registro_profissional": "CRF12345",
+  "especialidade": "Fisioterapia",
+  "unidade_lotacao_id": 1,
+  "password": "senha456"
+}
+
+### 3. Criar Usuário com CPF Duplicado (deve falhar)
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "profile_type": "gestor",
+  "nome_completo": "Outro Gestor",
+  "cpf": "12345678901",
+  "telefone": "(11) 77777-7777",
+  "matricula": "GEST002",
+  "password": "senha789"
+}
+
+### 4. Criar Gestor com Matrícula Duplicada (deve falhar)
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "profile_type": "gestor",
+  "nome_completo": "Terceiro Gestor",
+  "cpf": "11111111111",
+  "telefone": "(11) 66666-6666",
+  "matricula": "GEST001",
+  "password": "senha000"
+}
+
+### 5. Listar Todos os Usuários
+GET {{baseUrl}}/users/
+
+### 6. Listar Usuários com Paginação
+GET {{baseUrl}}/users/?skip=0&limit=2
+
+### 7. Buscar Usuário por ID
+GET {{baseUrl}}/users/3
+
+### 8. Buscar Usuário Inexistente (deve falhar)
+GET {{baseUrl}}/users/999
+
+### 9. Atualizar Usuário
+PUT {{baseUrl}}/users/1
+Content-Type: application/json
+
+{
+  "nome_completo": "João Silva Gestor",
+  "telefone": "(11) 99999-8888",
+  "complemento": "Apto 46"
+}
+
+### 10. Atualizar Senha do Usuário
+PUT {{baseUrl}}/users/1
+Content-Type: application/json
+
+{
+  "password": "senha123"
+}
+
+### 11. Atualizar Usuário Inexistente (deve falhar)
+PUT {{baseUrl}}/users/999
+Content-Type: application/json
+
+{
+  "nome_completo": "Usuário Inexistente"
+}
+
+### 12. Deletar Usuário
+DELETE {{baseUrl}}/users/3
+
+### 13. Deletar Usuário Inexistente (deve falhar)
+DELETE {{baseUrl}}/users/999

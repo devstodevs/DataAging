@@ -1,0 +1,15 @@
+- [x] CRUD Login
+    - ~~Logar~~
+    - ~~Ver informações do usuário com token~~
+    - ~~Falhar com dados incorretos~~
+- [x] CRUD Cadastro
+    - ~~Criar usuario gestor~~
+    - ~~Criar usuario tecnico~~
+    - ~~Falhar com CPF duplicado~~
+    - ~~Falhar com matrícula duplicada (Gestor)~~
+    - ~~Listar usuários~~
+    - ~~Listar usuários com paginação~~
+    - ~~Buscar usuário por ID~~
+    - ~~Atualizar usuário por ID~~
+    - ~~Falhar tentando atualizar senha de usuário inexistente~~
+    - ~~Deletar usuário~~

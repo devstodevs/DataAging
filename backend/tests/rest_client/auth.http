@@ -1,0 +1,46 @@
+### DataAging API - Testes de Autenticação
+@baseUrl = http://localhost:8000/api/v1
+@tokenGestor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwMSIsInVzZXJfaWQiOjEsInByb2ZpbGVfdHlwZSI6Imdlc3RvciIsImV4cCI6MTc2MDkwNDU2N30.fqDQ0FwcENFv4bIx8Er_H1ijZRIl-BHq6tjE4ihOpS4
+@tokenTecnico = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODc2NTQzMjEwMCIsInVzZXJfaWQiOjIsInByb2ZpbGVfdHlwZSI6InRlY25pY28iLCJleHAiOjE3NjA5MDQ1OTJ9.GdyPf-L5apVsSTB-W5dOuGqqDCq2JAgeQkhQ-DG7mJ8
+
+### 1. Login - Gestor
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=12345678901&password=senha123
+
+### 2. Login - Técnico
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=98765432100&password=senha456
+
+### 3. Login - CPF Inválido
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=00000000000&password=senha123
+
+### 4. Login - Senha Incorreta
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=12345678901&password=senhaerrada
+
+### 5. Obter informações do usuário atual (requer token)
+### Primeiro faça login e copie o token da resposta
+
+### Gestor
+GET {{baseUrl}}/me
+Authorization: Bearer {{tokenGestor}}
+
+### Tecnico
+GET {{baseUrl}}/me
+Authorization: Bearer {{tokenTecnico}}
+
+### 6. Obter informações sem token (deve falhar)
+GET {{baseUrl}}/me
+
+### 7. Obter informações com token inválido (deve falhar)
+GET {{baseUrl}}/me
+Authorization: Bearer token_invalido

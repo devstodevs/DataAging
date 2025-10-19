@@ -1,5 +1,11 @@
 fastapi
-python-jose
+python-jose[cryptography]
 python-multipart
 pydantic
+pydantic-settings
 uvicorn
+sqlalchemy
+passlib
+bcrypt==4.0.1
+python-dateutil
+requests

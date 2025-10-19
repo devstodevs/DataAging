@@ -7,8 +7,8 @@ Content-Type: application/json
 
 {
   "profile_type": "gestor",
-  "nome_completo": "João Silva Gestor",
-  "cpf": "12345678901",
+  "nome_completo": "João Silva Gestor 2",
+  "cpf": "12345678902",
   "telefone": "(11) 99999-9999",
   "sexo": "M",
   "data_nascimento": "1990-01-15",
@@ -19,7 +19,7 @@ Content-Type: application/json
   "bairro": "Centro",
   "municipio": "São Paulo",
   "uf": "SP",
-  "matricula": "GEST001",
+  "matricula": "GEST002",
   "password": "senha123"
 }
 
@@ -60,7 +60,7 @@ Content-Type: application/json
   "password": "senha789"
 }
 
-### 4. Criar Usuário com Matrícula Duplicada (deve falhar)
+### 4. Criar Gestor com Matrícula Duplicada (deve falhar)
 POST {{baseUrl}}/users/
 Content-Type: application/json
 
@@ -77,10 +77,10 @@ Content-Type: application/json
 GET {{baseUrl}}/users/
 
 ### 6. Listar Usuários com Paginação
-GET {{baseUrl}}/users/?skip=0&limit=10
+GET {{baseUrl}}/users/?skip=0&limit=2
 
 ### 7. Buscar Usuário por ID
-GET {{baseUrl}}/users/1
+GET {{baseUrl}}/users/3
 
 ### 8. Buscar Usuário Inexistente (deve falhar)
 GET {{baseUrl}}/users/999
@@ -90,7 +90,7 @@ PUT {{baseUrl}}/users/1
 Content-Type: application/json
 
 {
-  "nome_completo": "João Silva Gestor Atualizado",
+  "nome_completo": "João Silva Gestor",
   "telefone": "(11) 99999-8888",
   "complemento": "Apto 46"
 }
@@ -100,7 +100,7 @@ PUT {{baseUrl}}/users/1
 Content-Type: application/json
 
 {
-  "password": "nova_senha123"
+  "password": "senha123"
 }
 
 ### 11. Atualizar Usuário Inexistente (deve falhar)
@@ -112,7 +112,7 @@ Content-Type: application/json
 }
 
 ### 12. Deletar Usuário
-DELETE {{baseUrl}}/users/2
+DELETE {{baseUrl}}/users/3
 
 ### 13. Deletar Usuário Inexistente (deve falhar)
 DELETE {{baseUrl}}/users/999

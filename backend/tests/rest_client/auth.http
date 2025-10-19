@@ -1,0 +1,38 @@
+### DataAging API - Testes de Autenticação
+@baseUrl = http://localhost:8000/api/v1
+
+### 1. Login - Gestor
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=12345678901&password=senha123
+
+### 2. Login - Técnico
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=98765432100&password=senha456
+
+### 3. Login - CPF Inválido
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=00000000000&password=senha123
+
+### 4. Login - Senha Incorreta
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=12345678901&password=senhaerrada
+
+### 5. Obter informações do usuário atual (requer token)
+# Primeiro faça login e copie o token da resposta
+GET {{baseUrl}}/me
+Authorization: Bearer SEU_TOKEN_AQUI
+
+### 6. Obter informações sem token (deve falhar)
+GET {{baseUrl}}/me
+
+### 7. Obter informações com token inválido (deve falhar)
+GET {{baseUrl}}/me
+Authorization: Bearer token_invalido

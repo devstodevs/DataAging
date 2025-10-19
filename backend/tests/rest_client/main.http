@@ -1,0 +1,17 @@
+### DataAging API - Endpoints Globais
+@baseUrl = http://localhost:8000
+
+### 1. Endpoint Raiz
+GET {{baseUrl}}/
+
+### 2. Listar Todas as Rotas (Debug)
+GET {{baseUrl}}/debug/routes
+
+### 3. Documentação Swagger
+GET {{baseUrl}}/docs
+
+### 4. Documentação ReDoc
+GET {{baseUrl}}/redoc
+
+### 5. OpenAPI Schema
+GET {{baseUrl}}/openapi.json

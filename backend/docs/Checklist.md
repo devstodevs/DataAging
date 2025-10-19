@@ -1,0 +1,8 @@
+- [x] CRUD Login
+    - ~~Logar~~
+    - ~~Ver informações do usuário com token~~
+    - ~~Falha com dados incorretos~~
+- [ ] CRUD 
+    - ~~Criar usuario gestor~~
+    - ~~Criar usuario tecnico~~
+    - ~~Falhar com CPF duplicado~~

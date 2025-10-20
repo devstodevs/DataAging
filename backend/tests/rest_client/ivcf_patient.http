@@ -1,0 +1,186 @@
+### IVCF Patient API Tests
+
+@baseUrl = http://localhost:8000/api/v1
+
+### Create IVCF Patient
+POST {{baseUrl}}/ivcf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Maria Silva Santos",
+  "cpf": "12345678901",
+  "idade": 72,
+  "telefone": "41999999999",
+  "bairro": "Centro",
+  "unidade_saude_id": 1,
+  "data_cadastro": "2024-01-15"
+}
+
+### Create Another Patient
+POST {{baseUrl}}/ivcf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "João Oliveira",
+  "cpf": "98765432100",
+  "idade": 68,
+  "telefone": "41988888888",
+  "bairro": "Boa Vista",
+  "unidade_saude_id": 2,
+  "data_cadastro": "2024-01-20"
+}
+
+### Create Patient in South Region
+POST {{baseUrl}}/ivcf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Ana Costa",
+  "cpf": "11122233344",
+  "idade": 75,
+  "telefone": "41977777777",
+  "bairro": "Portão",
+  "unidade_saude_id": 3,
+  "data_cadastro": "2024-01-25"
+}
+
+### Create Patient with Minimum Age
+POST {{baseUrl}}/ivcf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Pedro Santos",
+  "cpf": "55566677788",
+  "idade": 60,
+  "telefone": "41966666666",
+  "bairro": "Centro",
+  "unidade_saude_id": 1,
+  "data_cadastro": "2024-02-01"
+}
+
+### List All Patients
+GET {{baseUrl}}/ivcf-patients/
+
+### List Patients with Pagination
+GET {{baseUrl}}/ivcf-patients/?skip=0&limit=2
+
+### List Only Active Patients
+GET {{baseUrl}}/ivcf-patients/?active_only=true
+
+### Filter Patients by Neighborhood
+GET {{baseUrl}}/ivcf-patients/?bairro=Centro
+
+### Filter Patients by Health Unit
+GET {{baseUrl}}/ivcf-patients/?unidade_saude_id=1
+
+### Filter Patients by Age Range
+GET {{baseUrl}}/ivcf-patients/?idade_min=70&idade_max=80
+
+### Get Patient by ID
+GET {{baseUrl}}/ivcf-patients/1
+
+### Get Patient with Evaluations
+GET {{baseUrl}}/ivcf-patients/1/evaluations
+
+### Get Patients by Region
+GET {{baseUrl}}/ivcf-patients/region/Centro
+
+### Get Patients by Region (Norte)
+GET {{baseUrl}}/ivcf-patients/region/Norte
+
+### Get Patients by Age Range (60-70)
+GET {{baseUrl}}/ivcf-patients/age-range/60-70
+
+### Get Patients by Age Range (71-80)
+GET {{baseUrl}}/ivcf-patients/age-range/71-80
+
+### Get Patients by Age Range (81+)
+GET {{baseUrl}}/ivcf-patients/age-range/81+
+
+### Get Patients Count
+GET {{baseUrl}}/ivcf-patients/stats/count
+
+### Get Active Patients Count
+GET {{baseUrl}}/ivcf-patients/stats/count?active_only=true
+
+### Update Patient
+PUT {{baseUrl}}/ivcf-patients/1
+Content-Type: application/json
+
+{
+  "nome_completo": "Maria Silva Santos Atualizada",
+  "telefone": "41999999988",
+  "bairro": "Centro Histórico"
+}
+
+### Update Patient Age
+PUT {{baseUrl}}/ivcf-patients/1
+Content-Type: application/json
+
+{
+  "idade": 73
+}
+
+### Update Patient Health Unit
+PUT {{baseUrl}}/ivcf-patients/1
+Content-Type: application/json
+
+{
+  "unidade_saude_id": 2
+}
+
+### Try to Create Patient with Duplicate CPF (Should Fail)
+POST {{baseUrl}}/ivcf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Outro Nome",
+  "cpf": "12345678901",
+  "idade": 65,
+  "bairro": "Outro Bairro",
+  "unidade_saude_id": 1
+}
+
+### Try to Create Patient with Invalid Age (Should Fail)
+POST {{baseUrl}}/ivcf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Paciente Jovem",
+  "cpf": "99988877766",
+  "idade": 50,
+  "bairro": "Centro",
+  "unidade_saude_id": 1
+}
+
+### Try to Create Patient with Non-existent Health Unit (Should Fail)
+POST {{baseUrl}}/ivcf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Paciente Teste",
+  "cpf": "88877766655",
+  "idade": 65,
+  "bairro": "Centro",
+  "unidade_saude_id": 999
+}
+
+### Get Non-existent Patient (Should Fail)
+GET {{baseUrl}}/ivcf-patients/999
+
+### Update Non-existent Patient (Should Fail)
+PUT {{baseUrl}}/ivcf-patients/999
+Content-Type: application/json
+
+{
+  "nome_completo": "Teste"
+}
+
+### Delete Patient (Soft Delete)
+DELETE {{baseUrl}}/ivcf-patients/1
+
+### Verify Patient is Soft Deleted
+GET {{baseUrl}}/ivcf-patients/1
+
+### List Patients Including Inactive
+GET {{baseUrl}}/ivcf-patients/?active_only=false

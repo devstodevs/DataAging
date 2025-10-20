@@ -1,3 +1,6 @@
 from .user import User
+from .health_unit import HealthUnit
+from .ivcf_patient import IVCFPatient
+from .ivcf_evaluation import IVCFEvaluation
 
-__all__ = ["User"]
+__all__ = ["User", "HealthUnit", "IVCFPatient", "IVCFEvaluation"]

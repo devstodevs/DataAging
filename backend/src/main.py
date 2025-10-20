@@ -1,9 +1,13 @@
 from fastapi import FastAPI
 from api.auth import router as auth_router
 from api.user import router as user_router
+from api.health_unit import router as health_unit_router
+from api.ivcf_patient import router as ivcf_patient_router
+from api.ivcf_evaluation import router as ivcf_evaluation_router
+from api.dashboard import router as dashboard_router
 from config import settings
 from db.base import engine, Base
-from models import user  # Import models to register them
+from models import user, health_unit, ivcf_patient, ivcf_evaluation  # Import models to register them
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -17,6 +21,10 @@ app = FastAPI(
 # Include routers
 app.include_router(auth_router, prefix=settings.API_V1_PREFIX, tags=["auth"])
 app.include_router(user_router, prefix=settings.API_V1_PREFIX, tags=["users"])
+app.include_router(health_unit_router, prefix=settings.API_V1_PREFIX, tags=["health-units"])
+app.include_router(ivcf_patient_router, prefix=settings.API_V1_PREFIX, tags=["ivcf-patients"])
+app.include_router(ivcf_evaluation_router, prefix=settings.API_V1_PREFIX, tags=["ivcf-evaluations"])
+app.include_router(dashboard_router, prefix=settings.API_V1_PREFIX, tags=["dashboard"])
 
 #DEBUG
 @app.get("/debug/routes")

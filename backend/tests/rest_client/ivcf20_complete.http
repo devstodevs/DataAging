@@ -1,0 +1,283 @@
+### IVCF20 Complete API Test Suite
+
+@baseUrl = http://localhost:8000/api/v1
+
+### ============================================
+### STEP 1: Create Health Units (Prerequisites)
+### ============================================
+
+### Create Health Unit - Centro
+POST {{baseUrl}}/health-units/
+Content-Type: application/json
+
+{
+  "nome": "UBS Centro",
+  "bairro": "Centro",
+  "regiao": "Centro",
+  "ativo": true
+}
+
+### Create Health Unit - Norte
+POST {{baseUrl}}/health-units/
+Content-Type: application/json
+
+{
+  "nome": "UBS Norte",
+  "bairro": "Boa Vista",
+  "regiao": "Norte",
+  "ativo": true
+}
+
+### Create Health Unit - Sul
+POST {{baseUrl}}/health-units/
+Content-Type: application/json
+
+{
+  "nome": "UBS Sul",
+  "bairro": "Portão",
+  "regiao": "Sul",
+  "ativo": true
+}
+
+### ============================================
+### STEP 2: Create IVCF Patients
+### ============================================
+
+### Create Patient 1 - Centro (Robusto)
+POST {{baseUrl}}/ivcf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Maria Silva Santos",
+  "cpf": "12345678901",
+  "idade": 72,
+  "telefone": "41999999999",
+  "bairro": "Centro",
+  "unidade_saude_id": 1,
+  "data_cadastro": "2024-01-15"
+}
+
+### Create Patient 2 - Norte (Em Risco)
+POST {{baseUrl}}/ivcf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "João Oliveira",
+  "cpf": "98765432100",
+  "idade": 68,
+  "telefone": "41988888888",
+  "bairro": "Boa Vista",
+  "unidade_saude_id": 2,
+  "data_cadastro": "2024-01-20"
+}
+
+### Create Patient 3 - Sul (Frágil)
+POST {{baseUrl}}/ivcf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Ana Costa",
+  "cpf": "11122233344",
+  "idade": 75,
+  "telefone": "41977777777",
+  "bairro": "Portão",
+  "unidade_saude_id": 3,
+  "data_cadastro": "2024-01-25"
+}
+
+### Create Patient 4 - Centro (Crítico)
+POST {{baseUrl}}/ivcf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Pedro Santos",
+  "cpf": "55566677788",
+  "idade": 82,
+  "telefone": "41966666666",
+  "bairro": "Centro",
+  "unidade_saude_id": 1,
+  "data_cadastro": "2024-02-01"
+}
+
+### ============================================
+### STEP 3: Create IVCF Evaluations
+### ============================================
+
+### Create Evaluation 1 - Robusto (Score 8)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 1,
+  "data_avaliacao": "2024-01-15",
+  "pontuacao_total": 8,
+  "classificacao": "Robusto",
+  "dominio_idade": 1,
+  "dominio_comorbidades": 1,
+  "dominio_comunicacao": 1,
+  "dominio_mobilidade": 1,
+  "dominio_humor": 1,
+  "dominio_cognicao": 1,
+  "dominio_avd": 1,
+  "dominio_autopercepcao": 1,
+  "comorbidades": "Nenhuma",
+  "observacoes": "Paciente em excelente condição"
+}
+
+### Create Evaluation 2 - Em Risco (Score 15)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 2,
+  "data_avaliacao": "2024-01-20",
+  "pontuacao_total": 15,
+  "classificacao": "Em Risco",
+  "dominio_idade": 2,
+  "dominio_comorbidades": 3,
+  "dominio_comunicacao": 2,
+  "dominio_mobilidade": 2,
+  "dominio_humor": 2,
+  "dominio_cognicao": 2,
+  "dominio_avd": 1,
+  "dominio_autopercepcao": 1,
+  "comorbidades": "HAS, DM2",
+  "observacoes": "Paciente colaborativo, necessita acompanhamento"
+}
+
+### Create Evaluation 3 - Frágil (Score 25)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 3,
+  "data_avaliacao": "2024-01-25",
+  "pontuacao_total": 25,
+  "classificacao": "Frágil",
+  "dominio_idade": 4,
+  "dominio_comorbidades": 4,
+  "dominio_comunicacao": 3,
+  "dominio_mobilidade": 4,
+  "dominio_humor": 3,
+  "dominio_cognicao": 3,
+  "dominio_avd": 2,
+  "dominio_autopercepcao": 2,
+  "comorbidades": "HAS, DM2, Artrite",
+  "observacoes": "Paciente com múltiplas comorbidades, necessita atenção especial"
+}
+
+### Create Evaluation 4 - Crítico (Score 35)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 4,
+  "data_avaliacao": "2024-02-01",
+  "pontuacao_total": 35,
+  "classificacao": "Frágil",
+  "dominio_idade": 5,
+  "dominio_comorbidades": 5,
+  "dominio_comunicacao": 4,
+  "dominio_mobilidade": 5,
+  "dominio_humor": 4,
+  "dominio_cognicao": 4,
+  "dominio_avd": 4,
+  "dominio_autopercepcao": 4,
+  "comorbidades": "HAS, DM2, Artrite, Depressão",
+  "observacoes": "PACIENTE CRÍTICO - Necessita intervenção imediata"
+}
+
+### ============================================
+### STEP 4: Test Dashboard Endpoints
+### ============================================
+
+### Get IVCF Summary
+GET {{baseUrl}}/dashboard/ivcf-summary
+
+### Get Domain Distribution (Spider Chart Data)
+GET {{baseUrl}}/dashboard/ivcf-by-domain
+
+### Get Domain Distribution with Region Filter
+GET {{baseUrl}}/dashboard/ivcf-by-domain?region=Centro
+
+### Get Domain Distribution with Age Range Filter
+GET {{baseUrl}}/dashboard/ivcf-by-domain?age_range=71-80
+
+### Get Domain Distribution with Classification Filter
+GET {{baseUrl}}/dashboard/ivcf-by-domain?classificacao=Frágil
+
+### Get Region Averages
+GET {{baseUrl}}/dashboard/ivcf-by-region
+
+### Get Monthly Evolution (6 months)
+GET {{baseUrl}}/dashboard/ivcf-evolution
+
+### Get Critical Patients
+GET {{baseUrl}}/dashboard/critical-patients
+
+### Get Curitiba Regions
+GET {{baseUrl}}/dashboard/curitiba-regions
+
+### ============================================
+### STEP 5: Test Patient Management
+### ============================================
+
+### List All Patients
+GET {{baseUrl}}/ivcf-patients/
+
+### Get Patient with Evaluations
+GET {{baseUrl}}/ivcf-patients/1/evaluations
+
+### Get Patients by Region
+GET {{baseUrl}}/ivcf-patients/region/Centro
+
+### Get Patients by Age Range
+GET {{baseUrl}}/ivcf-patients/age-range/71-80
+
+### Get Patients Count
+GET {{baseUrl}}/ivcf-patients/stats/count
+
+### ============================================
+### STEP 6: Test Evaluation Management
+### ============================================
+
+### List All Evaluations
+GET {{baseUrl}}/ivcf-evaluations/
+
+### Get Latest Evaluation for Patient
+GET {{baseUrl}}/ivcf-evaluations/patient/1/latest
+
+### Filter Evaluations by Classification
+GET {{baseUrl}}/ivcf-evaluations/?classificacao=Frágil
+
+### Filter Evaluations by Period
+GET {{baseUrl}}/ivcf-evaluations/?period_from=2024-01-01&period_to=2024-02-28
+
+### ============================================
+### STEP 7: Test Health Unit Management
+### ============================================
+
+### List All Health Units
+GET {{baseUrl}}/health-units/
+
+### Get Health Units by Region
+GET {{baseUrl}}/health-units/region/Centro
+
+### ============================================
+### STEP 8: Test Error Cases
+### ============================================
+
+### Try Invalid Region Filter (Should Fail)
+GET {{baseUrl}}/dashboard/ivcf-by-domain?region=RegiãoInexistente
+
+### Try Invalid Age Range (Should Fail)
+GET {{baseUrl}}/dashboard/ivcf-by-domain?age_range=50-60
+
+### Try Invalid Classification (Should Fail)
+GET {{baseUrl}}/dashboard/ivcf-by-domain?classificacao=ClassificaçãoInválida
+
+### Try Invalid Monthly Evolution (Should Fail)
+GET {{baseUrl}}/dashboard/ivcf-evolution?months_back=0
+
+### Try Invalid Critical Threshold (Should Fail)
+GET {{baseUrl}}/dashboard/critical-patients?pontuacao_minima=50

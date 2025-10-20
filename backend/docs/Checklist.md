@@ -2,7 +2,8 @@
     - ~~Logar~~
     - ~~Ver informações do usuário com token~~
     - ~~Falhar com dados incorretos~~
-- [x] CRUD Cadastro
+- [ ] CRUD Cadastro
+    - Aceitar apenas CPF válidos
     - ~~Criar usuario gestor~~
     - ~~Criar usuario tecnico~~
     - ~~Falhar com CPF duplicado~~

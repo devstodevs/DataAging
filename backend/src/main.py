@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from api.auth import auth_router
 from api.user import user_router
 from api.ivcf import health_unit_router, ivcf_patient_router, ivcf_evaluation_router, ivcf_dashboard_router
@@ -13,6 +14,15 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
     description="DataAging API - Sistema de Gerenciamento"
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # Frontend URLs
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Include routers

@@ -9,6 +9,7 @@ from typing import Optional
 from config import settings
 from db.base import get_db
 from db.user import user_crud
+from db.user.user_crud import get_user_by_cpf
 from models.user.user import User
 from schemas.user import UserResponse
 from services.auth import AuthService

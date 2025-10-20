@@ -4,12 +4,16 @@ import Title from "../../components/base/Title/Title";
 import Subtitle from "../../components/base/Subtitle/Subtitle";
 import TestCard from "../../components/compound/TestCard/TestCard";
 import HighlightsCard from "../../components/compound/HighlightsCard/HighlightsCard";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface HomeProps {
   onNavigate?: (page: string) => void;
 }
 
 const Home: React.FC<HomeProps> = ({ onNavigate }) => {
+  const { user } = useAuth();
+  
+  const firstName = user?.nome_completo?.split(' ')[0] || 'Usuário';
   const clinicalTests = [
     {
       id: "atividade-fisica",
@@ -75,12 +79,14 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
               Dashboard DataAging
             </h1>
             <p className="text-sm text-gray-600 mt-1">
-              Bem-vindo de volta, João!
+              Bem-vindo de volta, {firstName}!
             </p>
           </div>
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium text-blue-700">J</span>
+              <span className="text-sm font-medium text-blue-700">
+                {firstName.charAt(0).toUpperCase()}
+              </span>
             </div>
           </div>
         </div>

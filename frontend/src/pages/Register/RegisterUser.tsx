@@ -5,13 +5,20 @@ import Tabs, { type Tab } from "../../components/base/Tabs";
 import Select, { type SelectOption } from "../../components/base/Select";
 import Button from "../../components/base/Button";
 import TextInput from "../../components/base/Input/TextInput";
+import { PasswordInput } from "../../components/base/Input";
 import DocumentInput from "../../components/base/Input/DocumentInput";
 import PhoneInput from "../../components/base/Input/PhoneInput";
 import CEPInput from "../../components/base/Input/CepInput";
 import DateInput from "../../components/base/Input/DateInput";
+import Alert from "../../components/base/Alert/Alert";
+import SecondaryLink from "../../components/base/SecondaryLink/SecondaryLink";
+import { useAuth } from "../../contexts/AuthContext";
 import "./RegisterUser.css";
 
 interface FormData {
+  // Dados de Acesso
+  password: string;
+  confirmPassword: string;
   // Dados Pessoais - Gestor
   matricula: string;
   nomeCompleto: string;
@@ -33,10 +40,21 @@ interface FormData {
   uf: string;
 }
 
-const RegisterUser: React.FC = () => {
+interface RegisterUserProps {
+  onNavigateToLogin?: () => void;
+}
+
+const RegisterUser: React.FC<RegisterUserProps> = ({ onNavigateToLogin }) => {
   const [activeTab, setActiveTab] = useState<string>("gestor");
   const [isLoadingCep, setIsLoadingCep] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const { register } = useAuth();
+  
   const [formData, setFormData] = useState<FormData>({
+    password: "",
+    confirmPassword: "",
     matricula: "",
     nomeCompleto: "",
     cpf: "",
@@ -154,13 +172,83 @@ const RegisterUser: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Dados do formulário:", {
-      tipo: activeTab,
-      ...formData,
-    });
-    alert(`Usuário ${activeTab} cadastrado com sucesso!`);
+    setError("");
+    setSuccess("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("As senhas não coincidem");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError("A senha deve ter pelo menos 6 caracteres");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const userData = {
+        cpf: formData.cpf,
+        password: formData.password,
+        nome_completo: formData.nomeCompleto,
+        profile_type: activeTab as 'gestor' | 'tecnico',
+        telefone: formData.telefone,
+        sexo: formData.sexo,
+        data_nascimento: formData.dataNascimento,
+        cep: formData.cep,
+        logradouro: formData.logradouro,
+        numero: formData.numero,
+        complemento: formData.complemento,
+        bairro: formData.bairro,
+        municipio: formData.municipio,
+        uf: formData.uf,
+        ...(activeTab === 'gestor' && { matricula: formData.matricula }),
+        ...(activeTab === 'tecnico' && {
+          registro_profissional: formData.registroProfissional,
+          especialidade: formData.especialidade,
+          unidade_lotacao_id: parseInt(formData.unidadeLotacao) || undefined,
+        }),
+      };
+
+      await register(userData);
+      setSuccess("Usuário cadastrado com sucesso! Você pode fazer login agora.");
+      
+      setFormData({
+        password: "",
+        confirmPassword: "",
+        matricula: "",
+        nomeCompleto: "",
+        cpf: "",
+        telefone: "",
+        sexo: "",
+        dataNascimento: "",
+        registroProfissional: "",
+        especialidade: "",
+        unidadeLotacao: "",
+        cep: "",
+        logradouro: "",
+        numero: "",
+        complemento: "",
+        bairro: "",
+        municipio: "",
+        uf: "",
+      });
+
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Erro ao cadastrar usuário");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleLoginClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (onNavigateToLogin) {
+      onNavigateToLogin();
+    }
   };
 
   return (
@@ -178,6 +266,35 @@ const RegisterUser: React.FC = () => {
           />
 
           <form onSubmit={handleSubmit}>
+            {/* Dados de Acesso */}
+            <div className="form-section">
+              <h3 className="section-title">Dados de Acesso</h3>
+
+              <div className="form-grid">
+                <div className="form-field">
+                  <PasswordInput
+                    label="Senha"
+                    placeholder="Digite sua senha"
+                    value={formData.password}
+                    onChange={(value) => handleInputChange("password", value)}
+                    required
+                    iconPosition="right"
+                  />
+                </div>
+
+                <div className="form-field">
+                  <PasswordInput
+                    label="Confirmar Senha"
+                    placeholder="Confirme sua senha"
+                    value={formData.confirmPassword}
+                    onChange={(value) => handleInputChange("confirmPassword", value)}
+                    required
+                    iconPosition="right"
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Dados Pessoais */}
             <div className="form-section">
               <h3 className="section-title">Dados Pessoais</h3>
@@ -386,10 +503,42 @@ const RegisterUser: React.FC = () => {
               </div>
             </div>
 
+            {/* Alertas */}
+            {error && (
+              <div style={{ marginBottom: "16px" }}>
+                <Alert type="error" message={error} />
+              </div>
+            )}
+
+            {success && (
+              <div style={{ marginBottom: "16px" }}>
+                <Alert type="success" message={success} />
+              </div>
+            )}
+
+            {/* Link para Login */}
+            {onNavigateToLogin && (
+              <div style={{ marginBottom: "16px", textAlign: "center" }}>
+                <SecondaryLink
+                  href="#"
+                  color="#2563eb"
+                  onClick={handleLoginClick}
+                >
+                  Já tem conta? Faça login
+                </SecondaryLink>
+              </div>
+            )}
+
             {/* Botão de Submissão */}
             <div className="form-actions">
-              <Button type="submit" variant="primary" fullWidth>
-                Continuar
+              <Button 
+                type="submit" 
+                variant="primary" 
+                fullWidth
+                loading={isSubmitting}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Cadastrando..." : "Cadastrar"}
               </Button>
             </div>
           </form>

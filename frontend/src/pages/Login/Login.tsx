@@ -8,6 +8,7 @@ import Alert from "../../components/base/Alert/Alert";
 import Button from "../../components/base/Button/Button";
 import SecondaryLink from "../../components/base/SecondaryLink/SecondaryLink";
 import { useAuth } from "../../contexts/AuthContext";
+import { validateCPF } from "../../utils/cpfValidator";
 
 interface LoginProps {
   onNavigateToRegister?: () => void;
@@ -23,6 +24,13 @@ const Login: React.FC<LoginProps> = ({ onNavigateToRegister }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Validar CPF antes de enviar
+    if (!validateCPF(cpf)) {
+      setError("CPF inválido");
+      return;
+    }
+
     setIsLoading(true);
 
     try {

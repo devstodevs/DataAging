@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, field_validator
 from typing import Optional, Literal
 from datetime import date
 from models.user.user import ProfileType
+from utils.cpf_validator import validate_cpf, clean_cpf
 
 
 class UserBase(BaseModel):
@@ -23,9 +24,15 @@ class UserBase(BaseModel):
     
     @field_validator('cpf')
     @classmethod
-    def validate_cpf(cls, v: str) -> str:
-        """Remove non-numeric characters from CPF"""
-        return ''.join(filter(str.isdigit, v))
+    def validate_cpf_field(cls, v: str) -> str:
+        """Validate and clean CPF"""
+        if not v:
+            raise ValueError('CPF é obrigatório')
+        
+        if not validate_cpf(v):
+            raise ValueError('CPF inválido')
+        
+        return clean_cpf(v)
     
     @field_validator('uf')
     @classmethod
@@ -90,9 +97,15 @@ class UserUpdate(BaseModel):
     
     @field_validator('cpf')
     @classmethod
-    def validate_cpf(cls, v: Optional[str]) -> Optional[str]:
-        """Remove non-numeric characters from CPF"""
-        return ''.join(filter(str.isdigit, v)) if v else None
+    def validate_cpf_field(cls, v: Optional[str]) -> Optional[str]:
+        """Validate and clean CPF"""
+        if v is None:
+            return None
+        
+        if not validate_cpf(v):
+            raise ValueError('CPF inválido')
+        
+        return clean_cpf(v)
     
     @field_validator('uf')
     @classmethod
@@ -101,10 +114,24 @@ class UserUpdate(BaseModel):
         return v.upper() if v else None
 
 
-class UserResponse(UserBase):
-    """Schema for user responses - excludes password"""
+class UserResponse(BaseModel):
+    """Schema for user responses - excludes password and CPF validation"""
     id: int
+    nome_completo: str
+    cpf: str  # No validation on response - just return what's in DB
+    telefone: Optional[str] = None
+    sexo: Optional[str] = None
+    data_nascimento: Optional[date] = None
     profile_type: ProfileType
+    
+    # Address fields
+    cep: Optional[str] = None
+    logradouro: Optional[str] = None
+    numero: Optional[str] = None
+    complemento: Optional[str] = None
+    bairro: Optional[str] = None
+    municipio: Optional[str] = None
+    uf: Optional[str] = None
     
     # Profile specific fields
     matricula: Optional[str] = None

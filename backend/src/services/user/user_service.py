@@ -2,9 +2,9 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from typing import Union, List
 from schemas.user import UserCreateGestor, UserCreateTecnico, UserUpdate, UserResponse
-from db import user_crud
+from db.user import user_crud
 from core.security import get_password_hash
-from models.user import User, ProfileType
+from models.user.user import User, ProfileType
 
 
 class UserService:

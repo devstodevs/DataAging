@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from api.auth import router as auth_router
-from api.user import router as user_router
+from api.auth import auth_router
+from api.user import user_router
 from api.ivcf import health_unit_router, ivcf_patient_router, ivcf_evaluation_router, dashboard_router
 from config import settings
 from db.base import engine, Base

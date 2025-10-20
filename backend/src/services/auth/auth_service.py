@@ -3,8 +3,8 @@ from fastapi import HTTPException, status
 from datetime import timedelta
 from typing import Optional
 
-from models.user import User
-from db.user_crud import get_user_by_cpf
+from models.user.user import User
+from db.user import user_crud
 from core.security import verify_password, create_access_token
 from config import settings
 

@@ -409,7 +409,7 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
           <CardHeader>
             <CardTitle>Distribuição da Média de Pontuação por Domínio</CardTitle>
             <p className="text-sm text-gray-600 mt-1">
-              Escala: 2 (melhor condição) a 8 (pior condição)
+              Escala: 0 (melhor condição) a 8 (pior condição)
             </p>
           </CardHeader>
           <CardContent>

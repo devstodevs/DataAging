@@ -5,6 +5,7 @@ from typing import Optional
 
 from models.user.user import User
 from db.user import user_crud
+from db.user.user_crud import get_user_by_cpf
 from core.security import verify_password, create_access_token
 from config import settings
 

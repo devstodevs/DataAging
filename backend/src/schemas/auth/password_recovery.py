@@ -3,9 +3,9 @@ from typing import Optional
 
 
 class PasswordRecoveryRequest(BaseModel):
-    """Schema for password recovery request"""
+    """Schema for password recovery request using a recovery password"""
     cpf: str = Field(..., description="User CPF (without formatting)")
-    current_password: str = Field(..., description="Current password")
+    recovery_password: str = Field(..., description="Recovery password set during registration")
     new_password: str = Field(..., min_length=6, description="New password (minimum 6 characters)")
 
 

@@ -26,6 +26,7 @@ class User(Base):
     
     # Security
     hashed_password = Column(String, nullable=False)
+    recovery_hashed_password = Column(String, nullable=True)
     
     # Profile type
     profile_type = Column(SQLEnum(ProfileType), nullable=False)

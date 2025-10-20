@@ -4,11 +4,12 @@ from api.auth import auth_router
 from api.user import user_router
 from api.ivcf import health_unit_router, ivcf_patient_router, ivcf_evaluation_router, ivcf_dashboard_router
 from config import settings
-from db.base import engine, Base
+from db.base import engine, Base, ensure_schema
 from models import user, ivcf  # Import models to register them
 
-# Create database tables
+# Create database tables and ensure runtime schema
 Base.metadata.create_all(bind=engine)
+ensure_schema()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

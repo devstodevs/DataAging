@@ -153,6 +153,6 @@ def recover_password(
     return AuthService.recover_password(
         db=db,
         cpf=password_data.cpf,
-        current_password=password_data.current_password,
+        recovery_password=password_data.recovery_password,
         new_password=password_data.new_password
     )

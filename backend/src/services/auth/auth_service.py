@@ -92,7 +92,7 @@ class AuthService:
         }
     
     @staticmethod
-    def recover_password(db: Session, cpf: str, current_password: str, new_password: str) -> dict:
+    def recover_password(db: Session, cpf: str, recovery_password: str, new_password: str) -> dict:
         """
         Recover/change user password by verifying current password.
         
@@ -119,11 +119,11 @@ class AuthService:
                 detail="Usuário não encontrado"
             )
         
-        # Verify current password
-        if not verify_password(current_password, user.hashed_password):
+        # Verify recovery password
+        if not verify_password(recovery_password, user.recovery_hashed_password or ""):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Senha atual incorreta"
+                detail="Senha de recuperação incorreta"
             )
         
         # Hash new password

@@ -45,12 +45,14 @@ class UserService:
                     detail="Matrícula já cadastrada"
                 )
         
-        # Hash the password
+        # Hash the password and recovery password
         hashed_password = get_password_hash(user_create.password)
+        recovery_hashed_password = get_password_hash(user_create.recovery_password)
         
         # Prepare user data
-        user_data = user_create.model_dump(exclude={'password'})
+        user_data = user_create.model_dump(exclude={'password', 'recovery_password'})
         user_data['hashed_password'] = hashed_password
+        user_data['recovery_hashed_password'] = recovery_hashed_password
         
         # Create user in database
         return user_crud.create_user(db, user_data)

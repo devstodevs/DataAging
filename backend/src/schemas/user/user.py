@@ -56,6 +56,7 @@ class TecnicoData(BaseModel):
 class UserCreateGestor(UserBase):
     """Schema for creating a Gestor user"""
     password: str = Field(..., min_length=6, max_length=100)
+    recovery_password: str = Field(..., min_length=6, max_length=100)
     matricula: str = Field(..., min_length=1, max_length=50)
     profile_type: Literal["gestor"] = "gestor"
 
@@ -63,6 +64,7 @@ class UserCreateGestor(UserBase):
 class UserCreateTecnico(UserBase):
     """Schema for creating a Tecnico user"""
     password: str = Field(..., min_length=6, max_length=100)
+    recovery_password: str = Field(..., min_length=6, max_length=100)
     registro_profissional: Optional[str] = Field(None, max_length=50)
     especialidade: Optional[str] = Field(None, max_length=100)
     unidade_lotacao_id: Optional[int] = None

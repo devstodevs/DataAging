@@ -20,6 +20,7 @@ interface FormData {
   // Dados de Acesso
   password: string;
   confirmPassword: string;
+  recoveryPassword: string;
   // Dados Pessoais - Gestor
   matricula: string;
   nomeCompleto: string;
@@ -56,6 +57,7 @@ const RegisterUser: React.FC<RegisterUserProps> = ({ onNavigateToLogin }) => {
   const [formData, setFormData] = useState<FormData>({
     password: "",
     confirmPassword: "",
+    recoveryPassword: "",
     matricula: "",
     nomeCompleto: "",
     cpf: "",
@@ -188,6 +190,11 @@ const RegisterUser: React.FC<RegisterUserProps> = ({ onNavigateToLogin }) => {
       return;
     }
 
+    if (formData.recoveryPassword.length < 6) {
+      setError("A senha de recuperação deve ter pelo menos 6 caracteres");
+      return;
+    }
+
     // Validações específicas por tipo
     if (activeTab === 'gestor' && !formData.matricula) {
       setError("Matrícula é obrigatória para gestores");
@@ -213,6 +220,7 @@ const RegisterUser: React.FC<RegisterUserProps> = ({ onNavigateToLogin }) => {
       const baseUserData = {
         cpf: formData.cpf,
         password: formData.password,
+        recovery_password: formData.recoveryPassword,
         nome_completo: formData.nomeCompleto,
         profile_type: activeTab as 'gestor' | 'tecnico',
         telefone: formData.telefone || undefined,
@@ -319,6 +327,20 @@ const RegisterUser: React.FC<RegisterUserProps> = ({ onNavigateToLogin }) => {
                     iconPosition="right"
                   />
                 </div>
+
+              <div className="form-field">
+                <PasswordInput
+                  label="Senha de Recuperação"
+                  placeholder="Defina uma senha de recuperação"
+                  value={formData.recoveryPassword}
+                  onChange={(value) => handleInputChange("recoveryPassword", value)}
+                  required
+                  iconPosition="right"
+                />
+                <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '4px' }}>
+                  Guarde esta senha em um local seguro. Ela será necessária para recuperar o acesso caso esqueça sua senha principal.
+                </div>
+              </div>
               </div>
             </div>
 

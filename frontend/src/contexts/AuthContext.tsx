@@ -27,6 +27,7 @@ interface AuthContextType {
 interface RegisterData {
   cpf: string;
   password: string;
+  recovery_password: string;
   nome_completo: string;
   profile_type: 'gestor' | 'tecnico';
   telefone?: string;

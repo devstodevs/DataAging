@@ -15,7 +15,7 @@ interface PasswordRecoveryProps {
 
 const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({ onNavigateToLogin }) => {
   const [cpf, setCpf] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
+  const [recoveryPassword, setRecoveryPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -55,7 +55,7 @@ const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({ onNavigateToLogin }
         },
         body: JSON.stringify({
           cpf: cpf.replace(/\D/g, ""), // Remove formatação do CPF
-          current_password: currentPassword,
+          recovery_password: recoveryPassword,
           new_password: newPassword,
         }),
       });
@@ -69,7 +69,7 @@ const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({ onNavigateToLogin }
       
       // Limpar formulário após sucesso
       setCpf("");
-      setCurrentPassword("");
+      setRecoveryPassword("");
       setNewPassword("");
       setConfirmPassword("");
       
@@ -112,7 +112,7 @@ const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({ onNavigateToLogin }
             </Title>
           </div>
           <Subtitle align="left">
-            Digite seu CPF, senha atual e a nova senha
+            Digite seu CPF, senha de recuperação e a nova senha
           </Subtitle>
         </div>
 
@@ -130,13 +130,13 @@ const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({ onNavigateToLogin }
             />
           </div>
 
-          {/* Campo de Senha Atual */}
+          {/* Campo de Senha de Recuperação */}
           <div style={{ marginBottom: "16px" }}>
             <PasswordInput
-              label="Senha Atual"
-              placeholder="Digite sua senha atual"
-              value={currentPassword}
-              onChange={setCurrentPassword}
+              label="Senha de Recuperação"
+              placeholder="Digite sua senha de recuperação"
+              value={recoveryPassword}
+              onChange={setRecoveryPassword}
               required
               iconPosition="right"
             />
@@ -197,7 +197,7 @@ const PasswordRecovery: React.FC<PasswordRecoveryProps> = ({ onNavigateToLogin }
             variant="primary"
             fullWidth
             loading={isLoading}
-            disabled={!cpf || !currentPassword || !newPassword || !confirmPassword}
+            disabled={!cpf || !recoveryPassword || !newPassword || !confirmPassword}
           >
             Alterar Senha
           </Button>

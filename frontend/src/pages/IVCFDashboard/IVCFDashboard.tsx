@@ -72,6 +72,8 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     riskClassification: "all",
   });
 
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
   // Hook para gerenciar dados do IVCF
   const {
     summary,
@@ -81,8 +83,7 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     curitibaRegions,
     loading,
     refetchAll,
-    refetchDomainDistribution,
-    refetchFragilePercentage,
+    refetchFilteredData,
     getRadarChartData,
     getLineChartData,
     isAnyLoading,
@@ -119,9 +120,8 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
 
   // Função para atualizar dados quando filtros mudam
   const updateFilteredData = useCallback((apiFilters: IVCFFilters) => {
-    refetchDomainDistribution(apiFilters);
-    refetchFragilePercentage(apiFilters);
-  }, [refetchDomainDistribution, refetchFragilePercentage]);
+    refetchFilteredData(apiFilters);
+  }, [refetchFilteredData]);
 
   // Opções de filtros
   const filterOptions = {
@@ -146,18 +146,32 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     ],
   };
 
-  // Efeito para atualizar dados quando filtros mudam
+  // Carregamento inicial dos dados filtrados
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      updateFilteredData(apiFilters);
-    }, 500);
+    if (isInitialLoad) {
+      const timer = setTimeout(() => {
+        // Carrega os dados filtrados com os filtros iniciais
+        refetchFilteredData(apiFilters);
+        setIsInitialLoad(false);
+      }, 500); // Aguarda um pouco após o carregamento inicial
+      return () => clearTimeout(timer);
+    }
+  }, [isInitialLoad, refetchFilteredData, apiFilters]);
 
-    return () => clearTimeout(timeoutId);
-  }, [apiFilters, updateFilteredData]);
+  // Efeito para atualizar dados quando filtros mudam (apenas após carregamento inicial)
+  useEffect(() => {
+    if (!isInitialLoad) {
+      const timeoutId = setTimeout(() => {
+        updateFilteredData(apiFilters);
+      }, 500);
 
-  // Dados processados para exibição
-  const radarData = getRadarChartData();
-  const lineData = getLineChartData();
+      return () => clearTimeout(timeoutId);
+    }
+  }, [apiFilters, updateFilteredData, isInitialLoad]);
+
+  // Dados processados para exibição (memoizados para evitar recálculos)
+  const radarData = useMemo(() => getRadarChartData(), [getRadarChartData]);
+  const lineData = useMemo(() => getLineChartData(), [getLineChartData]);
   const criticalPatientsCount = criticalPatients?.total_critical || 0;
   const patientsList = allPatients?.critical_patients || [];
   const totalPatients = allPatients?.total_critical || 0;
@@ -218,6 +232,7 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
 
         <div className="header-right">
           <Button
+            className="mr-4"
             variant="outline"
             onClick={handleRefresh}
             disabled={isAnyLoading}

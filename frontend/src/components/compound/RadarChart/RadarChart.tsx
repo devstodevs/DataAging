@@ -31,18 +31,16 @@ const RadarChartComponent: React.FC<RadarChartProps> = ({
   height = 300,
   domain,
 }) => {
-  // Calcular domínio automaticamente se não fornecido
   const chartDomain = domain || (() => {
     if (data.length === 0) return [0, 10];
     const maxFullMark = Math.max(...data.map(d => d.fullMark));
-    // Para IVCF, usar escala de 2 a 8 se fullMark for 8
-    if (maxFullMark === 8) return [2, 8];
+    if (maxFullMark === 8) return [0, 8];
     return [0, maxFullMark];
   })();
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const isIVCFScale = chartDomain[0] === 2 && chartDomain[1] === 8;
+      const isIVCFScale = chartDomain[0] === 0 && chartDomain[1] === 8;
       return (
         <div className="radar-chart__tooltip">
           <p className="radar-chart__tooltip-label">{data.domain}</p>
@@ -51,7 +49,7 @@ const RadarChartComponent: React.FC<RadarChartProps> = ({
           </p>
           {isIVCFScale && (
             <p className="radar-chart__tooltip-scale">
-              Escala: 2 (melhor) - 8 (pior)
+              Escala: 0 (melhor) - 8 (pior)
             </p>
           )}
         </div>

@@ -118,6 +118,17 @@ def get_critical_patients(
     return IVCFDashboardService.get_critical_patients(db, pontuacao_minima)
 
 
+@router.get("/ivcf-dashboard/all-patients", response_model=CriticalPatientsResponse)
+def get_all_patients(db: Session = Depends(get_db)):
+    """
+    Get all patients with their evaluations.
+    
+    **Returns:**
+    - All patients data
+    """
+    return IVCFDashboardService.get_all_patients(db)
+
+
 @router.get("/ivcf-dashboard/curitiba-regions")
 def get_curitiba_regions():
     """

@@ -80,6 +80,29 @@ def get_critical_patients(db: Session, pontuacao_minima: int = 20) -> List[Dict[
     return [dict(row._mapping) for row in query.all()]
 
 
+def get_all_patients(db: Session) -> List[Dict[str, Any]]:
+    """Get all patients with their evaluations"""
+    query = db.query(
+        IVCFPatient.id.label('patient_id'),
+        IVCFPatient.nome_completo,
+        IVCFPatient.idade,
+        IVCFPatient.bairro,
+        HealthUnit.nome.label('unidade_saude'),
+        IVCFEvaluation.pontuacao_total,
+        IVCFEvaluation.classificacao,
+        IVCFEvaluation.comorbidades,
+        IVCFEvaluation.data_avaliacao.label('data_ultima_avaliacao')
+    ).join(
+        IVCFEvaluation, IVCFPatient.id == IVCFEvaluation.patient_id
+    ).join(
+        HealthUnit, IVCFPatient.unidade_saude_id == HealthUnit.id
+    ).filter(
+        IVCFPatient.ativo == True
+    ).order_by(desc(IVCFEvaluation.data_avaliacao))
+    
+    return [dict(row._mapping) for row in query.all()]
+
+
 def get_domain_distribution(
     db: Session,
     period_from: Optional[date] = None,

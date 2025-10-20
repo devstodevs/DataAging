@@ -229,6 +229,35 @@ class IVCFDashboardService:
         )
     
     @staticmethod
+    def get_all_patients(db: Session) -> CriticalPatientsResponse:
+        """
+        Get all patients with their evaluations.
+        
+        Args:
+            db: Database session
+            
+        Returns:
+            CriticalPatientsResponse object with all patients
+        """
+        # Get all patients data
+        from db.ivcf.ivcf_evaluation_crud import get_all_patients
+        all_patients_data = get_all_patients(db)
+        
+        # Get applied filters
+        filters_applied = ivcf_dashboard_crud.get_dashboard_filters_applied()
+        filters_applied["total_patients"] = len(all_patients_data)
+        
+        # Create response
+        all_patients = [CriticalPatient(**data) for data in all_patients_data]
+        filters = FiltersApplied(**filters_applied)
+        
+        return CriticalPatientsResponse(
+            critical_patients=all_patients,
+            total_critical=len(all_patients_data),
+            filters_applied=filters
+        )
+    
+    @staticmethod
     def get_curitiba_regions() -> list:
         """
         Get list of valid Curitiba regions.

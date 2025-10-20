@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LogIn, FileText, LayoutDashboard, BarChart3, UserPlus, Activity, Heart } from "lucide-react";
+import { LogOut, FileText, LayoutDashboard, BarChart3, UserPlus, Activity, Heart, User } from "lucide-react";
 import "./App.css";
 import ComponentExamples from "./pages/ComponentExamples/ComponentExamples";
 import Login from "./pages/Login/Login";
@@ -8,15 +8,17 @@ import IVCFDashboard from "./pages/IVCFDashboard";
 import RegisterUser from "./pages/Register/RegisterUser";
 import PhysicalActivityDashboard from "./pages/PhysicalActivityDashboard";
 import FACTFDashboard from "./pages/FACTFDashboard";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
 
-function App() {
-  type PageType = "login" | "examples" | "home" | "ivcf-dashboard" | "register-user" | "physical-activity" | "factf-dashboard";
-  
+const AuthenticatedApp: React.FC = () => {
+  type PageType = "home" | "ivcf-dashboard" | "register-user" | "physical-activity" | "factf-dashboard" | "examples";
+
   const [currentPage, setCurrentPage] = useState<PageType>("home");
+  const { user, logout } = useAuth();
 
   const handleNavigate = (page: string) => {
-    // Type-safe navigation handler that validates the page string
-    const validPages: PageType[] = ["login", "examples", "home", "ivcf-dashboard", "register-user", "physical-activity", "factf-dashboard"];
+    const validPages: PageType[] = ["home", "ivcf-dashboard", "register-user", "physical-activity", "factf-dashboard", "examples"];
     if (validPages.includes(page as PageType)) {
       setCurrentPage(page as PageType);
     } else {
@@ -26,8 +28,6 @@ function App() {
 
   const renderPage = () => {
     switch (currentPage) {
-      case "login":
-        return <Login />;
       case "examples":
         return <ComponentExamples />;
       case "home":
@@ -41,7 +41,7 @@ function App() {
       case "factf-dashboard":
         return <FACTFDashboard onNavigate={handleNavigate} />;
       default:
-        return <Home />;
+        return <Home onNavigate={handleNavigate} />;
     }
   };
 
@@ -51,7 +51,6 @@ function App() {
     { id: "physical-activity", label: "Atividade Física", icon: Activity },
     { id: "factf-dashboard", label: "Teste FACT-F", icon: Heart },
     { id: "register-user", label: "Cadastrar Usuário", icon: UserPlus },
-    { id: "login", label: "Login", icon: LogIn },
     { id: "examples", label: "Exemplos", icon: FileText },
   ];
 
@@ -75,11 +74,10 @@ function App() {
                 <li key={item.id}>
                   <button
                     onClick={() => handleNavigate(item.id)}
-                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                      isActive
-                        ? "bg-blue-50 text-blue-700 border border-blue-200"
-                        : "text-gray-700 hover:bg-gray-50"
-                    }`}
+                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${isActive
+                      ? "bg-blue-50 text-blue-700 border border-blue-200"
+                      : "text-gray-700 hover:bg-gray-50"
+                      }`}
                   >
                     <Icon size={20} />
                     <span className="font-medium">{item.label}</span>
@@ -89,12 +87,72 @@ function App() {
             })}
           </ul>
         </nav>
+
+        {/* User Info & Logout */}
+        <div className="p-4 border-t border-gray-200">
+          <div className="flex items-center space-x-3 mb-3">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <User size={16} className="text-blue-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {user?.nome_completo}
+              </p>
+              <p className="text-xs text-gray-500 truncate">
+                CPF: {user?.cpf}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={logout}
+            className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            <LogOut size={16} />
+            <span>Sair</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">{renderPage()}</div>
     </div>
   );
+};
+
+const AuthScreen: React.FC = () => {
+  const [currentScreen, setCurrentScreen] = useState<"login" | "register">("login");
+
+  const handleNavigateToRegister = () => setCurrentScreen("register");
+  const handleNavigateToLogin = () => setCurrentScreen("login");
+
+  if (currentScreen === "register") {
+    return <RegisterUser onNavigateToLogin={handleNavigateToLogin} />;
+  }
+
+  return <Login onNavigateToRegister={handleNavigateToRegister} />;
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
 }
+
+// Componente que decide qual tela mostrar baseado na autenticação
+const AppContent: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  if (!isAuthenticated) {
+    return <AuthScreen />;
+  }
+
+  return <AuthenticatedApp />;
+};
 
 export default App;

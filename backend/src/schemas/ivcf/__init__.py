@@ -14,6 +14,7 @@ from .ivcf_patient import (
 from .ivcf_evaluation import (
     IVCFEvaluationBase,
     IVCFEvaluationCreate,
+    IVCFEvaluationCreateSimple,
     IVCFEvaluationUpdate,
     IVCFEvaluationResponse,
     IVCFEvaluationWithPatient
@@ -45,6 +46,7 @@ __all__ = [
     "IVCFPatientWithEvaluations",
     "IVCFEvaluationBase",
     "IVCFEvaluationCreate",
+    "IVCFEvaluationCreateSimple",
     "IVCFEvaluationUpdate",
     "IVCFEvaluationResponse",
     "IVCFEvaluationWithPatient",

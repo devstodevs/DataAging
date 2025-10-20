@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 from datetime import date
-from schemas.ivcf.ivcf_evaluation import IVCFEvaluationCreate, IVCFEvaluationUpdate, IVCFEvaluationResponse
+from schemas.ivcf.ivcf_evaluation import IVCFEvaluationCreate, IVCFEvaluationCreateSimple, IVCFEvaluationUpdate, IVCFEvaluationResponse
 from db.ivcf import ivcf_evaluation_crud, ivcf_patient_crud
 from models.ivcf.ivcf_evaluation import IVCFEvaluation
 
@@ -11,7 +11,7 @@ class IVCFEvaluationService:
     """Service layer for IVCF evaluation business logic"""
     
     @staticmethod
-    def create_ivcf_evaluation(db: Session, evaluation_create: IVCFEvaluationCreate) -> IVCFEvaluation:
+    def create_ivcf_evaluation(db: Session, evaluation_create: Union[IVCFEvaluationCreate, IVCFEvaluationCreateSimple]) -> IVCFEvaluation:
         """
         Create a new IVCF evaluation with validation.
         
@@ -25,6 +25,10 @@ class IVCFEvaluationService:
         Raises:
             HTTPException: If patient not found or validation fails
         """
+        # Convert IVCFEvaluationCreateSimple to IVCFEvaluationCreate if needed
+        if isinstance(evaluation_create, IVCFEvaluationCreateSimple):
+            evaluation_create = evaluation_create.to_ivcf_evaluation_create()
+        
         # Check if patient exists
         patient = ivcf_patient_crud.get_ivcf_patient(db, evaluation_create.patient_id)
         if not patient:

@@ -5,6 +5,7 @@ from datetime import date
 from db.base import get_db
 from schemas.ivcf.ivcf_evaluation import (
     IVCFEvaluationCreate,
+    IVCFEvaluationCreateSimple,
     IVCFEvaluationUpdate,
     IVCFEvaluationResponse,
     IVCFEvaluationWithPatient
@@ -16,27 +17,27 @@ router = APIRouter()
 
 @router.post("/ivcf-evaluations/", response_model=IVCFEvaluationResponse, status_code=status.HTTP_201_CREATED)
 def create_ivcf_evaluation(
-    evaluation: IVCFEvaluationCreate,
+    evaluation: IVCFEvaluationCreateSimple,
     db: Session = Depends(get_db)
 ):
     """
-    Create a new IVCF evaluation.
+    Create a new IVCF evaluation with automatic score calculation.
     
     **Request Body:**
     - patient_id: Patient ID
     - data_avaliacao: Evaluation date (cannot be future)
-    - pontuacao_total: Total score (0-40)
-    - classificacao: Classification (Robusto, Em Risco, Frágil)
-    - dominio_*: Individual domain scores (0-5 each)
+    - dominio_*: Individual domain scores (0-5 each) - only these are required
     - comorbidades: Identified comorbidities (optional)
     - observacoes: Observations (optional)
     
+    **Note:** Total score and classification are calculated automatically based on domain scores.
+    
     **Returns:**
-    - Created evaluation data
+    - Created evaluation data with calculated total score and classification
     
     **Raises:**
     - 404: Patient not found
-    - 422: Validation error (score mismatch, invalid classification)
+    - 422: Validation error
     """
     return IVCFEvaluationService.create_ivcf_evaluation(db, evaluation)
 

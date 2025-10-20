@@ -40,6 +40,13 @@
   margin: 0;
 }
 
+.radar-chart__tooltip-scale {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 4px 0 0 0;
+  font-style: italic;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .radar-chart {

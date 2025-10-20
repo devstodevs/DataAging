@@ -6,9 +6,9 @@ from datetime import date
 class DomainDistribution(BaseModel):
     """Schema for domain distribution data"""
     domain: str
-    average_score: float = Field(..., ge=0, le=5)
-    min_score: int = Field(..., ge=0, le=5)
-    max_score: int = Field(..., ge=0, le=5)
+    average_score: float = Field(..., ge=0, le=10)
+    min_score: int = Field(..., ge=0, le=10)
+    max_score: int = Field(..., ge=0, le=10)
     patient_count: int = Field(..., ge=0)
 
 
@@ -31,7 +31,7 @@ class FiltersApplied(BaseModel):
 
 class DomainDistributionResponse(BaseModel):
     """Schema for domain distribution API response"""
-    data: List[DomainDistribution]
+    domains: List[DomainDistribution]
     chart_config: ChartConfig
     filters_applied: FiltersApplied
 
@@ -48,7 +48,7 @@ class IVCFSummary(BaseModel):
 
 class RegionAverage(BaseModel):
     """Schema for region average data"""
-    region: str
+    regiao: str
     bairro: str
     average_score: float = Field(..., ge=0, le=40)
     patient_count: int = Field(..., ge=0)
@@ -59,7 +59,7 @@ class RegionAverage(BaseModel):
 
 class RegionAverageResponse(BaseModel):
     """Schema for region average API response"""
-    data: List[RegionAverage]
+    regions: List[RegionAverage]
     filters_applied: FiltersApplied
 
 
@@ -75,7 +75,7 @@ class MonthlyEvolution(BaseModel):
 
 class MonthlyEvolutionResponse(BaseModel):
     """Schema for monthly evolution API response"""
-    data: List[MonthlyEvolution]
+    evolution: List[MonthlyEvolution]
     filters_applied: FiltersApplied
 
 
@@ -94,14 +94,20 @@ class CriticalPatient(BaseModel):
 
 class CriticalPatientsResponse(BaseModel):
     """Schema for critical patients API response"""
-    data: List[CriticalPatient]
+    critical_patients: List[CriticalPatient]
     total_critical: int = Field(..., ge=0)
     filters_applied: FiltersApplied
 
 
+class FragilePercentageData(BaseModel):
+    """Schema for fragile percentage data"""
+    total_patients: int = Field(..., ge=0)
+    fragile_patients: int = Field(..., ge=0)
+    fragile_percentage: float = Field(..., ge=0, le=100)
+    breakdown: Dict[str, int] = Field(default_factory=dict)
+
+
 class FragileElderlyPercentageResponse(BaseModel):
     """Schema for fragile elderly percentage API response"""
-    total_elderly: int = Field(..., ge=0)
-    fragile_elderly: int = Field(..., ge=0)
-    fragile_percentage: float = Field(..., ge=0, le=100)
+    percentage_data: FragilePercentageData
     filters_applied: FiltersApplied

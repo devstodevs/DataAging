@@ -13,7 +13,8 @@ pip install -r requirements.txt
 ### 2. Iniciar o Servidor com Uvicorn
 
 ```bash
-uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+cd backend/src
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 **Pronto!** Servidor rodando em: **http://localhost:8000**

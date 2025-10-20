@@ -105,7 +105,7 @@ class IVCFDashboardService:
         filters = FiltersApplied(**filters_applied)
         
         return DomainDistributionResponse(
-            data=domain_distributions,
+            domains=domain_distributions,
             chart_config=chart_config,
             filters_applied=filters
         )
@@ -141,7 +141,7 @@ class IVCFDashboardService:
         filters = FiltersApplied(**filters_applied)
         
         return RegionAverageResponse(
-            data=region_averages,
+            regions=region_averages,
             filters_applied=filters
         )
     
@@ -182,7 +182,7 @@ class IVCFDashboardService:
         filters = FiltersApplied(**filters_applied)
         
         return MonthlyEvolutionResponse(
-            data=monthly_evolutions,
+            evolution=monthly_evolutions,
             filters_applied=filters
         )
     
@@ -223,7 +223,7 @@ class IVCFDashboardService:
         filters = FiltersApplied(**filters_applied)
         
         return CriticalPatientsResponse(
-            data=critical_patients,
+            critical_patients=critical_patients,
             total_critical=len(critical_data),
             filters_applied=filters
         )
@@ -291,11 +291,25 @@ class IVCFDashboardService:
         # Create response
         filters = FiltersApplied(**filters_applied)
         
-        from schemas.ivcf.ivcf_dashboard import FragileElderlyPercentageResponse
-        return FragileElderlyPercentageResponse(
-            total_elderly=percentage_data["total_elderly"],
-            fragile_elderly=percentage_data["fragile_elderly"],
+        # Create percentage data structure
+        from schemas.ivcf.ivcf_dashboard import FragilePercentageData, FragileElderlyPercentageResponse
+        
+        # Calculate breakdown (we need to get classification counts)
+        breakdown = {
+            "robust": 0,
+            "risk": 0,
+            "fragile": percentage_data["fragile_elderly"]
+        }
+        
+        percentage_data_obj = FragilePercentageData(
+            total_patients=percentage_data["total_elderly"],
+            fragile_patients=percentage_data["fragile_elderly"],
             fragile_percentage=percentage_data["fragile_percentage"],
+            breakdown=breakdown
+        )
+        
+        return FragileElderlyPercentageResponse(
+            percentage_data=percentage_data_obj,
             filters_applied=filters
         )
     

@@ -183,17 +183,118 @@ def get_curitiba_regions() -> list:
 
 def validate_curitiba_region(region: str) -> bool:
     """Validate if region is a valid Curitiba region"""
+    # Strip whitespace and normalize
+    region = region.strip()
     valid_regions = get_curitiba_regions()
     return region in valid_regions
 
 
 def validate_age_range(age_range: str) -> bool:
     """Validate age range format"""
+    # Normalize the input by removing all spaces and then reconstructing valid ranges
+    normalized = age_range.replace(' ', '')
+    
+    # Handle URL encoding where + becomes space - normalize back to +
+    # If it ends with a number and no +, it was likely 81+ that became 81
+    if normalized in ['60', '70', '71', '80', '81']:
+        # Check if original had a space at the end (indicating it was 81+)
+        if age_range.endswith(' '):
+            normalized += '+'
+        # Or if it was just the number without +, assume it's the + version
+        elif normalized == '81':
+            normalized = '81+'
+    
+    # Also handle cases where spaces were in the middle
+    if ' ' in age_range:
+        # Try replacing spaces with + and see if it matches a valid range
+        space_to_plus = age_range.replace(' ', '+')
+        if space_to_plus in ["60-70", "71-80", "81+"]:
+            normalized = space_to_plus
+    
     valid_ranges = ["60-70", "71-80", "81+"]
-    return age_range in valid_ranges
+    return normalized in valid_ranges
 
 
 def validate_classification(classification: str) -> bool:
     """Validate classification"""
+    # Strip whitespace and normalize
+    classification = classification.strip()
     valid_classifications = ["Robusto", "Em Risco", "Frágil"]
     return classification in valid_classifications
+
+
+def get_fragile_elderly_percentage(
+    db: Session,
+    period_from: Optional[date] = None,
+    period_to: Optional[date] = None,
+    region: Optional[str] = None,
+    health_unit_id: Optional[int] = None,
+    age_range: Optional[str] = None
+) -> Dict[str, Any]:
+    """Get percentage of fragile elderly with filters"""
+    
+    # Base query for total elderly
+    total_query = db.query(IVCFEvaluation).join(
+        IVCFPatient, IVCFEvaluation.patient_id == IVCFPatient.id
+    ).join(
+        HealthUnit, IVCFPatient.unidade_saude_id == HealthUnit.id
+    ).filter(IVCFPatient.ativo == True)
+    
+    # Base query for fragile elderly
+    fragile_query = db.query(IVCFEvaluation).join(
+        IVCFPatient, IVCFEvaluation.patient_id == IVCFPatient.id
+    ).join(
+        HealthUnit, IVCFPatient.unidade_saude_id == HealthUnit.id
+    ).filter(
+        and_(
+            IVCFPatient.ativo == True,
+            IVCFEvaluation.classificacao == "Frágil"
+        )
+    )
+    
+    # Apply filters to both queries
+    if period_from:
+        total_query = total_query.filter(IVCFEvaluation.data_avaliacao >= period_from)
+        fragile_query = fragile_query.filter(IVCFEvaluation.data_avaliacao >= period_from)
+    
+    if period_to:
+        total_query = total_query.filter(IVCFEvaluation.data_avaliacao <= period_to)
+        fragile_query = fragile_query.filter(IVCFEvaluation.data_avaliacao <= period_to)
+    
+    if region:
+        total_query = total_query.filter(HealthUnit.regiao == region)
+        fragile_query = fragile_query.filter(HealthUnit.regiao == region)
+    
+    if health_unit_id:
+        total_query = total_query.filter(IVCFPatient.unidade_saude_id == health_unit_id)
+        fragile_query = fragile_query.filter(IVCFPatient.unidade_saude_id == health_unit_id)
+    
+    if age_range:
+        if age_range == "60-70":
+            age_filter = and_(IVCFPatient.idade >= 60, IVCFPatient.idade <= 70)
+        elif age_range == "71-80":
+            age_filter = and_(IVCFPatient.idade >= 71, IVCFPatient.idade <= 80)
+        elif age_range == "81+":
+            age_filter = IVCFPatient.idade >= 81
+        else:
+            age_filter = None
+        
+        if age_filter is not None:
+            total_query = total_query.filter(age_filter)
+            fragile_query = fragile_query.filter(age_filter)
+    
+    # Get counts
+    total_elderly = total_query.count()
+    fragile_elderly = fragile_query.count()
+    
+    # Calculate percentage
+    if total_elderly == 0:
+        fragile_percentage = 0.0
+    else:
+        fragile_percentage = round((fragile_elderly / total_elderly) * 100, 1)
+    
+    return {
+        "total_elderly": total_elderly,
+        "fragile_elderly": fragile_elderly,
+        "fragile_percentage": fragile_percentage
+    }

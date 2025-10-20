@@ -9,7 +9,7 @@ class DomainDistribution(BaseModel):
     average_score: float = Field(..., ge=0, le=5)
     min_score: int = Field(..., ge=0, le=5)
     max_score: int = Field(..., ge=0, le=5)
-    patient_count: int = Field(..., gt=0)
+    patient_count: int = Field(..., ge=0)
 
 
 class ChartConfig(BaseModel):
@@ -26,7 +26,7 @@ class FiltersApplied(BaseModel):
     health_unit_id: Optional[int] = None
     age_range: Optional[str] = None
     classification: Optional[str] = None
-    total_patients: int = Field(..., gt=0)
+    total_patients: int = Field(..., ge=0)
 
 
 class DomainDistributionResponse(BaseModel):
@@ -38,7 +38,7 @@ class DomainDistributionResponse(BaseModel):
 
 class IVCFSummary(BaseModel):
     """Schema for IVCF summary data"""
-    total_elderly: int = Field(..., gt=0)
+    total_elderly: int = Field(..., ge=0)
     fragile_percentage: float = Field(..., ge=0, le=100)
     risk_percentage: float = Field(..., ge=0, le=100)
     robust_percentage: float = Field(..., ge=0, le=100)
@@ -51,7 +51,7 @@ class RegionAverage(BaseModel):
     region: str
     bairro: str
     average_score: float = Field(..., ge=0, le=40)
-    patient_count: int = Field(..., gt=0)
+    patient_count: int = Field(..., ge=0)
     fragile_count: int = Field(..., ge=0)
     risk_count: int = Field(..., ge=0)
     robust_count: int = Field(..., ge=0)
@@ -70,7 +70,7 @@ class MonthlyEvolution(BaseModel):
     robust: int = Field(..., ge=0)
     risk: int = Field(..., ge=0)
     fragile: int = Field(..., ge=0)
-    total: int = Field(..., gt=0)
+    total: int = Field(..., ge=0)
 
 
 class MonthlyEvolutionResponse(BaseModel):
@@ -96,3 +96,12 @@ class CriticalPatientsResponse(BaseModel):
     """Schema for critical patients API response"""
     data: List[CriticalPatient]
     total_critical: int = Field(..., ge=0)
+    filters_applied: FiltersApplied
+
+
+class FragileElderlyPercentageResponse(BaseModel):
+    """Schema for fragile elderly percentage API response"""
+    total_elderly: int = Field(..., ge=0)
+    fragile_elderly: int = Field(..., ge=0)
+    fragile_percentage: float = Field(..., ge=0, le=100)
+    filters_applied: FiltersApplied

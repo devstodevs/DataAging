@@ -18,7 +18,7 @@ from .ivcf_evaluation import (
     IVCFEvaluationResponse,
     IVCFEvaluationWithPatient
 )
-from .dashboard import (
+from .ivcf_dashboard import (
     DomainDistribution,
     ChartConfig,
     FiltersApplied,
@@ -29,7 +29,8 @@ from .dashboard import (
     MonthlyEvolution,
     MonthlyEvolutionResponse,
     CriticalPatient,
-    CriticalPatientsResponse
+    CriticalPatientsResponse,
+    FragileElderlyPercentageResponse
 )
 
 __all__ = [

@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from typing import Dict, Any, Optional
 from datetime import date
-from schemas.ivcf.dashboard import (
+from schemas.ivcf.ivcf_dashboard import (
     DomainDistributionResponse,
     ChartConfig,
     FiltersApplied,
@@ -10,15 +10,16 @@ from schemas.ivcf.dashboard import (
     RegionAverageResponse,
     MonthlyEvolutionResponse,
     CriticalPatientsResponse,
+    FragileElderlyPercentageResponse,
     DomainDistribution,
     RegionAverage,
     MonthlyEvolution,
     CriticalPatient
 )
-from db.ivcf import dashboard_crud, ivcf_evaluation_crud
+from db.ivcf import ivcf_dashboard_crud, ivcf_evaluation_crud
 
 
-class DashboardService:
+class IVCFDashboardService:
     """Service layer for dashboard business logic"""
     
     @staticmethod
@@ -32,7 +33,7 @@ class DashboardService:
         Returns:
             IVCFSummary object
         """
-        summary_data = dashboard_crud.get_ivcf_summary(db)
+        summary_data = ivcf_dashboard_crud.get_ivcf_summary(db)
         return IVCFSummary(**summary_data)
     
     @staticmethod
@@ -64,19 +65,19 @@ class DashboardService:
             HTTPException: If invalid filters provided
         """
         # Validate filters
-        if region and not dashboard_crud.validate_curitiba_region(region):
+        if region and not ivcf_dashboard_crud.validate_curitiba_region(region):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=f"Região '{region}' não é uma região válida de Curitiba"
             )
         
-        if age_range and not dashboard_crud.validate_age_range(age_range):
+        if age_range and not ivcf_dashboard_crud.validate_age_range(age_range):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=f"Faixa etária '{age_range}' não é válida. Use: 60-70, 71-80, 81+"
             )
         
-        if classification and not dashboard_crud.validate_classification(classification):
+        if classification and not ivcf_dashboard_crud.validate_classification(classification):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=f"Classificação '{classification}' não é válida. Use: Robusto, Em Risco, Frágil"
@@ -88,12 +89,12 @@ class DashboardService:
         )
         
         # Get total patients with filters
-        total_patients = dashboard_crud.get_total_patients_with_filters(
+        total_patients = ivcf_dashboard_crud.get_total_patients_with_filters(
             db, period_from, period_to, region, health_unit_id, age_range, classification
         )
         
         # Get applied filters
-        filters_applied = dashboard_crud.get_dashboard_filters_applied(
+        filters_applied = ivcf_dashboard_crud.get_dashboard_filters_applied(
             period_from, period_to, region, health_unit_id, age_range, classification
         )
         filters_applied["total_patients"] = total_patients
@@ -130,7 +131,7 @@ class DashboardService:
         region_data = ivcf_evaluation_crud.get_region_averages(db, period_from, period_to)
         
         # Get applied filters
-        filters_applied = dashboard_crud.get_dashboard_filters_applied(
+        filters_applied = ivcf_dashboard_crud.get_dashboard_filters_applied(
             period_from, period_to
         )
         filters_applied["total_patients"] = sum(item["patient_count"] for item in region_data)
@@ -172,7 +173,7 @@ class DashboardService:
         evolution_data = ivcf_evaluation_crud.get_monthly_evolution(db, months_back)
         
         # Get applied filters
-        filters_applied = dashboard_crud.get_dashboard_filters_applied()
+        filters_applied = ivcf_dashboard_crud.get_dashboard_filters_applied()
         filters_applied["total_patients"] = sum(item["total"] for item in evolution_data)
         filters_applied["period"] = f"Últimos {months_back} meses"
         
@@ -213,7 +214,7 @@ class DashboardService:
         critical_data = ivcf_evaluation_crud.get_critical_patients(db, pontuacao_minima)
         
         # Get applied filters
-        filters_applied = dashboard_crud.get_dashboard_filters_applied()
+        filters_applied = ivcf_dashboard_crud.get_dashboard_filters_applied()
         filters_applied["total_patients"] = len(critical_data)
         filters_applied["classification"] = "Frágil"
         
@@ -235,7 +236,68 @@ class DashboardService:
         Returns:
             List of region names
         """
-        return dashboard_crud.get_curitiba_regions()
+        return ivcf_dashboard_crud.get_curitiba_regions()
+    
+    @staticmethod
+    def get_fragile_elderly_percentage(
+        db: Session,
+        period_from: Optional[date] = None,
+        period_to: Optional[date] = None,
+        region: Optional[str] = None,
+        health_unit_id: Optional[int] = None,
+        age_range: Optional[str] = None
+    ) -> "FragileElderlyPercentageResponse":
+        """
+        Get percentage of fragile elderly with filters.
+        
+        Args:
+            db: Database session
+            period_from: Start date filter
+            period_to: End date filter
+            region: Region filter
+            health_unit_id: Health unit filter
+            age_range: Age range filter
+            
+        Returns:
+            FragileElderlyPercentageResponse object
+            
+        Raises:
+            HTTPException: If invalid filters provided
+        """
+        # Validate filters
+        if region and not ivcf_dashboard_crud.validate_curitiba_region(region):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Região '{region}' não é uma região válida de Curitiba"
+            )
+        
+        if age_range and not ivcf_dashboard_crud.validate_age_range(age_range):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Faixa etária '{age_range}' não é válida. Use: 60-70, 71-80, 81+"
+            )
+        
+        # Get fragile elderly percentage data
+        percentage_data = ivcf_dashboard_crud.get_fragile_elderly_percentage(
+            db, period_from, period_to, region, health_unit_id, age_range
+        )
+        
+        # Get applied filters
+        filters_applied = ivcf_dashboard_crud.get_dashboard_filters_applied(
+            period_from, period_to, region, health_unit_id, age_range
+        )
+        filters_applied["total_patients"] = percentage_data["total_elderly"]
+        
+        # Create response
+        filters = FiltersApplied(**filters_applied)
+        
+        from schemas.ivcf.ivcf_dashboard import FragileElderlyPercentageResponse
+        return FragileElderlyPercentageResponse(
+            total_elderly=percentage_data["total_elderly"],
+            fragile_elderly=percentage_data["fragile_elderly"],
+            fragile_percentage=percentage_data["fragile_percentage"],
+            filters_applied=filters
+        )
     
     @staticmethod
     def validate_filters(
@@ -256,13 +318,13 @@ class DashboardService:
         """
         errors = {}
         
-        if region and not dashboard_crud.validate_curitiba_region(region):
+        if region and not ivcf_dashboard_crud.validate_curitiba_region(region):
             errors["region"] = f"Região '{region}' não é válida"
         
-        if age_range and not dashboard_crud.validate_age_range(age_range):
+        if age_range and not ivcf_dashboard_crud.validate_age_range(age_range):
             errors["age_range"] = f"Faixa etária '{age_range}' não é válida"
         
-        if classification and not dashboard_crud.validate_classification(classification):
+        if classification and not ivcf_dashboard_crud.validate_classification(classification):
             errors["classification"] = f"Classificação '{classification}' não é válida"
         
         return errors

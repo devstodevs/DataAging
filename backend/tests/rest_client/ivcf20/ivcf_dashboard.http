@@ -1,6 +1,6 @@
-### Dashboard API Tests
+### IVCF Dashboard API Tests
 
-@baseUrl = http://localhost:8000/api/v1/dashboard
+@baseUrl = http://localhost:8000/api/v1/ivcf-dashboard
 
 ### Get IVCF Summary
 GET {{baseUrl}}/ivcf-summary
@@ -33,16 +33,16 @@ GET {{baseUrl}}/ivcf-by-domain?age_range=71-80
 GET {{baseUrl}}/ivcf-by-domain?age_range=81+
 
 ### Get Domain Distribution with Classification Filter (Robusto)
-GET {{baseUrl}}/ivcf-by-domain?classificacao=Robusto
+GET {{baseUrl}}/ivcf-by-domain?classification=Robusto
 
 ### Get Domain Distribution with Classification Filter (Em Risco)
-GET {{baseUrl}}/ivcf-by-domain?classificacao=Em Risco
+GET {{baseUrl}}/ivcf-by-domain?classification=Em Risco
 
 ### Get Domain Distribution with Classification Filter (Frágil)
-GET {{baseUrl}}/ivcf-by-domain?classificacao=Frágil
+GET {{baseUrl}}/ivcf-by-domain?classification=Frágil
 
 ### Get Domain Distribution with Multiple Filters
-GET {{baseUrl}}/ivcf-by-domain?period_from=2024-01-01&period_to=2024-02-28&region=Centro&age_range=71-80&classificacao=Frágil
+GET {{baseUrl}}/ivcf-by-domain?period_from=2024-01-01&period_to=2024-02-28&region=Centro&age_range=71-80&classification=Frágil
 
 ### Get Region Averages (No Filters)
 GET {{baseUrl}}/ivcf-by-region
@@ -67,6 +67,18 @@ GET {{baseUrl}}/critical-patients?pontuacao_minima=30
 
 ### Get Critical Patients with Lower Threshold
 GET {{baseUrl}}/critical-patients?pontuacao_minima=15
+
+### Get Fragile Elderly Percentage (No Filters)
+GET {{baseUrl}}/fragile-percentage
+
+### Get Fragile Elderly Percentage with Region Filter
+GET {{baseUrl}}/fragile-percentage?region=Centro
+
+### Get Fragile Elderly Percentage with Age Range Filter
+GET {{baseUrl}}/fragile-percentage?age_range=71-80
+
+### Get Fragile Elderly Percentage with Multiple Filters
+GET {{baseUrl}}/fragile-percentage?region=Norte&age_range=81+
 
 ### Get Curitiba Regions List
 GET {{baseUrl}}/curitiba-regions

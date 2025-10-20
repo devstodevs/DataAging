@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from typing import List, Optional
-from schemas.ivcf_patient import IVCFPatientCreate, IVCFPatientUpdate, IVCFPatientResponse
-from db import ivcf_patient_crud, health_unit_crud
-from models.ivcf_patient import IVCFPatient
+from schemas.ivcf.ivcf_patient import IVCFPatientCreate, IVCFPatientUpdate, IVCFPatientResponse
+from db.ivcf import ivcf_patient_crud, health_unit_crud
+from models.ivcf.ivcf_patient import IVCFPatient
 
 
 class IVCFPatientService:

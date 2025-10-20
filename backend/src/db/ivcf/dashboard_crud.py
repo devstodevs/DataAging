@@ -2,9 +2,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, func, desc
 from typing import Dict, Any, Optional
 from datetime import date, datetime, timedelta
-from models.ivcf_evaluation import IVCFEvaluation
-from models.ivcf_patient import IVCFPatient
-from models.health_unit import HealthUnit
+from models.ivcf.ivcf_evaluation import IVCFEvaluation
+from models.ivcf.ivcf_patient import IVCFPatient
+from models.ivcf.health_unit import HealthUnit
 
 
 def get_ivcf_summary(db: Session) -> Dict[str, Any]:

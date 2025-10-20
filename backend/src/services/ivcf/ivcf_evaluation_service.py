@@ -2,9 +2,9 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from typing import List, Optional, Dict, Any
 from datetime import date
-from schemas.ivcf_evaluation import IVCFEvaluationCreate, IVCFEvaluationUpdate, IVCFEvaluationResponse
-from db import ivcf_evaluation_crud, ivcf_patient_crud
-from models.ivcf_evaluation import IVCFEvaluation
+from schemas.ivcf.ivcf_evaluation import IVCFEvaluationCreate, IVCFEvaluationUpdate, IVCFEvaluationResponse
+from db.ivcf import ivcf_evaluation_crud, ivcf_patient_crud
+from models.ivcf.ivcf_evaluation import IVCFEvaluation
 
 
 class IVCFEvaluationService:

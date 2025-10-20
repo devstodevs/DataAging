@@ -3,14 +3,14 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from datetime import date
 from db.base import get_db
-from schemas.dashboard import (
+from schemas.ivcf.dashboard import (
     DomainDistributionResponse,
     IVCFSummary,
     RegionAverageResponse,
     MonthlyEvolutionResponse,
     CriticalPatientsResponse
 )
-from services.dashboard_service import DashboardService
+from services.ivcf.dashboard_service import DashboardService
 
 router = APIRouter()
 

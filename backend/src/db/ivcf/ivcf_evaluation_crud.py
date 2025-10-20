@@ -2,9 +2,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, func, desc
 from typing import List, Optional, Dict, Any
 from datetime import date, datetime
-from models.ivcf_evaluation import IVCFEvaluation
-from models.ivcf_patient import IVCFPatient
-from models.health_unit import HealthUnit
+from models.ivcf.ivcf_evaluation import IVCFEvaluation
+from models.ivcf.ivcf_patient import IVCFPatient
+from models.ivcf.health_unit import HealthUnit
 
 
 def create_ivcf_evaluation(db: Session, evaluation_data: dict) -> IVCFEvaluation:

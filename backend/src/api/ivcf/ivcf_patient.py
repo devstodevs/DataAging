@@ -2,13 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from db.base import get_db
-from schemas.ivcf_patient import (
+from schemas.ivcf.ivcf_patient import (
     IVCFPatientCreate,
     IVCFPatientUpdate,
     IVCFPatientResponse,
     IVCFPatientWithEvaluations
 )
-from services.ivcf_patient_service import IVCFPatientService
+from services.ivcf.ivcf_patient_service import IVCFPatientService
 
 router = APIRouter()
 

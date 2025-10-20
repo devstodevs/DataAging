@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from typing import Dict, Any, Optional
 from datetime import date
-from schemas.dashboard import (
+from schemas.ivcf.dashboard import (
     DomainDistributionResponse,
     ChartConfig,
     FiltersApplied,
@@ -15,7 +15,7 @@ from schemas.dashboard import (
     MonthlyEvolution,
     CriticalPatient
 )
-from db import dashboard_crud, ivcf_evaluation_crud
+from db.ivcf import dashboard_crud, ivcf_evaluation_crud
 
 
 class DashboardService:

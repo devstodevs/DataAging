@@ -1,13 +1,10 @@
 from fastapi import FastAPI
 from api.auth import router as auth_router
 from api.user import router as user_router
-from api.health_unit import router as health_unit_router
-from api.ivcf_patient import router as ivcf_patient_router
-from api.ivcf_evaluation import router as ivcf_evaluation_router
-from api.dashboard import router as dashboard_router
+from api.ivcf import health_unit_router, ivcf_patient_router, ivcf_evaluation_router, dashboard_router
 from config import settings
 from db.base import engine, Base
-from models import user, health_unit, ivcf_patient, ivcf_evaluation  # Import models to register them
+from models import user, ivcf  # Import models to register them
 
 # Create database tables
 Base.metadata.create_all(bind=engine)

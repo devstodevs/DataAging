@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 from typing import List, Optional
-from models.ivcf_patient import IVCFPatient
+from models.ivcf.ivcf_patient import IVCFPatient
 
 
 def create_ivcf_patient(db: Session, patient_data: dict) -> IVCFPatient:

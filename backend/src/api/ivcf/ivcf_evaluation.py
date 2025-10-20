@@ -3,13 +3,13 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import date
 from db.base import get_db
-from schemas.ivcf_evaluation import (
+from schemas.ivcf.ivcf_evaluation import (
     IVCFEvaluationCreate,
     IVCFEvaluationUpdate,
     IVCFEvaluationResponse,
     IVCFEvaluationWithPatient
 )
-from services.ivcf_evaluation_service import IVCFEvaluationService
+from services.ivcf.ivcf_evaluation_service import IVCFEvaluationService
 
 router = APIRouter()
 

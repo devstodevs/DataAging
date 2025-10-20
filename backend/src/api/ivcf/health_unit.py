@@ -2,12 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from db.base import get_db
-from schemas.health_unit import (
+from schemas.ivcf.health_unit import (
     HealthUnitCreate,
     HealthUnitUpdate,
     HealthUnitResponse
 )
-from services.health_unit_service import HealthUnitService
+from services.ivcf.health_unit_service import HealthUnitService
 
 router = APIRouter()
 

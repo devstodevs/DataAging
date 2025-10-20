@@ -29,7 +29,7 @@ const SubtitleExamples: React.FC = () => {
         size="medium"
       >
         <Title level="h1" align="center">
-          Entrar na Plataforma
+          Acesso ao DataAging
         </Title>
         <div style={{ marginTop: "8px" }}>
           <Subtitle align="center">

@@ -89,7 +89,7 @@ const TitleExamples: React.FC = () => {
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
           <div>
             <Title size="large" align="center">
-              Entrar na Plataforma
+              Acesso ao DataAging
             </Title>
             <div style={{ marginTop: "8px" }}>
               <Title size="medium" align="center">

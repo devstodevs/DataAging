@@ -78,14 +78,15 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
   const {
     summary,
     criticalPatients,
-    allPatients,
     fragilePercentage,
     curitibaRegions,
     loading,
     refetchAll,
-    refetchFilteredData,
+    refetchDomainDistribution,
+    refetchFragilePercentage,
     getRadarChartData,
     getLineChartData,
+    getFilteredPatients,
     isAnyLoading,
     hasAnyError,
   } = useIVCFData();
@@ -118,10 +119,12 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     return result;
   }, [filters]);
 
-  // Função para atualizar dados quando filtros mudam
+  // Função para atualizar dados quando filtros mudam (apenas gráficos e KPIs)
   const updateFilteredData = useCallback((apiFilters: IVCFFilters) => {
-    refetchFilteredData(apiFilters);
-  }, [refetchFilteredData]);
+    // Atualiza apenas os dados que precisam de filtros do backend
+    refetchDomainDistribution(apiFilters);
+    refetchFragilePercentage(apiFilters);
+  }, [refetchDomainDistribution, refetchFragilePercentage]);
 
   // Opções de filtros
   const filterOptions = {
@@ -151,12 +154,12 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     if (isInitialLoad) {
       const timer = setTimeout(() => {
         // Carrega os dados filtrados com os filtros iniciais
-        refetchFilteredData(apiFilters);
+        updateFilteredData(apiFilters);
         setIsInitialLoad(false);
       }, 500); // Aguarda um pouco após o carregamento inicial
       return () => clearTimeout(timer);
     }
-  }, [isInitialLoad, refetchFilteredData, apiFilters]);
+  }, [isInitialLoad, updateFilteredData, apiFilters]);
 
   // Efeito para atualizar dados quando filtros mudam (apenas após carregamento inicial)
   useEffect(() => {
@@ -173,8 +176,26 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
   const radarData = useMemo(() => getRadarChartData(), [getRadarChartData]);
   const lineData = useMemo(() => getLineChartData(), [getLineChartData]);
   const criticalPatientsCount = criticalPatients?.total_critical || 0;
-  const patientsList = allPatients?.critical_patients || [];
-  const totalPatients = allPatients?.total_critical || 0;
+  
+  // Filtragem da tabela no frontend
+  const filteredPatients = useMemo(() => {
+    // Criar filtros para o frontend que incluem "all"
+    const frontendFilters = {
+      period_from: filters.period.from ? formatDateForAPI(filters.period.from) : undefined,
+      period_to: filters.period.to ? formatDateForAPI(filters.period.to) : undefined,
+      age_range: filters.ageRange,
+      region: filters.region,
+      classification: filters.riskClassification === "all" ? "all" : 
+        filters.riskClassification === "fragile" ? "Frágil" :
+        filters.riskClassification === "risk" ? "Em Risco" :
+        filters.riskClassification === "robust" ? "Robusto" : "all"
+    };
+    
+    return getFilteredPatients(frontendFilters);
+  }, [getFilteredPatients, filters]);
+  
+  const patientsList = filteredPatients;
+  const totalPatients = filteredPatients.length;
 
   // Handlers
   const handleFilterChange = (filterType: string, value: any) => {
@@ -185,8 +206,8 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
   };
 
   const handleExportReport = () => {
-    if (patientsList.length > 0) {
-      const exportData = patientsList.map(patient => ({
+    if (filteredPatients.length > 0) {
+      const exportData = filteredPatients.map(patient => ({
         Nome: patient.nome_completo,
         Idade: patient.idade,
         Pontuação: patient.pontuacao_total,
@@ -197,7 +218,7 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
         'Unidade de Saúde': patient.unidade_saude,
       }));
 
-      prepareDataForExport(exportData, `ivcf-dashboard-${new Date().toISOString().split('T')[0]}`);
+      prepareDataForExport(exportData, `ivcf-dashboard-filtrado-${new Date().toISOString().split('T')[0]}`);
     }
   };
 
@@ -242,7 +263,7 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
           </Button>
           <Button
             onClick={handleExportReport}
-            disabled={patientsList.length === 0}
+            disabled={filteredPatients.length === 0}
           >
             <Download />
             Exportar Relatório
@@ -400,7 +421,7 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
               <RadarChart
                 data={radarData}
                 height={350}
-                domain={[2, 8]}
+                domain={[0, 8]}
               />
             ) : (
               <div className="flex items-center justify-center h-[350px] text-gray-500">

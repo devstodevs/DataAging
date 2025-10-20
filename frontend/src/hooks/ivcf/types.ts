@@ -8,6 +8,7 @@ import {
   type IVCFFilters,
   type RadarChartData,
   type LineChartData,
+  type IVCFPatient,
 } from '../../types/ivcf';
 
 export interface IVCFDataState {
@@ -57,6 +58,7 @@ export interface IVCFDataActions {
 export interface IVCFDataHelpers {
   getRadarChartData: () => RadarChartData[];
   getLineChartData: () => LineChartData[];
+  getFilteredPatients: (filters: any) => IVCFPatient[];
   isAnyLoading: boolean;
   hasAnyError: boolean;
 }

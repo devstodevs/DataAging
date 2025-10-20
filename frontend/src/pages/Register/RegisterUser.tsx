@@ -13,6 +13,7 @@ import DateInput from "../../components/base/Input/DateInput";
 import Alert from "../../components/base/Alert/Alert";
 import SecondaryLink from "../../components/base/SecondaryLink/SecondaryLink";
 import { useAuth } from "../../contexts/AuthContext";
+import { validateCPF } from "../../utils/cpfValidator";
 import "./RegisterUser.css";
 
 interface FormData {
@@ -187,31 +188,57 @@ const RegisterUser: React.FC<RegisterUserProps> = ({ onNavigateToLogin }) => {
       return;
     }
 
+    // Validações específicas por tipo
+    if (activeTab === 'gestor' && !formData.matricula) {
+      setError("Matrícula é obrigatória para gestores");
+      return;
+    }
+
+    // Validar campos obrigatórios
+    if (!formData.nomeCompleto || !formData.cpf) {
+      setError("Nome completo e CPF são obrigatórios");
+      return;
+    }
+
+    // Validar CPF
+    if (!validateCPF(formData.cpf)) {
+      setError("CPF inválido");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const userData = {
+      // Preparar dados base
+      const baseUserData = {
         cpf: formData.cpf,
         password: formData.password,
         nome_completo: formData.nomeCompleto,
         profile_type: activeTab as 'gestor' | 'tecnico',
-        telefone: formData.telefone,
-        sexo: formData.sexo,
-        data_nascimento: formData.dataNascimento,
-        cep: formData.cep,
-        logradouro: formData.logradouro,
-        numero: formData.numero,
-        complemento: formData.complemento,
-        bairro: formData.bairro,
-        municipio: formData.municipio,
-        uf: formData.uf,
-        ...(activeTab === 'gestor' && { matricula: formData.matricula }),
-        ...(activeTab === 'tecnico' && {
-          registro_profissional: formData.registroProfissional,
-          especialidade: formData.especialidade,
-          unidade_lotacao_id: parseInt(formData.unidadeLotacao) || undefined,
-        }),
+        telefone: formData.telefone || undefined,
+        sexo: formData.sexo || undefined,
+        data_nascimento: formData.dataNascimento || undefined,
+        cep: formData.cep || undefined,
+        logradouro: formData.logradouro || undefined,
+        numero: formData.numero || undefined,
+        complemento: formData.complemento || undefined,
+        bairro: formData.bairro || undefined,
+        municipio: formData.municipio || undefined,
+        uf: formData.uf || undefined,
       };
+
+      // Adicionar campos específicos baseado no tipo
+      const userData = activeTab === 'gestor' 
+        ? {
+            ...baseUserData,
+            matricula: formData.matricula,
+          }
+        : {
+            ...baseUserData,
+            registro_profissional: formData.registroProfissional || undefined,
+            especialidade: formData.especialidade || undefined,
+            unidade_lotacao_id: formData.unidadeLotacao ? parseInt(formData.unidadeLotacao) : undefined,
+          };
 
       await register(userData);
       setSuccess("Usuário cadastrado com sucesso! Você pode fazer login agora.");

@@ -29,10 +29,6 @@ interface RegisterData {
   password: string;
   nome_completo: string;
   profile_type: 'gestor' | 'tecnico';
-  matricula?: string;
-  registro_profissional?: string;
-  especialidade?: string;
-  unidade_lotacao_id?: number;
   telefone?: string;
   sexo?: string;
   data_nascimento?: string;
@@ -43,6 +39,12 @@ interface RegisterData {
   bairro?: string;
   municipio?: string;
   uf?: string;
+  // Campos específicos do Gestor
+  matricula?: string;
+  // Campos específicos do Técnico
+  registro_profissional?: string;
+  especialidade?: string;
+  unidade_lotacao_id?: number;
 }
 
 // Context
@@ -123,7 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (userData: RegisterData): Promise<void> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/users`, {
+      const response = await fetch(`${API_BASE_URL}/users/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +135,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || 'Erro ao criar usuário');
+        // Tratar diferentes tipos de erro
+        if (errorData.detail) {
+          if (Array.isArray(errorData.detail)) {
+            // Erros de validação do Pydantic
+            const errorMessages = errorData.detail.map((err: any) => 
+              `${err.loc?.join('.')}: ${err.msg}`
+            ).join(', ');
+            throw new Error(errorMessages);
+          } else {
+            throw new Error(errorData.detail);
+          }
+        }
+        throw new Error('Erro ao criar usuário');
       }
 
       // Após registro bem-sucedido, não fazemos login automático

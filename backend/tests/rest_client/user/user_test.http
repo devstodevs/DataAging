@@ -1,0 +1,126 @@
+### User API Tests
+
+@baseUrl = http://localhost:8000/api/v1
+
+### Create Gestor User
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "cpf": "12345678901",
+  "password": "senha123",
+  "nome_completo": "Maria Silva Santos",
+  "profile_type": "gestor",
+  "telefone": "41999999999",
+  "sexo": "feminino",
+  "data_nascimento": "1980-05-15",
+  "cep": "80010000",
+  "logradouro": "Rua das Flores",
+  "numero": "123",
+  "complemento": "Apto 101",
+  "bairro": "Centro",
+  "municipio": "Curitiba",
+  "uf": "PR",
+  "matricula": "GES001"
+}
+
+### Create Tecnico User
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "cpf": "98765432100",
+  "password": "senha456",
+  "nome_completo": "João Oliveira Costa",
+  "profile_type": "tecnico",
+  "telefone": "41988888888",
+  "sexo": "masculino",
+  "data_nascimento": "1985-10-20",
+  "cep": "80020000",
+  "logradouro": "Avenida Brasil",
+  "numero": "456",
+  "bairro": "Batel",
+  "municipio": "Curitiba",
+  "uf": "PR",
+  "registro_profissional": "CREFITO 12345",
+  "especialidade": "fisioterapia"
+}
+
+### List All Users
+GET {{baseUrl}}/users/
+
+### Get User by ID
+GET {{baseUrl}}/users/1
+
+### Update User
+PUT {{baseUrl}}/users/1
+Content-Type: application/json
+
+{
+  "telefone": "41999999998",
+  "complemento": "Apto 102"
+}
+
+### Delete User
+DELETE {{baseUrl}}/users/1
+
+### Test Login with Created User
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=12345678901&password=senha123
+
+### Get Current User Info (requires token from login)
+GET {{baseUrl}}/me
+Authorization: Bearer YOUR_TOKEN_HERE
+
+### ============================================
+### Error Test Cases
+### ============================================
+
+### Test Invalid CPF (should fail)
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "cpf": "12345678900",
+  "password": "senha123",
+  "nome_completo": "Teste CPF Inválido",
+  "profile_type": "gestor",
+  "matricula": "GES002"
+}
+
+### Test CPF with all same digits (should fail)
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "cpf": "11111111111",
+  "password": "senha123",
+  "nome_completo": "Teste CPF Repetido",
+  "profile_type": "gestor",
+  "matricula": "GES003"
+}
+
+### Test Duplicate CPF (should fail after first user is created)
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "cpf": "12345678901",
+  "password": "senha789",
+  "nome_completo": "Teste CPF Duplicado",
+  "profile_type": "tecnico"
+}
+
+### Test Valid CPF with formatting
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "cpf": "123.456.789-09",
+  "password": "senha123",
+  "nome_completo": "Ana Paula Silva",
+  "profile_type": "gestor",
+  "matricula": "GES004"
+}

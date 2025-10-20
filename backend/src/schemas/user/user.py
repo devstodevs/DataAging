@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional, Literal
 from datetime import date
-from models.user import ProfileType
+from models.user.user import ProfileType
 
 
 class UserBase(BaseModel):

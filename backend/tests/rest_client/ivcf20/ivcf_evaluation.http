@@ -1,0 +1,262 @@
+### IVCF Evaluation API Tests
+
+@baseUrl = http://localhost:8000/api/v1
+
+### Create IVCF Evaluation - Robusto (Score 8)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 1,
+  "data_avaliacao": "2024-01-15",
+  "pontuacao_total": 8,
+  "classificacao": "Robusto",
+  "dominio_idade": 1,
+  "dominio_comorbidades": 1,
+  "dominio_comunicacao": 1,
+  "dominio_mobilidade": 1,
+  "dominio_humor": 1,
+  "dominio_cognicao": 1,
+  "dominio_avd": 1,
+  "dominio_autopercepcao": 1,
+  "comorbidades": "Nenhuma",
+  "observacoes": "Paciente em excelente condição"
+}
+
+### Create IVCF Evaluation - Em Risco (Score 15)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 2,
+  "data_avaliacao": "2024-01-20",
+  "pontuacao_total": 15,
+  "classificacao": "Em Risco",
+  "dominio_idade": 2,
+  "dominio_comorbidades": 3,
+  "dominio_comunicacao": 2,
+  "dominio_mobilidade": 2,
+  "dominio_humor": 2,
+  "dominio_cognicao": 2,
+  "dominio_avd": 1,
+  "dominio_autopercepcao": 1,
+  "comorbidades": "HAS, DM2",
+  "observacoes": "Paciente colaborativo, necessita acompanhamento"
+}
+
+### Create IVCF Evaluation - Frágil (Score 25)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 3,
+  "data_avaliacao": "2024-01-25",
+  "pontuacao_total": 25,
+  "classificacao": "Frágil",
+  "dominio_idade": 4,
+  "dominio_comorbidades": 4,
+  "dominio_comunicacao": 3,
+  "dominio_mobilidade": 4,
+  "dominio_humor": 3,
+  "dominio_cognicao": 3,
+  "dominio_avd": 2,
+  "dominio_autopercepcao": 2,
+  "comorbidades": "HAS, DM2, Artrite",
+  "observacoes": "Paciente com múltiplas comorbidades, necessita atenção especial"
+}
+
+### Create IVCF Evaluation - Critical Patient (Score 35)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 4,
+  "data_avaliacao": "2024-02-01",
+  "pontuacao_total": 35,
+  "classificacao": "Frágil",
+  "dominio_idade": 5,
+  "dominio_comorbidades": 5,
+  "dominio_comunicacao": 4,
+  "dominio_mobilidade": 5,
+  "dominio_humor": 4,
+  "dominio_cognicao": 4,
+  "dominio_avd": 4,
+  "dominio_autopercepcao": 4,
+  "comorbidades": "HAS, DM2, Artrite, Depressão",
+  "observacoes": "PACIENTE CRÍTICO - Necessita intervenção imediata"
+}
+
+### Create Another Evaluation for Same Patient (Historical)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 1,
+  "data_avaliacao": "2024-02-15",
+  "pontuacao_total": 12,
+  "classificacao": "Robusto",
+  "dominio_idade": 2,
+  "dominio_comorbidades": 2,
+  "dominio_comunicacao": 1,
+  "dominio_mobilidade": 2,
+  "dominio_humor": 2,
+  "dominio_cognicao": 1,
+  "dominio_avd": 1,
+  "dominio_autopercepcao": 1,
+  "comorbidades": "HAS leve",
+  "observacoes": "Evolução positiva do paciente"
+}
+
+### List All Evaluations
+GET {{baseUrl}}/ivcf-evaluations/
+
+### List Evaluations with Pagination
+GET {{baseUrl}}/ivcf-evaluations/?skip=0&limit=3
+
+### Filter Evaluations by Patient
+GET {{baseUrl}}/ivcf-evaluations/?patient_id=1
+
+### Filter Evaluations by Period
+GET {{baseUrl}}/ivcf-evaluations/?period_from=2024-01-01&period_to=2024-01-31
+
+### Filter Evaluations by Classification
+GET {{baseUrl}}/ivcf-evaluations/?classificacao=Frágil
+
+### Filter Evaluations by Classification (Robusto)
+GET {{baseUrl}}/ivcf-evaluations/?classificacao=Robusto
+
+### Filter Evaluations by Classification (Em Risco)
+GET {{baseUrl}}/ivcf-evaluations/?classificacao=Em Risco
+
+### Get Evaluation by ID
+GET {{baseUrl}}/ivcf-evaluations/1
+
+### Get Critical Patients
+GET {{baseUrl}}/ivcf-evaluations/critical-patients
+
+### Get Critical Patients with Higher Threshold
+GET {{baseUrl}}/ivcf-evaluations/critical-patients?pontuacao_minima=30
+
+### Update Evaluation
+PUT {{baseUrl}}/ivcf-evaluations/1
+Content-Type: application/json
+
+{
+  "observacoes": "Observações atualizadas - paciente melhorou"
+}
+
+### Update Evaluation Domain Scores (Auto-recalculate total and classification)
+PUT {{baseUrl}}/ivcf-evaluations/2
+Content-Type: application/json
+
+{
+  "dominio_idade": 2,
+  "dominio_comorbidades": 2,
+  "dominio_comunicacao": 2,
+  "dominio_mobilidade": 2,
+  "dominio_humor": 2,
+  "dominio_cognicao": 2,
+  "dominio_avd": 2,
+  "dominio_autopercepcao": 4
+}
+
+### Update Evaluation Date
+PUT {{baseUrl}}/ivcf-evaluations/1
+Content-Type: application/json
+
+{
+  "data_avaliacao": "2024-02-20"
+}
+
+### Try to Create Evaluation with Score Mismatch (Should Fail)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 1,
+  "data_avaliacao": "2024-02-25",
+  "pontuacao_total": 20,
+  "classificacao": "Frágil",
+  "dominio_idade": 1,
+  "dominio_comorbidades": 1,
+  "dominio_comunicacao": 1,
+  "dominio_mobilidade": 1,
+  "dominio_humor": 1,
+  "dominio_cognicao": 1,
+  "dominio_avd": 1,
+  "dominio_autopercepcao": 1
+}
+
+### Try to Create Evaluation with Invalid Classification (Should Fail)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 1,
+  "data_avaliacao": "2024-02-25",
+  "pontuacao_total": 8,
+  "classificacao": "Frágil",
+  "dominio_idade": 1,
+  "dominio_comorbidades": 1,
+  "dominio_comunicacao": 1,
+  "dominio_mobilidade": 1,
+  "dominio_humor": 1,
+  "dominio_cognicao": 1,
+  "dominio_avd": 1,
+  "dominio_autopercepcao": 1
+}
+
+### Try to Create Evaluation with Future Date (Should Fail)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 1,
+  "data_avaliacao": "2025-01-01",
+  "pontuacao_total": 8,
+  "classificacao": "Robusto",
+  "dominio_idade": 1,
+  "dominio_comorbidades": 1,
+  "dominio_comunicacao": 1,
+  "dominio_mobilidade": 1,
+  "dominio_humor": 1,
+  "dominio_cognicao": 1,
+  "dominio_avd": 1,
+  "dominio_autopercepcao": 1
+}
+
+### Try to Create Evaluation for Non-existent Patient (Should Fail)
+POST {{baseUrl}}/ivcf-evaluations/
+Content-Type: application/json
+
+{
+  "patient_id": 999,
+  "data_avaliacao": "2024-02-25",
+  "pontuacao_total": 8,
+  "classificacao": "Robusto",
+  "dominio_idade": 1,
+  "dominio_comorbidades": 1,
+  "dominio_comunicacao": 1,
+  "dominio_mobilidade": 1,
+  "dominio_humor": 1,
+  "dominio_cognicao": 1,
+  "dominio_avd": 1,
+  "dominio_autopercepcao": 1
+}
+
+### Get Non-existent Evaluation (Should Fail)
+GET {{baseUrl}}/ivcf-evaluations/999
+
+### Update Non-existent Evaluation (Should Fail)
+PUT {{baseUrl}}/ivcf-evaluations/2
+Content-Type: application/json
+
+{
+  "observacoes": "Paciente em risco"
+}
+
+### Delete Evaluation
+DELETE {{baseUrl}}/ivcf-evaluations/1
+
+### Verify Evaluation is Deleted
+GET {{baseUrl}}/ivcf-evaluations/1

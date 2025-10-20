@@ -1,27 +1,24 @@
-from .user import (
-    UserBase,
-    UserCreateGestor,
-    UserCreateTecnico,
-    UserUpdate,
-    UserResponse,
-    GestorData,
-    TecnicoData
-)
-from .ivcf import (
+from .health_unit import (
     HealthUnitBase,
     HealthUnitCreate,
     HealthUnitUpdate,
-    HealthUnitResponse,
+    HealthUnitResponse
+)
+from .ivcf_patient import (
     IVCFPatientBase,
     IVCFPatientCreate,
     IVCFPatientUpdate,
     IVCFPatientResponse,
-    IVCFPatientWithEvaluations,
+    IVCFPatientWithEvaluations
+)
+from .ivcf_evaluation import (
     IVCFEvaluationBase,
     IVCFEvaluationCreate,
     IVCFEvaluationUpdate,
     IVCFEvaluationResponse,
-    IVCFEvaluationWithPatient,
+    IVCFEvaluationWithPatient
+)
+from .ivcf_dashboard import (
     DomainDistribution,
     ChartConfig,
     FiltersApplied,
@@ -32,17 +29,11 @@ from .ivcf import (
     MonthlyEvolution,
     MonthlyEvolutionResponse,
     CriticalPatient,
-    CriticalPatientsResponse
+    CriticalPatientsResponse,
+    FragileElderlyPercentageResponse
 )
 
 __all__ = [
-    "UserBase",
-    "UserCreateGestor",
-    "UserCreateTecnico",
-    "UserUpdate",
-    "UserResponse",
-    "GestorData",
-    "TecnicoData",
     "HealthUnitBase",
     "HealthUnitCreate",
     "HealthUnitUpdate",

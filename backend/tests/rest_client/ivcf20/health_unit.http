@@ -1,0 +1,103 @@
+### Health Unit API Tests
+
+@baseUrl = http://localhost:8000/api/v1
+
+### Create Health Unit
+POST {{baseUrl}}/health-units/
+Content-Type: application/json
+
+{
+  "nome": "UBS Centro",
+  "bairro": "Centro",
+  "regiao": "Centro",
+  "ativo": true
+}
+
+### Create Another Health Unit
+POST {{baseUrl}}/health-units/
+Content-Type: application/json
+
+{
+  "nome": "UBS Norte",
+  "bairro": "Boa Vista",
+  "regiao": "Norte",
+  "ativo": true
+}
+
+### Create Health Unit in South Region
+POST {{baseUrl}}/health-units/
+Content-Type: application/json
+
+{
+  "nome": "UBS Sul",
+  "bairro": "Portão",
+  "regiao": "Sul",
+  "ativo": true
+}
+
+### List All Health Units
+GET {{baseUrl}}/health-units/
+
+### List Health Units with Pagination
+GET {{baseUrl}}/health-units/?skip=0&limit=2
+
+### List Only Active Health Units
+GET {{baseUrl}}/health-units/?active_only=true
+
+### Get Health Unit by ID
+GET {{baseUrl}}/health-units/1
+
+### Get Health Units by Region
+GET {{baseUrl}}/health-units/region/Centro
+
+### Get Health Units by Region (Norte)
+GET {{baseUrl}}/health-units/region/Norte
+
+### Update Health Unit
+PUT {{baseUrl}}/health-units/1
+Content-Type: application/json
+
+{
+  "nome": "UBS Centro Atualizada",
+  "bairro": "Centro Histórico",
+  "regiao": "Centro"
+}
+
+### Update Health Unit Status
+PUT {{baseUrl}}/health-units/1
+Content-Type: application/json
+
+{
+  "ativo": false
+}
+
+### Try to Create Duplicate Health Unit Name (Should Fail)
+POST {{baseUrl}}/health-units/
+Content-Type: application/json
+
+{
+  "nome": "UBS Centro",
+  "bairro": "Outro Bairro",
+  "regiao": "Outra Região",
+  "ativo": true
+}
+
+### Get Non-existent Health Unit (Should Fail)
+GET {{baseUrl}}/health-units/999
+
+### Update Non-existent Health Unit (Should Fail)
+PUT {{baseUrl}}/health-units/999
+Content-Type: application/json
+
+{
+  "nome": "Teste"
+}
+
+### Delete Health Unit (Soft Delete)
+DELETE {{baseUrl}}/health-units/1
+
+### Verify Health Unit is Soft Deleted
+GET {{baseUrl}}/health-units/1
+
+### List Health Units Including Inactive
+GET {{baseUrl}}/health-units/?active_only=false

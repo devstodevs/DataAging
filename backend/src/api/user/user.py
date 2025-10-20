@@ -8,7 +8,7 @@ from schemas.user import (
     UserUpdate,
     UserResponse
 )
-from services.user_service import UserService
+from services.user import UserService
 
 router = APIRouter()
 

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional
+from typing import Optional, List
 from datetime import date
 
 
@@ -53,7 +53,7 @@ class IVCFPatientResponse(IVCFPatientBase):
 
 class IVCFPatientWithEvaluations(IVCFPatientResponse):
     """Schema for IVCF patient with evaluations"""
-    evaluations: list = Field(default_factory=list)
+    evaluations: List[dict] = Field(default_factory=list)
     
     class Config:
         from_attributes = True

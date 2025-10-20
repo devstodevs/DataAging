@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, func, desc
+from sqlalchemy import and_, func, desc, case
 from typing import List, Optional, Dict, Any
 from datetime import date, datetime
 from models.ivcf.ivcf_evaluation import IVCFEvaluation
@@ -19,6 +19,11 @@ def create_ivcf_evaluation(db: Session, evaluation_data: dict) -> IVCFEvaluation
 def get_ivcf_evaluation(db: Session, evaluation_id: int) -> Optional[IVCFEvaluation]:
     """Get an IVCF evaluation by ID"""
     return db.query(IVCFEvaluation).filter(IVCFEvaluation.id == evaluation_id).first()
+
+
+def get_ivcf_evaluation_by_patient(db: Session, patient_id: int) -> Optional[IVCFEvaluation]:
+    """Get an IVCF evaluation by patient ID (only one evaluation per patient allowed)"""
+    return db.query(IVCFEvaluation).filter(IVCFEvaluation.patient_id == patient_id).first()
 
 
 def get_ivcf_evaluations(
@@ -48,17 +53,10 @@ def get_ivcf_evaluations(
     return query.order_by(desc(IVCFEvaluation.data_avaliacao)).offset(skip).limit(limit).all()
 
 
-def get_latest_evaluation_by_patient(db: Session, patient_id: int) -> Optional[IVCFEvaluation]:
-    """Get the latest evaluation for a patient"""
-    return db.query(IVCFEvaluation).filter(
-        IVCFEvaluation.patient_id == patient_id
-    ).order_by(desc(IVCFEvaluation.data_avaliacao)).first()
-
-
 def get_critical_patients(db: Session, pontuacao_minima: int = 20) -> List[Dict[str, Any]]:
     """Get patients with critical scores (Frágil classification)"""
     query = db.query(
-        IVCFPatient.id,
+        IVCFPatient.id.label('patient_id'),
         IVCFPatient.nome_completo,
         IVCFPatient.idade,
         IVCFPatient.bairro,
@@ -66,7 +64,7 @@ def get_critical_patients(db: Session, pontuacao_minima: int = 20) -> List[Dict[
         IVCFEvaluation.pontuacao_total,
         IVCFEvaluation.classificacao,
         IVCFEvaluation.comorbidades,
-        IVCFEvaluation.data_avaliacao
+        IVCFEvaluation.data_avaliacao.label('data_ultima_avaliacao')
     ).join(
         IVCFEvaluation, IVCFPatient.id == IVCFEvaluation.patient_id
     ).join(
@@ -176,9 +174,9 @@ def get_region_averages(
         HealthUnit.bairro,
         func.avg(IVCFEvaluation.pontuacao_total).label('average_score'),
         func.count(IVCFEvaluation.id).label('patient_count'),
-        func.sum(func.case([(IVCFEvaluation.classificacao == "Frágil", 1)], else_=0)).label('fragile_count'),
-        func.sum(func.case([(IVCFEvaluation.classificacao == "Em Risco", 1)], else_=0)).label('risk_count'),
-        func.sum(func.case([(IVCFEvaluation.classificacao == "Robusto", 1)], else_=0)).label('robust_count')
+        func.sum(case((IVCFEvaluation.classificacao == "Frágil", 1), else_=0)).label('fragile_count'),
+        func.sum(case((IVCFEvaluation.classificacao == "Em Risco", 1), else_=0)).label('risk_count'),
+        func.sum(case((IVCFEvaluation.classificacao == "Robusto", 1), else_=0)).label('robust_count')
     ).join(
         IVCFPatient, IVCFEvaluation.patient_id == IVCFPatient.id
     ).join(
@@ -216,9 +214,9 @@ def get_monthly_evolution(
         func.strftime('%Y-%m', IVCFEvaluation.data_avaliacao).label('month_year'),
         func.strftime('%Y', IVCFEvaluation.data_avaliacao).label('year'),
         func.strftime('%m', IVCFEvaluation.data_avaliacao).label('month'),
-        func.sum(func.case([(IVCFEvaluation.classificacao == "Robusto", 1)], else_=0)).label('robust'),
-        func.sum(func.case([(IVCFEvaluation.classificacao == "Em Risco", 1)], else_=0)).label('risk'),
-        func.sum(func.case([(IVCFEvaluation.classificacao == "Frágil", 1)], else_=0)).label('fragile'),
+        func.sum(case((IVCFEvaluation.classificacao == "Robusto", 1), else_=0)).label('robust'),
+        func.sum(case((IVCFEvaluation.classificacao == "Em Risco", 1), else_=0)).label('risk'),
+        func.sum(case((IVCFEvaluation.classificacao == "Frágil", 1), else_=0)).label('fragile'),
         func.count(IVCFEvaluation.id).label('total')
     ).join(
         IVCFPatient, IVCFEvaluation.patient_id == IVCFPatient.id

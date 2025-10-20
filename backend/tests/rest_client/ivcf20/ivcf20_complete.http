@@ -188,35 +188,44 @@ Content-Type: application/json
 }
 
 ### ============================================
-### STEP 4: Test Dashboard Endpoints
+### STEP 4: Test IVCF Dashboard Endpoints
 ### ============================================
 
 ### Get IVCF Summary
-GET {{baseUrl}}/dashboard/ivcf-summary
+GET {{baseUrl}}/ivcf-dashboard/ivcf-summary
 
 ### Get Domain Distribution (Spider Chart Data)
-GET {{baseUrl}}/dashboard/ivcf-by-domain
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain
 
 ### Get Domain Distribution with Region Filter
-GET {{baseUrl}}/dashboard/ivcf-by-domain?region=Centro
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?region=Centro
 
 ### Get Domain Distribution with Age Range Filter
-GET {{baseUrl}}/dashboard/ivcf-by-domain?age_range=71-80
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?age_range=71-80
 
 ### Get Domain Distribution with Classification Filter
-GET {{baseUrl}}/dashboard/ivcf-by-domain?classificacao=Frágil
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?classificacao=Frágil
 
 ### Get Region Averages
-GET {{baseUrl}}/dashboard/ivcf-by-region
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-region
 
 ### Get Monthly Evolution (6 months)
-GET {{baseUrl}}/dashboard/ivcf-evolution
+GET {{baseUrl}}/ivcf-dashboard/ivcf-evolution
 
 ### Get Critical Patients
-GET {{baseUrl}}/dashboard/critical-patients
+GET {{baseUrl}}/ivcf-dashboard/critical-patients
+
+### Get Fragile Elderly Percentage
+GET {{baseUrl}}/ivcf-dashboard/fragile-percentage
+
+### Get Fragile Elderly Percentage with Region Filter
+GET {{baseUrl}}/ivcf-dashboard/fragile-percentage?region=Centro
+
+### Get Fragile Elderly Percentage with Age Range Filter
+GET {{baseUrl}}/ivcf-dashboard/fragile-percentage?age_range=71-80
 
 ### Get Curitiba Regions
-GET {{baseUrl}}/dashboard/curitiba-regions
+GET {{baseUrl}}/ivcf-dashboard/curitiba-regions
 
 ### ============================================
 ### STEP 5: Test Patient Management
@@ -225,8 +234,8 @@ GET {{baseUrl}}/dashboard/curitiba-regions
 ### List All Patients
 GET {{baseUrl}}/ivcf-patients/
 
-### Get Patient with Evaluations
-GET {{baseUrl}}/ivcf-patients/1/evaluations
+### Get Patient with Evaluation
+GET {{baseUrl}}/ivcf-patients/1/evaluation
 
 ### Get Patients by Region
 GET {{baseUrl}}/ivcf-patients/region/Centro
@@ -243,9 +252,6 @@ GET {{baseUrl}}/ivcf-patients/stats/count
 
 ### List All Evaluations
 GET {{baseUrl}}/ivcf-evaluations/
-
-### Get Latest Evaluation for Patient
-GET {{baseUrl}}/ivcf-evaluations/patient/1/latest
 
 ### Filter Evaluations by Classification
 GET {{baseUrl}}/ivcf-evaluations/?classificacao=Frágil
@@ -268,16 +274,16 @@ GET {{baseUrl}}/health-units/region/Centro
 ### ============================================
 
 ### Try Invalid Region Filter (Should Fail)
-GET {{baseUrl}}/dashboard/ivcf-by-domain?region=RegiãoInexistente
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?region=RegiãoInexistente
 
 ### Try Invalid Age Range (Should Fail)
-GET {{baseUrl}}/dashboard/ivcf-by-domain?age_range=50-60
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?age_range=50-60
 
 ### Try Invalid Classification (Should Fail)
-GET {{baseUrl}}/dashboard/ivcf-by-domain?classificacao=ClassificaçãoInválida
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?classificacao=ClassificaçãoInválida
 
 ### Try Invalid Monthly Evolution (Should Fail)
-GET {{baseUrl}}/dashboard/ivcf-evolution?months_back=0
+GET {{baseUrl}}/ivcf-dashboard/ivcf-evolution?months_back=0
 
 ### Try Invalid Critical Threshold (Should Fail)
-GET {{baseUrl}}/dashboard/critical-patients?pontuacao_minima=50
+GET {{baseUrl}}/ivcf-dashboard/critical-patients?pontuacao_minima=50

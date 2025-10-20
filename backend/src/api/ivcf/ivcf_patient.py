@@ -92,7 +92,7 @@ def get_ivcf_patient(
     return IVCFPatientService.get_ivcf_patient_by_id(db, patient_id)
 
 
-@router.get("/ivcf-patients/{patient_id}/evaluations", response_model=IVCFPatientWithEvaluations)
+@router.get("/ivcf-patients/{patient_id}/evaluation", response_model=IVCFPatientWithEvaluations)
 def get_patient_with_evaluations(
     patient_id: int,
     db: Session = Depends(get_db)
@@ -112,9 +112,41 @@ def get_patient_with_evaluations(
     patient = IVCFPatientService.get_ivcf_patient_by_id(db, patient_id)
     evaluations = IVCFPatientService.get_patient_evaluations(db, patient_id)
     
-    # Convert to response format
-    patient_data = patient.__dict__.copy()
-    patient_data['evaluations'] = evaluations
+    # Convert evaluations to dictionaries for serialization
+    evaluations_data = []
+    for evaluation in evaluations:
+        eval_dict = {
+            "id": evaluation.id,
+            "patient_id": evaluation.patient_id,
+            "data_avaliacao": evaluation.data_avaliacao,
+            "pontuacao_total": evaluation.pontuacao_total,
+            "classificacao": evaluation.classificacao,
+            "dominio_idade": evaluation.dominio_idade,
+            "dominio_comorbidades": evaluation.dominio_comorbidades,
+            "dominio_comunicacao": evaluation.dominio_comunicacao,
+            "dominio_mobilidade": evaluation.dominio_mobilidade,
+            "dominio_humor": evaluation.dominio_humor,
+            "dominio_cognicao": evaluation.dominio_cognicao,
+            "dominio_avd": evaluation.dominio_avd,
+            "dominio_autopercepcao": evaluation.dominio_autopercepcao,
+            "comorbidades": evaluation.comorbidades,
+            "observacoes": evaluation.observacoes
+        }
+        evaluations_data.append(eval_dict)
+    
+    # Convert patient to response format
+    patient_data = {
+        "id": patient.id,
+        "nome_completo": patient.nome_completo,
+        "cpf": patient.cpf,
+        "idade": patient.idade,
+        "telefone": patient.telefone,
+        "bairro": patient.bairro,
+        "unidade_saude_id": patient.unidade_saude_id,
+        "data_cadastro": patient.data_cadastro,
+        "ativo": patient.ativo,
+        "evaluations": evaluations_data
+    }
     
     return IVCFPatientWithEvaluations(**patient_data)
 

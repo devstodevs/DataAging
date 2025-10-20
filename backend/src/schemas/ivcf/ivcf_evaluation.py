@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional, Literal
 from datetime import date
 
@@ -24,44 +24,41 @@ class IVCFEvaluationBase(BaseModel):
     comorbidades: Optional[str] = Field(None, max_length=500)
     observacoes: Optional[str] = Field(None, max_length=1000)
     
-    @field_validator('pontuacao_total')
-    @classmethod
-    def validate_total_score(cls, v: int, info) -> int:
-        """Validate that total score matches sum of domain scores"""
-        if 'data' in info and info['data']:
-            domain_scores = [
-                info['data'].get('dominio_idade', 0),
-                info['data'].get('dominio_comorbidades', 0),
-                info['data'].get('dominio_comunicacao', 0),
-                info['data'].get('dominio_mobilidade', 0),
-                info['data'].get('dominio_humor', 0),
-                info['data'].get('dominio_cognicao', 0),
-                info['data'].get('dominio_avd', 0),
-                info['data'].get('dominio_autopercepcao', 0),
-            ]
-            expected_total = sum(domain_scores)
-            if v != expected_total:
-                raise ValueError(f"Pontuação total ({v}) deve ser igual à soma dos domínios ({expected_total})")
-        return v
-    
-    @field_validator('classificacao')
-    @classmethod
-    def validate_classification(cls, v: str, info) -> str:
-        """Validate classification based on total score"""
-        if 'data' in info and info['data']:
-            total_score = info['data'].get('pontuacao_total', 0)
-            if total_score <= 12 and v != "Robusto":
-                raise ValueError("Pontuação 0-12 deve ser classificada como 'Robusto'")
-            elif 13 <= total_score <= 19 and v != "Em Risco":
-                raise ValueError("Pontuação 13-19 deve ser classificada como 'Em Risco'")
-            elif total_score >= 20 and v != "Frágil":
-                raise ValueError("Pontuação 20-40 deve ser classificada como 'Frágil'")
-        return v
 
 
 class IVCFEvaluationCreate(IVCFEvaluationBase):
     """Schema for creating an IVCF evaluation"""
-    pass
+    
+    @model_validator(mode='after')
+    def validate_scores_and_classification(self):
+        """Validate that total score matches sum of domain scores and classification is correct"""
+        # Calculate expected total from domain scores
+        domain_scores = [
+            self.dominio_idade,
+            self.dominio_comorbidades,
+            self.dominio_comunicacao,
+            self.dominio_mobilidade,
+            self.dominio_humor,
+            self.dominio_cognicao,
+            self.dominio_avd,
+            self.dominio_autopercepcao,
+        ]
+        expected_total = sum(domain_scores)
+        
+        # Validate total score matches sum of domains
+        if self.pontuacao_total != expected_total:
+            raise ValueError(f"Pontuação total ({self.pontuacao_total}) deve ser igual à soma dos domínios ({expected_total})")
+        
+        # Validate classification based on total score
+        total_score = self.pontuacao_total
+        if total_score <= 12 and self.classificacao != "Robusto":
+            raise ValueError("Pontuação 0-12 deve ser classificada como 'Robusto'")
+        elif 13 <= total_score <= 19 and self.classificacao != "Em Risco":
+            raise ValueError("Pontuação 13-19 deve ser classificada como 'Em Risco'")
+        elif total_score >= 20 and self.classificacao != "Frágil":
+            raise ValueError("Pontuação 20-40 deve ser classificada como 'Frágil'")
+        
+        return self
 
 
 class IVCFEvaluationUpdate(BaseModel):
@@ -83,7 +80,6 @@ class IVCFEvaluationUpdate(BaseModel):
     # Additional information
     comorbidades: Optional[str] = Field(None, max_length=500)
     observacoes: Optional[str] = Field(None, max_length=1000)
-
 
 class IVCFEvaluationResponse(IVCFEvaluationBase):
     """Schema for IVCF evaluation responses"""

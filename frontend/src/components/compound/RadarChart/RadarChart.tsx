@@ -21,6 +21,7 @@ interface RadarChartProps {
   title?: string;
   className?: string;
   height?: number;
+  domain?: [number, number];
 }
 
 const RadarChartComponent: React.FC<RadarChartProps> = ({
@@ -28,14 +29,31 @@ const RadarChartComponent: React.FC<RadarChartProps> = ({
   title,
   className = "",
   height = 300,
+  domain,
 }) => {
+  // Calcular domínio automaticamente se não fornecido
+  const chartDomain = domain || (() => {
+    if (data.length === 0) return [0, 10];
+    const maxFullMark = Math.max(...data.map(d => d.fullMark));
+    // Para IVCF, usar escala de 2 a 8 se fullMark for 8
+    if (maxFullMark === 8) return [2, 8];
+    return [0, maxFullMark];
+  })();
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
+      const isIVCFScale = chartDomain[0] === 2 && chartDomain[1] === 8;
       return (
         <div className="radar-chart__tooltip">
           <p className="radar-chart__tooltip-label">{data.domain}</p>
-          <p className="radar-chart__tooltip-value">Pontuação: {data.score}</p>
+          <p className="radar-chart__tooltip-value">
+            Média: {typeof data.score === 'number' ? data.score.toFixed(1) : data.score}
+          </p>
+          {isIVCFScale && (
+            <p className="radar-chart__tooltip-scale">
+              Escala: 2 (melhor) - 8 (pior)
+            </p>
+          )}
         </div>
       );
     }
@@ -59,7 +77,7 @@ const RadarChartComponent: React.FC<RadarChartProps> = ({
             />
             <PolarRadiusAxis
               angle={90}
-              domain={[0, 40]}
+              domain={chartDomain}
               tick={{ fontSize: 10, fill: "#9ca3af" }}
               tickLine={{ stroke: "#d1d5db" }}
             />

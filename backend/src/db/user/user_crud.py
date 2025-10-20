@@ -113,6 +113,28 @@ def update_user(
     return db_user
 
 
+def update_user_password(db: Session, user_id: int, new_hashed_password: str) -> Optional[User]:
+    """
+    Update a user's password.
+    
+    Args:
+        db: Database session
+        user_id: User ID to update
+        new_hashed_password: New hashed password
+        
+    Returns:
+        Updated User object or None if not found
+    """
+    db_user = get_user(db, user_id)
+    if not db_user:
+        return None
+    
+    db_user.hashed_password = new_hashed_password
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
 def delete_user(db: Session, user_id: int) -> bool:
     """
     Delete a user from the database.

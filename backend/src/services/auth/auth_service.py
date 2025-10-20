@@ -5,8 +5,8 @@ from typing import Optional
 
 from models.user.user import User
 from db.user import user_crud
-from db.user.user_crud import get_user_by_cpf
-from core.security import verify_password, create_access_token
+from db.user.user_crud import get_user_by_cpf, update_user_password
+from core.security import verify_password, create_access_token, get_password_hash
 from config import settings
 
 
@@ -89,4 +89,55 @@ class AuthService:
         return {
             **token_data,
             "user": user
+        }
+    
+    @staticmethod
+    def recover_password(db: Session, cpf: str, current_password: str, new_password: str) -> dict:
+        """
+        Recover/change user password by verifying current password.
+        
+        Args:
+            db: Database session
+            cpf: User CPF
+            current_password: Current password for verification
+            new_password: New password to set
+            
+        Returns:
+            Dictionary with success message
+            
+        Raises:
+            HTTPException: If authentication fails or user not found
+        """
+        # Clean CPF (remove non-numeric characters)
+        cpf_clean = ''.join(filter(str.isdigit, cpf))
+        
+        # Get user by CPF
+        user = get_user_by_cpf(db, cpf_clean)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuário não encontrado"
+            )
+        
+        # Verify current password
+        if not verify_password(current_password, user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Senha atual incorreta"
+            )
+        
+        # Hash new password
+        new_hashed_password = get_password_hash(new_password)
+        
+        # Update password in database
+        updated_user = update_user_password(db, user.id, new_hashed_password)
+        if not updated_user:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno ao atualizar senha"
+            )
+        
+        return {
+            "message": "Senha alterada com sucesso",
+            "success": True
         }

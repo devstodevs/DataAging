@@ -12,6 +12,7 @@ from db.user import user_crud
 from db.user.user_crud import get_user_by_cpf
 from models.user.user import User
 from schemas.user import UserResponse
+from schemas.auth import PasswordRecoveryRequest, PasswordRecoveryResponse
 from services.auth import AuthService
 
 router = APIRouter()
@@ -116,3 +117,42 @@ def get_current_user_info(current_user: User = Depends(get_current_user)):
     - 401: Invalid or missing token
     """
     return current_user
+
+
+@router.post("/recover-password", response_model=PasswordRecoveryResponse)
+def recover_password(
+    password_data: PasswordRecoveryRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Recover/change user password by verifying current password.
+    
+    **Request Body:**
+    - cpf: User CPF (without formatting, e.g., "12345678901")
+    - current_password: Current password for verification
+    - new_password: New password (minimum 6 characters)
+    
+    **Returns:**
+    - message: Success message
+    - success: Operation success status
+    
+    **Raises:**
+    - 404: User not found
+    - 401: Incorrect current password
+    - 500: Internal server error
+    
+    **Example:**
+    ```json
+    {
+        "cpf": "12345678901",
+        "current_password": "senhaAtual123",
+        "new_password": "novaSenha456"
+    }
+    ```
+    """
+    return AuthService.recover_password(
+        db=db,
+        cpf=password_data.cpf,
+        current_password=password_data.current_password,
+        new_password=password_data.new_password
+    )

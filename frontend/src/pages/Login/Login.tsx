@@ -12,9 +12,10 @@ import { validateCPF } from "../../utils/cpfValidator";
 
 interface LoginProps {
   onNavigateToRegister?: () => void;
+  onNavigateToPasswordRecovery?: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onNavigateToRegister }) => {
+const Login: React.FC<LoginProps> = ({ onNavigateToRegister, onNavigateToPasswordRecovery }) => {
   const [cpf, setCpf] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -44,8 +45,9 @@ const Login: React.FC<LoginProps> = ({ onNavigateToRegister }) => {
 
   const handleForgotPassword = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    // implementar a lógica para recuperação de senha
-    console.log("Esqueceu a senha clicado");
+    if (onNavigateToPasswordRecovery) {
+      onNavigateToPasswordRecovery();
+    }
   };
 
   const handleRegisterClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -110,7 +112,7 @@ const Login: React.FC<LoginProps> = ({ onNavigateToRegister }) => {
               color="#374151"
               onClick={handleForgotPassword}
             >
-              Esqueceu sua senha?
+              Alterar senha
             </SecondaryLink>
             {onNavigateToRegister && (
               <SecondaryLink

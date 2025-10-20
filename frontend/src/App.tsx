@@ -6,6 +6,7 @@ import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
 import IVCFDashboard from "./pages/IVCFDashboard";
 import RegisterUser from "./pages/Register/RegisterUser";
+import PasswordRecovery from "./pages/PasswordRecovery/PasswordRecovery";
 import PhysicalActivityDashboard from "./pages/PhysicalActivityDashboard";
 import FACTFDashboard from "./pages/FACTFDashboard";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -120,16 +121,26 @@ const AuthenticatedApp: React.FC = () => {
 };
 
 const AuthScreen: React.FC = () => {
-  const [currentScreen, setCurrentScreen] = useState<"login" | "register">("login");
+  const [currentScreen, setCurrentScreen] = useState<"login" | "register" | "password-recovery">("login");
 
   const handleNavigateToRegister = () => setCurrentScreen("register");
   const handleNavigateToLogin = () => setCurrentScreen("login");
+  const handleNavigateToPasswordRecovery = () => setCurrentScreen("password-recovery");
 
   if (currentScreen === "register") {
     return <RegisterUser onNavigateToLogin={handleNavigateToLogin} />;
   }
 
-  return <Login onNavigateToRegister={handleNavigateToRegister} />;
+  if (currentScreen === "password-recovery") {
+    return <PasswordRecovery onNavigateToLogin={handleNavigateToLogin} />;
+  }
+
+  return (
+    <Login 
+      onNavigateToRegister={handleNavigateToRegister}
+      onNavigateToPasswordRecovery={handleNavigateToPasswordRecovery}
+    />
+  );
 };
 
 function App() {

@@ -15,7 +15,7 @@ const SecondaryLinkExamples: React.FC = () => {
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px", textAlign: "center" }}>
                     <div>
                         <SecondaryLink href="/forgot-password">
-                            Esqueceu sua senha?
+                            Alterar senha
                         </SecondaryLink>
                     </div>
 
@@ -156,7 +156,7 @@ const SecondaryLinkExamples: React.FC = () => {
 
                     <div style={{ textAlign: "center", marginBottom: "12px" }}>
                         <SecondaryLink href="/forgot-password">
-                            Esqueceu sua senha?
+                            Alterar senha
                         </SecondaryLink>
                     </div>
 

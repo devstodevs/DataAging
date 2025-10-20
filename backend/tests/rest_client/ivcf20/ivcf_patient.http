@@ -44,14 +44,14 @@ Content-Type: application/json
   "data_cadastro": "2024-01-25"
 }
 
-### Create Patient with Minimum Age
+### Create Patient outside the minimum age range (Should Fail)
 POST {{baseUrl}}/ivcf-patients/
 Content-Type: application/json
 
 {
   "nome_completo": "Pedro Santos",
   "cpf": "55566677788",
-  "idade": 60,
+  "idade": 59,
   "telefone": "41966666666",
   "bairro": "Centro",
   "unidade_saude_id": 1,
@@ -80,7 +80,7 @@ GET {{baseUrl}}/ivcf-patients/?idade_min=70&idade_max=80
 GET {{baseUrl}}/ivcf-patients/1
 
 ### Get Patient with Evaluations
-GET {{baseUrl}}/ivcf-patients/1/evaluations
+GET {{baseUrl}}/ivcf-patients/1/evaluation
 
 ### Get Patients by Region
 GET {{baseUrl}}/ivcf-patients/region/Centro

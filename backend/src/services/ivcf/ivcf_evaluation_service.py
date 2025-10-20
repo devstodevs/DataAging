@@ -33,6 +33,9 @@ class IVCFEvaluationService:
                 detail="Paciente não encontrado"
             )
         
+        # Check if patient already has an evaluation
+        existing_evaluation = ivcf_evaluation_crud.get_ivcf_evaluation_by_patient(db, evaluation_create.patient_id)
+        
         # Validate total score matches sum of domains
         domain_scores = [
             evaluation_create.dominio_idade,
@@ -69,9 +72,15 @@ class IVCFEvaluationService:
                 detail="Pontuação 20-40 deve ser classificada como 'Frágil'"
             )
         
-        # Create evaluation
+        # Create or update evaluation
         evaluation_data = evaluation_create.model_dump()
-        return ivcf_evaluation_crud.create_ivcf_evaluation(db, evaluation_data)
+        
+        if existing_evaluation:
+            # Update existing evaluation
+            return ivcf_evaluation_crud.update_ivcf_evaluation(db, existing_evaluation.id, evaluation_data)
+        else:
+            # Create new evaluation
+            return ivcf_evaluation_crud.create_ivcf_evaluation(db, evaluation_data)
     
     @staticmethod
     def get_ivcf_evaluation_by_id(db: Session, evaluation_id: int) -> IVCFEvaluation:
@@ -150,19 +159,7 @@ class IVCFEvaluationService:
         
         return ivcf_evaluation_crud.get_latest_evaluation_by_patient(db, patient_id)
     
-    @staticmethod
-    def get_critical_patients(db: Session, pontuacao_minima: int = 20) -> List[Dict[str, Any]]:
-        """
-        Get patients with critical scores.
-        
-        Args:
-            db: Database session
-            pontuacao_minima: Minimum score for critical patients
-            
-        Returns:
-            List of critical patients data
-        """
-        return ivcf_evaluation_crud.get_critical_patients(db, pontuacao_minima)
+
     
     @staticmethod
     def get_domain_distribution(
@@ -259,11 +256,11 @@ class IVCFEvaluationService:
         
         # If updating domain scores or total score, recalculate
         if any(key.startswith('dominio_') for key in update_data.keys()) or 'pontuacao_total' in update_data:
-            # Get current values
-            current_data = existing_evaluation.__dict__
+            # Get current values and merge with update data
+            current_data = existing_evaluation.__dict__.copy()
             current_data.update(update_data)
             
-            # Calculate expected total
+            # Calculate expected total from merged data
             domain_scores = [
                 current_data.get('dominio_idade', 0),
                 current_data.get('dominio_comorbidades', 0),

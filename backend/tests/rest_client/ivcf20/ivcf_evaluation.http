@@ -131,12 +131,6 @@ GET {{baseUrl}}/ivcf-evaluations/?classificacao=Em Risco
 ### Get Evaluation by ID
 GET {{baseUrl}}/ivcf-evaluations/1
 
-### Get Latest Evaluation for Patient
-GET {{baseUrl}}/ivcf-evaluations/patient/1/latest
-
-### Get Latest Evaluation for Patient 2
-GET {{baseUrl}}/ivcf-evaluations/patient/2/latest
-
 ### Get Critical Patients
 GET {{baseUrl}}/ivcf-evaluations/critical-patients
 
@@ -152,7 +146,7 @@ Content-Type: application/json
 }
 
 ### Update Evaluation Domain Scores (Auto-recalculate total and classification)
-PUT {{baseUrl}}/ivcf-evaluations/1
+PUT {{baseUrl}}/ivcf-evaluations/2
 Content-Type: application/json
 
 {
@@ -162,8 +156,8 @@ Content-Type: application/json
   "dominio_mobilidade": 2,
   "dominio_humor": 2,
   "dominio_cognicao": 2,
-  "dominio_avd": 1,
-  "dominio_autopercepcao": 1
+  "dominio_avd": 2,
+  "dominio_autopercepcao": 4
 }
 
 ### Update Evaluation Date
@@ -254,11 +248,11 @@ Content-Type: application/json
 GET {{baseUrl}}/ivcf-evaluations/999
 
 ### Update Non-existent Evaluation (Should Fail)
-PUT {{baseUrl}}/ivcf-evaluations/999
+PUT {{baseUrl}}/ivcf-evaluations/2
 Content-Type: application/json
 
 {
-  "observacoes": "Teste"
+  "observacoes": "Paciente em risco"
 }
 
 ### Delete Evaluation

@@ -116,21 +116,7 @@ def get_latest_evaluation_by_patient(
     return evaluation
 
 
-@router.get("/ivcf-evaluations/critical-patients")
-def get_critical_patients(
-    pontuacao_minima: int = Query(20, ge=0, le=40, description="Minimum score for critical patients"),
-    db: Session = Depends(get_db)
-):
-    """
-    Get patients with critical scores.
-    
-    **Query Parameters:**
-    - pontuacao_minima: Minimum score for critical patients (default: 20, range: 0-40)
-    
-    **Returns:**
-    - List of critical patients data
-    """
-    return IVCFEvaluationService.get_critical_patients(db, pontuacao_minima)
+
 
 
 @router.put("/ivcf-evaluations/{evaluation_id}", response_model=IVCFEvaluationResponse)

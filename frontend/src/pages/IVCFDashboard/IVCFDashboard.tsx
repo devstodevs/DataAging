@@ -40,7 +40,7 @@ import Alert from "../../components/base/Alert";
 import RadarChart from "../../components/compound/RadarChart/RadarChart";
 import LineChart from "../../components/compound/LineChart/LineChart";
 import type { DateRange } from "react-day-picker";
-import { useIVCFData } from "../../hooks/useIVCFData";
+import { useIVCFData } from "../../hooks/ivcf";
 import { type IVCFFilters } from "../../types/ivcf";
 import {
   formatDate,
@@ -470,17 +470,17 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
                           {patient.nome_completo}
                         </div>
                       </TableCell>
-                    <TableCell>{patient.idade}</TableCell>
-                    <TableCell>{patient.pontuacao_total}</TableCell>
-                    <TableCell>
-                      <Badge variant={getBadgeVariant(patient.classificacao)}>
-                        {patient.classificacao}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{patient.comorbidades || "Não informado"}</TableCell>
-                    <TableCell>{formatDate(patient.data_ultima_avaliacao)}</TableCell>
-                    <TableCell>{patient.bairro}</TableCell>
-                    <TableCell>{patient.unidade_saude}</TableCell>
+                      <TableCell>{patient.idade}</TableCell>
+                      <TableCell>{patient.pontuacao_total}</TableCell>
+                      <TableCell>
+                        <Badge variant={getBadgeVariant(patient.classificacao)}>
+                          {patient.classificacao}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{patient.comorbidades || "Não informado"}</TableCell>
+                      <TableCell>{formatDate(patient.data_ultima_avaliacao)}</TableCell>
+                      <TableCell>{patient.bairro}</TableCell>
+                      <TableCell>{patient.unidade_saude}</TableCell>
                     </TableRow>
                   );
                 })}

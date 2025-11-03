@@ -7,8 +7,9 @@ import {
   type FragileElderlyPercentageResponse,
   type IVCFFilters,
 } from '../types/ivcf';
+import { API_CONFIG } from '../config/api';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 class IVCFApiService {
   private getAuthHeaders(): HeadersInit {

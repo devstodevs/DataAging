@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { API_CONFIG } from '../config/api';
 
 // Tipos
 interface User {
@@ -61,7 +62,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const API_BASE_URL = 'http://localhost:8000/api/v1';
+  const API_BASE_URL = API_CONFIG.BASE_URL;
 
   // Verificar se há token salvo no localStorage ao inicializar
   useEffect(() => {

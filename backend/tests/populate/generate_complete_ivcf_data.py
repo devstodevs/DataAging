@@ -11,14 +11,11 @@ from faker import Faker
 import requests
 from typing import List, Dict, Any
 
-# Initialize Faker with Brazilian locale
 fake = Faker('pt_BR')
 
-# Configuration
 API_BASE_URL = "http://localhost:8001/api/v1"
 NUM_PATIENTS = 50  # Number of patients to generate
 
-# Brazilian neighborhoods in Curitiba
 CURITIBA_NEIGHBORHOODS = [
     "Centro", "Centro Histórico", "Boa Vista", "Portão", "Santa Felicidade", 
     "Cabral", "Rebouças", "Xaxim", "Juvevê", "Água Verde", "Batel", 
@@ -29,10 +26,8 @@ CURITIBA_NEIGHBORHOODS = [
     "Pinheirinho", "Santa Cândida", "Seminário", "Tarumã", "Uberaba"
 ]
 
-# Health unit IDs
 HEALTH_UNIT_IDS = [1, 2, 3, 4]
 
-# Common comorbidities for elderly patients
 COMORBIDITIES = [
     "Hipertensão arterial sistêmica",
     "Diabetes mellitus tipo 2", 
@@ -57,14 +52,12 @@ def generate_cpf():
     """Generate a valid Brazilian CPF number"""
     cpf = [random.randint(0, 9) for _ in range(9)]
     
-    # Calculate first check digit
     sum1 = sum(cpf[i] * (10 - i) for i in range(9))
     digit1 = 11 - (sum1 % 11)
     if digit1 >= 10:
         digit1 = 0
     cpf.append(digit1)
     
-    # Calculate second check digit
     sum2 = sum(cpf[i] * (11 - i) for i in range(10))
     digit2 = 11 - (sum2 % 11)
     if digit2 >= 10:
@@ -90,7 +83,6 @@ def generate_registration_date():
 
 def generate_evaluation_date(registration_date: date):
     """Generate evaluation date after registration date"""
-    # Evaluation should be after registration, within last year
     min_date = max(registration_date, date.today() - timedelta(days=365))
     max_date = date.today()
     
@@ -108,13 +100,10 @@ def generate_evaluation_date(registration_date: date):
 def generate_domain_scores(target_classification: str):
     """Generate domain scores based on target classification"""
     if target_classification == "Robusto":
-        # Lower scores (0-2 per domain, total 0-12)
         return [random.randint(0, 2) for _ in range(8)]
     elif target_classification == "Em Risco":
-        # Medium scores (1-3 per domain, total 13-19)
         base_scores = [random.randint(1, 3) for _ in range(8)]
         total = sum(base_scores)
-        # Adjust to be in range 13-19
         while total < 13:
             idx = random.randint(0, 7)
             if base_scores[idx] < 3:
@@ -126,11 +115,9 @@ def generate_domain_scores(target_classification: str):
                 base_scores[idx] -= 1
                 total -= 1
         return base_scores
-    else:  # Frágil
-        # Higher scores (2-5 per domain, total 20-40)
+    else:  
         base_scores = [random.randint(2, 5) for _ in range(8)]
         total = sum(base_scores)
-        # Adjust to be at least 20
         while total < 20:
             idx = random.randint(0, 7)
             if base_scores[idx] < 5:
@@ -153,7 +140,7 @@ def generate_comorbidities(classification: str) -> str:
         num_comorbidities = random.randint(0, 2)
     elif classification == "Em Risco":
         num_comorbidities = random.randint(1, 3)
-    else:  # Frágil
+    else: 
         num_comorbidities = random.randint(2, 5)
     
     if num_comorbidities == 0:
@@ -181,7 +168,6 @@ def generate_patient():
 
 def generate_evaluation(patient_id: int, registration_date: date):
     """Generate an IVCF evaluation for a patient"""
-    # Determine classification distribution (realistic)
     classification_weights = [
         ("Robusto", 0.3),      # 30% robust
         ("Em Risco", 0.45),    # 45% at risk  
@@ -193,11 +179,9 @@ def generate_evaluation(patient_id: int, registration_date: date):
         weights=[c[1] for c in classification_weights]
     )[0]
     
-    # Generate domain scores based on classification
     domain_scores = generate_domain_scores(classification)
     total_score = sum(domain_scores)
     
-    # Ensure classification matches score
     actual_classification = get_classification_from_score(total_score)
     
     evaluation_date = generate_evaluation_date(registration_date)
@@ -245,7 +229,6 @@ def cleanup_existing_data():
     """Delete all existing patients and evaluations"""
     print("🧹 Cleaning up existing data...")
     
-    # Get all existing patients
     response = make_api_request("GET", "ivcf-patients/")
     if not response or response.status_code != 200:
         print("❌ Failed to get existing patients")
@@ -254,7 +237,6 @@ def cleanup_existing_data():
     patients = response.json()
     print(f"Found {len(patients)} existing patients to delete")
     
-    # Delete each patient (this should cascade delete evaluations)
     deleted_count = 0
     for patient in patients:
         response = make_api_request("DELETE", f"ivcf-patients/{patient['id']}")
@@ -269,7 +251,6 @@ def cleanup_existing_data():
 
 def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
     """Create a patient and their evaluation"""
-    # Create patient
     response = make_api_request("POST", "ivcf-patients/", patient_data)
     if not response or response.status_code != 201:
         print(f"❌ Failed to create patient: {patient_data['nome_completo']}")
@@ -281,7 +262,6 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
     patient_id = created_patient['id']
     print(f"✅ Created patient {patient_id}: {patient_data['nome_completo']}")
     
-    # Create evaluation
     evaluation_data = generate_evaluation(patient_id, registration_date)
     response = make_api_request("POST", "ivcf-evaluations/", evaluation_data)
     if not response or response.status_code != 201:
@@ -316,22 +296,18 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
     for i in range(num_patients):
         print(f"\n--- Creating patient {i+1}/{num_patients} ---")
         
-        # Generate patient data
         patient_data, registration_date = generate_patient()
         
-        # Create patient and evaluation
         result = create_patient_with_evaluation(patient_data, registration_date)
         if result:
             created_patients.append(result)
             success_count += 1
     
-    # Print final statistics
     print(f"\n📈 Generation Complete!")
     print(f"✅ Successfully created: {success_count} patients with evaluations")
     print(f"❌ Failed: {num_patients - success_count}")
     
     if created_patients:
-        # Classification distribution
         classifications = {}
         total_scores = []
         

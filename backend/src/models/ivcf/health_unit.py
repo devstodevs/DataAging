@@ -20,6 +20,7 @@ class HealthUnit(Base):
     
     # Relationships
     patients = relationship("IVCFPatient", back_populates="health_unit")
+    factf_patients = relationship("FACTFPatient", back_populates="health_unit")
     
     def __repr__(self):
         return f"<HealthUnit(id={self.id}, nome={self.nome}, bairro={self.bairro}, regiao={self.regiao})>"

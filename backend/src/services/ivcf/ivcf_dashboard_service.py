@@ -148,7 +148,8 @@ class IVCFDashboardService:
     @staticmethod
     def get_monthly_evolution(
         db: Session,
-        months_back: int = 6
+        months_back: int = 6,
+        from_last_evaluation: bool = False
     ) -> MonthlyEvolutionResponse:
         """
         Get monthly evolution for the last N months.
@@ -156,6 +157,7 @@ class IVCFDashboardService:
         Args:
             db: Database session
             months_back: Number of months to look back
+            from_last_evaluation: If True, starts from the last evaluation date
             
         Returns:
             MonthlyEvolutionResponse object
@@ -170,12 +172,16 @@ class IVCFDashboardService:
             )
         
         # Get monthly evolution data
-        evolution_data = ivcf_evaluation_crud.get_monthly_evolution(db, months_back)
+        evolution_data = ivcf_evaluation_crud.get_monthly_evolution(db, months_back, from_last_evaluation)
         
         # Get applied filters
         filters_applied = ivcf_dashboard_crud.get_dashboard_filters_applied()
         filters_applied["total_patients"] = sum(item["total"] for item in evolution_data)
-        filters_applied["period"] = f"Últimos {months_back} meses"
+        
+        if from_last_evaluation:
+            filters_applied["period"] = f"Últimos {months_back} meses a partir da última avaliação"
+        else:
+            filters_applied["period"] = f"Últimos {months_back} meses"
         
         # Create response
         monthly_evolutions = [MonthlyEvolution(**data) for data in evolution_data]

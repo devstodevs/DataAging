@@ -66,7 +66,7 @@ export const createDataFetchers = (
   const refetchMonthlyEvolution = useCallback(async (monthsBack: number = 6) => {
     await handleAsyncOperation(
       'monthlyEvolution',
-      () => ivcfApiService.getMonthlyEvolution(monthsBack),
+      () => ivcfApiService.getMonthlyEvolution(monthsBack, true), // Always use from_last_evaluation=true
       (data) => setState(prev => ({ ...prev, monthlyEvolution: data }))
     );
   }, [handleAsyncOperation, setState]);

@@ -22,13 +22,13 @@ class IVCFApiService {
 
   private buildQueryParams(filters: IVCFFilters): string {
     const params = new URLSearchParams();
-    
+
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         params.append(key, value.toString());
       }
     });
-    
+
     return params.toString();
   }
 
@@ -50,7 +50,7 @@ class IVCFApiService {
   async getDomainDistribution(filters: IVCFFilters = {}): Promise<DomainDistributionResponse> {
     const queryParams = this.buildQueryParams(filters);
     const url = `${API_BASE_URL}/ivcf-dashboard/ivcf-by-domain${queryParams ? `?${queryParams}` : ''}`;
-    
+
     const response = await fetch(url, {
       headers: this.getAuthHeaders(),
     });
@@ -60,15 +60,20 @@ class IVCFApiService {
   async getRegionAverages(filters: Pick<IVCFFilters, 'period_from' | 'period_to'> = {}): Promise<RegionAverageResponse> {
     const queryParams = this.buildQueryParams(filters);
     const url = `${API_BASE_URL}/ivcf-dashboard/ivcf-by-region${queryParams ? `?${queryParams}` : ''}`;
-    
+
     const response = await fetch(url, {
       headers: this.getAuthHeaders(),
     });
     return this.handleResponse<RegionAverageResponse>(response);
   }
 
-  async getMonthlyEvolution(monthsBack: number = 6): Promise<MonthlyEvolutionResponse> {
-    const response = await fetch(`${API_BASE_URL}/ivcf-dashboard/ivcf-evolution?months_back=${monthsBack}`, {
+  async getMonthlyEvolution(monthsBack: number = 6, fromLastEvaluation: boolean = false): Promise<MonthlyEvolutionResponse> {
+    const params = new URLSearchParams({
+      months_back: monthsBack.toString(),
+      from_last_evaluation: fromLastEvaluation.toString()
+    });
+
+    const response = await fetch(`${API_BASE_URL}/ivcf-dashboard/ivcf-evolution?${params}`, {
       headers: this.getAuthHeaders(),
     });
     return this.handleResponse<MonthlyEvolutionResponse>(response);
@@ -92,7 +97,7 @@ class IVCFApiService {
   async getFragilePercentage(filters: IVCFFilters = {}): Promise<FragileElderlyPercentageResponse> {
     const queryParams = this.buildQueryParams(filters);
     const url = `${API_BASE_URL}/ivcf-dashboard/fragile-percentage${queryParams ? `?${queryParams}` : ''}`;
-    
+
     const response = await fetch(url, {
       headers: this.getAuthHeaders(),
     });
@@ -113,7 +118,7 @@ class IVCFApiService {
   }): Promise<{ valid: boolean; errors: string[] }> {
     const queryParams = this.buildQueryParams(filters as any);
     const url = `${API_BASE_URL}/ivcf-dashboard/validate-filters${queryParams ? `?${queryParams}` : ''}`;
-    
+
     const response = await fetch(url, {
       headers: this.getAuthHeaders(),
     });

@@ -214,18 +214,19 @@ class IVCFEvaluationService:
         return ivcf_evaluation_crud.get_region_averages(db, period_from, period_to)
     
     @staticmethod
-    def get_monthly_evolution(db: Session, months_back: int = 6) -> List[Dict[str, Any]]:
+    def get_monthly_evolution(db: Session, months_back: int = 6, from_last_evaluation: bool = False) -> List[Dict[str, Any]]:
         """
         Get monthly evolution for the last N months.
         
         Args:
             db: Database session
             months_back: Number of months to look back
+            from_last_evaluation: If True, starts from the last evaluation date
             
         Returns:
             List of monthly evolution data
         """
-        return ivcf_evaluation_crud.get_monthly_evolution(db, months_back)
+        return ivcf_evaluation_crud.get_monthly_evolution(db, months_back, from_last_evaluation)
     
     @staticmethod
     def update_ivcf_evaluation(

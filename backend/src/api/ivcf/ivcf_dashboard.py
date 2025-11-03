@@ -81,6 +81,7 @@ def get_region_averages(
 @router.get("/ivcf-dashboard/ivcf-evolution", response_model=MonthlyEvolutionResponse)
 def get_monthly_evolution(
     months_back: int = Query(6, ge=1, le=24, description="Number of months to look back"),
+    from_last_evaluation: bool = Query(False, description="Start from the last evaluation date"),
     db: Session = Depends(get_db)
 ):
     """
@@ -88,6 +89,7 @@ def get_monthly_evolution(
     
     **Query Parameters:**
     - months_back: Number of months to look back (default: 6, range: 1-24)
+    - from_last_evaluation: Start from the last evaluation date (default: False)
     
     **Returns:**
     - Monthly evolution data with applied filters
@@ -95,7 +97,7 @@ def get_monthly_evolution(
     **Raises:**
     - 422: Invalid months_back value
     """
-    return IVCFDashboardService.get_monthly_evolution(db, months_back)
+    return IVCFDashboardService.get_monthly_evolution(db, months_back, from_last_evaluation)
 
 
 @router.get("/ivcf-dashboard/critical-patients", response_model=CriticalPatientsResponse)

@@ -59,6 +59,12 @@ GET {{baseUrl}}/ivcf-evolution?months_back=3
 ### Get Monthly Evolution (12 months)
 GET {{baseUrl}}/ivcf-evolution?months_back=12
 
+### Get Monthly Evolution from Last Evaluation (6 months)
+GET {{baseUrl}}/ivcf-evolution?from_last_evaluation=true
+
+### Get Monthly Evolution from Last Evaluation (3 months)
+GET {{baseUrl}}/ivcf-evolution?months_back=3&from_last_evaluation=true
+
 ### Get Critical Patients (Default threshold 20)
 GET {{baseUrl}}/critical-patients
 

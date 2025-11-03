@@ -219,19 +219,46 @@ def get_region_averages(
     return [dict(row._mapping) for row in query.all()]
 
 
+def get_latest_evaluation_by_patient(db: Session, patient_id: int) -> Optional[IVCFEvaluation]:
+    """Get the latest evaluation for a specific patient"""
+    return db.query(IVCFEvaluation).filter(
+        IVCFEvaluation.patient_id == patient_id
+    ).order_by(desc(IVCFEvaluation.data_avaliacao)).first()
+
+
 def get_monthly_evolution(
     db: Session,
-    months_back: int = 6
+    months_back: int = 6,
+    from_last_evaluation: bool = False
 ) -> List[Dict[str, Any]]:
     """Get monthly evolution for the last N months"""
     
-    # Calculate start date
-    start_date = date.today().replace(day=1)
-    for _ in range(months_back):
-        if start_date.month == 1:
-            start_date = start_date.replace(year=start_date.year - 1, month=12)
-        else:
-            start_date = start_date.replace(month=start_date.month - 1)
+    if from_last_evaluation:
+        # Get the date of the most recent evaluation across all patients
+        latest_evaluation = db.query(IVCFEvaluation).join(
+            IVCFPatient, IVCFEvaluation.patient_id == IVCFPatient.id
+        ).filter(
+            IVCFPatient.ativo == True
+        ).order_by(desc(IVCFEvaluation.data_avaliacao)).first()
+        
+        if not latest_evaluation:
+            return []
+        
+        # Start from the month of the latest evaluation and go back N months
+        start_date = latest_evaluation.data_avaliacao.replace(day=1)
+        for _ in range(months_back - 1):  # -1 because we include the current month
+            if start_date.month == 1:
+                start_date = start_date.replace(year=start_date.year - 1, month=12)
+            else:
+                start_date = start_date.replace(month=start_date.month - 1)
+    else:
+        # Calculate start date from today (original behavior)
+        start_date = date.today().replace(day=1)
+        for _ in range(months_back):
+            if start_date.month == 1:
+                start_date = start_date.replace(year=start_date.year - 1, month=12)
+            else:
+                start_date = start_date.replace(month=start_date.month - 1)
     
     query = db.query(
         func.strftime('%Y-%m', IVCFEvaluation.data_avaliacao).label('month_year'),

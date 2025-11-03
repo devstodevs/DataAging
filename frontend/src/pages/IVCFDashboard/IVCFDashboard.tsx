@@ -453,6 +453,9 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
         <Card className="chart-card">
           <CardHeader>
             <CardTitle>Evolução Mensal por Categoria (Últimos 6 meses)</CardTitle>
+            <p className="text-sm text-gray-600 mt-1">
+              (calculado a partir da última avaliação feita)
+            </p>
           </CardHeader>
           <CardContent>
             {loading.monthlyEvolution ? (

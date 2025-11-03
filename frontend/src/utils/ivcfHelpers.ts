@@ -23,12 +23,12 @@ export const formatDateForAPI = (date: Date): string => {
 /**
  * Obter variante do badge baseada na classificação
  */
-export const getBadgeVariant = (classification: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
+export const getBadgeVariant = (classification: string): 'default' | 'secondary' | 'destructive' | 'warning' | 'outline' => {
   switch (classification.toLowerCase()) {
     case 'frágil':
       return 'destructive';
     case 'em risco':
-      return 'secondary';
+      return 'warning';
     case 'robusto':
       return 'default';
     default:

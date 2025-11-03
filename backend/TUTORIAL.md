@@ -95,13 +95,13 @@ curl -X GET "http://localhost:8000/api/v1/me" \
 
 **Porta em uso:**
 ```bash
-uvicorn src.main:app --reload --port 8001
+uvicorn main:app --reload --port 8001
 ```
 
 **Resetar banco de dados:**
 ```bash
 rm src/dataaging.db
-uvicorn src.main:app --reload
+uvicorn main:app --reload
 ```
 
 **Módulo não encontrado:**

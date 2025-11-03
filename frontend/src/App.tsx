@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LogOut, FileText, LayoutDashboard, BarChart3, UserPlus, Activity, Heart, User } from "lucide-react";
+import { LogOut, FileText, LayoutDashboard, BarChart3, Activity, Heart, User } from "lucide-react";
 import "./App.css";
 import ComponentExamples from "./pages/ComponentExamples/ComponentExamples";
 import Login from "./pages/Login/Login";
@@ -13,13 +13,13 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
 
 const AuthenticatedApp: React.FC = () => {
-  type PageType = "home" | "ivcf-dashboard" | "register-user" | "physical-activity" | "factf-dashboard" | "examples";
+  type PageType = "home" | "ivcf-dashboard" | "physical-activity" | "factf-dashboard" | "examples";
 
   const [currentPage, setCurrentPage] = useState<PageType>("home");
   const { user, logout } = useAuth();
 
   const handleNavigate = (page: string) => {
-    const validPages: PageType[] = ["home", "ivcf-dashboard", "register-user", "physical-activity", "factf-dashboard", "examples"];
+    const validPages: PageType[] = ["home", "ivcf-dashboard", "physical-activity", "factf-dashboard", "examples"];
     if (validPages.includes(page as PageType)) {
       setCurrentPage(page as PageType);
     } else {
@@ -35,8 +35,6 @@ const AuthenticatedApp: React.FC = () => {
         return <Home onNavigate={handleNavigate} />;
       case "ivcf-dashboard":
         return <IVCFDashboard testId="ivcf-20" onNavigate={handleNavigate} />;
-      case "register-user":
-        return <RegisterUser />;
       case "physical-activity":
         return <PhysicalActivityDashboard onNavigate={handleNavigate} />;
       case "factf-dashboard":
@@ -51,7 +49,6 @@ const AuthenticatedApp: React.FC = () => {
     { id: "ivcf-dashboard", label: "Teste IVCF-20", icon: BarChart3 },
     { id: "physical-activity", label: "Atividade Física", icon: Activity },
     { id: "factf-dashboard", label: "Teste FACT-F", icon: Heart },
-    { id: "register-user", label: "Cadastrar Usuário", icon: UserPlus },
     { id: "examples", label: "Exemplos", icon: FileText },
   ];
 

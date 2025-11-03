@@ -1,0 +1,191 @@
+### FACT-F Patient API Tests
+
+@baseUrl = http://localhost:8001/api/v1
+
+### Create FACT-F Patient
+POST {{baseUrl}}/factf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Maria Silva Santos",
+  "cpf": "12345678901",
+  "idade": 45,
+  "telefone": "41999999999",
+  "email": "maria.santos@gmail.com",
+  "bairro": "Centro",
+  "unidade_saude_id": 1,
+  "diagnostico_principal": "Câncer de mama",
+  "comorbidades": "Hipertensão arterial sistêmica",
+  "tratamento_atual": "Quimioterapia adjuvante",
+  "data_cadastro": "2024-01-15"
+}
+
+### Create Another Patient (Younger)
+POST {{baseUrl}}/factf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "João Oliveira",
+  "cpf": "98765432100",
+  "idade": 28,
+  "telefone": "41988888888",
+  "email": "joao.oliveira@hotmail.com",
+  "bairro": "Boa Vista",
+  "unidade_saude_id": 2,
+  "diagnostico_principal": "Linfoma de Hodgkin",
+  "comorbidades": "Nenhuma comorbidade conhecida",
+  "tratamento_atual": "Quimioterapia",
+  "data_cadastro": "2024-01-20"
+}
+
+### Create Elderly Patient
+POST {{baseUrl}}/factf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Ana Costa",
+  "cpf": "11122233344",
+  "idade": 72,
+  "telefone": "41977777777",
+  "email": "ana.costa@yahoo.com.br",
+  "bairro": "Portão",
+  "unidade_saude_id": 3,
+  "diagnostico_principal": "Câncer de pulmão",
+  "comorbidades": "Diabetes mellitus tipo 2, DPOC leve",
+  "tratamento_atual": "Radioterapia",
+  "data_cadastro": "2024-01-25"
+}
+
+### Create Patient with Minimal Data
+POST {{baseUrl}}/factf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Pedro Santos",
+  "cpf": "55566677788",
+  "idade": 35,
+  "bairro": "Centro",
+  "unidade_saude_id": 1,
+  "diagnostico_principal": "Câncer de próstata"
+}
+
+### Create Patient under minimum age (Should Fail)
+POST {{baseUrl}}/factf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Paciente Jovem",
+  "cpf": "99988877766",
+  "idade": 17,
+  "bairro": "Centro",
+  "unidade_saude_id": 1,
+  "diagnostico_principal": "Leucemia"
+}
+
+### List All Patients
+GET {{baseUrl}}/factf-patients/
+
+### List Patients with Pagination
+GET {{baseUrl}}/factf-patients/?skip=0&limit=2
+
+### List Only Active Patients
+GET {{baseUrl}}/factf-patients/?active_only=true
+
+### Filter Patients by Neighborhood
+GET {{baseUrl}}/factf-patients/?bairro=Centro
+
+### Filter Patients by Health Unit
+GET {{baseUrl}}/factf-patients/?unidade_saude_id=1
+
+### Filter Patients by Age Range
+GET {{baseUrl}}/factf-patients/?idade_min=30&idade_max=50
+
+### Filter Patients by Fatigue Classification
+GET {{baseUrl}}/factf-patients/?classificacao_fadiga=Fadiga Grave
+
+### Get Patient by ID
+GET {{baseUrl}}/factf-patients/1
+
+### Get Patient Evaluations
+GET {{baseUrl}}/factf-patients/1/evaluations
+
+### Update Patient
+PUT {{baseUrl}}/factf-patients/1
+Content-Type: application/json
+
+{
+  "nome_completo": "Maria Silva Santos Atualizada",
+  "telefone": "41999999988",
+  "email": "maria.santos.nova@gmail.com",
+  "bairro": "Centro Histórico",
+  "tratamento_atual": "Hormonioterapia"
+}
+
+### Update Patient Medical Info
+PUT {{baseUrl}}/factf-patients/1
+Content-Type: application/json
+
+{
+  "comorbidades": "Hipertensão arterial sistêmica, Ansiedade",
+  "tratamento_atual": "Quimioterapia adjuvante + suporte psicológico"
+}
+
+### Try to Create Patient with Duplicate CPF (Should Fail)
+POST {{baseUrl}}/factf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Outro Nome",
+  "cpf": "12345678901",
+  "idade": 40,
+  "bairro": "Outro Bairro",
+  "unidade_saude_id": 1,
+  "diagnostico_principal": "Câncer de ovário"
+}
+
+### Try to Create Patient with Invalid Email (Should Fail)
+POST {{baseUrl}}/factf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Paciente Email Inválido",
+  "cpf": "88877766655",
+  "idade": 40,
+  "email": "email-invalido",
+  "bairro": "Centro",
+  "unidade_saude_id": 1,
+  "diagnostico_principal": "Melanoma"
+}
+
+### Try to Create Patient with Non-existent Health Unit (Should Fail)
+POST {{baseUrl}}/factf-patients/
+Content-Type: application/json
+
+{
+  "nome_completo": "Paciente Teste",
+  "cpf": "77766655544",
+  "idade": 50,
+  "bairro": "Centro",
+  "unidade_saude_id": 999,
+  "diagnostico_principal": "Câncer de estômago"
+}
+
+### Get Non-existent Patient (Should Fail)
+GET {{baseUrl}}/factf-patients/999
+
+### Update Non-existent Patient (Should Fail)
+PUT {{baseUrl}}/factf-patients/999
+Content-Type: application/json
+
+{
+  "nome_completo": "Teste"
+}
+
+### Delete Patient (Soft Delete)
+DELETE {{baseUrl}}/factf-patients/1
+
+### Verify Patient is Soft Deleted
+GET {{baseUrl}}/factf-patients/1
+
+### List Patients Including Inactive
+GET {{baseUrl}}/factf-patients/?active_only=false

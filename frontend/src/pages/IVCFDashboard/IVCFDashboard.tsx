@@ -63,8 +63,8 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
 }) => {
   const [filters, setFilters] = useState({
     period: {
-      from: new Date("2024-01-01"),
-      to: new Date("2024-12-31"),
+      from: undefined,
+      to: undefined,
     } as DateRange,
     ageRange: "all",
     region: "all",
@@ -78,6 +78,7 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
   const {
     summary,
     criticalPatients,
+    allPatients,
     fragilePercentage,
     curitibaRegions,
     loading,
@@ -91,10 +92,11 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     hasAnyError,
   } = useIVCFData();
 
-  // Converter filtros para formato da API
+  // Converter filtros para formato da API (apenas para gráficos e KPIs)
   const apiFilters = useMemo((): IVCFFilters => {
     const result: IVCFFilters = {};
 
+    // Só aplica filtros se houver valores selecionados
     if (filters.period.from) {
       result.period_from = formatDateForAPI(filters.period.from);
     }
@@ -176,24 +178,41 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
   const radarData = useMemo(() => getRadarChartData(), [getRadarChartData]);
   const lineData = useMemo(() => getLineChartData(), [getLineChartData]);
   const criticalPatientsCount = criticalPatients?.total_critical || 0;
-  
+
   // Filtragem da tabela no frontend
   const filteredPatients = useMemo(() => {
+    // Se não há dados carregados, retorna array vazio
+    if (!allPatients?.critical_patients) {
+      return [];
+    }
+
+    // Se todos os filtros estão em "all" e não há período, retorna todos os pacientes
+    const hasActiveFilters =
+      filters.ageRange !== "all" ||
+      filters.region !== "all" ||
+      filters.riskClassification !== "all" ||
+      filters.period.from ||
+      filters.period.to;
+
+    if (!hasActiveFilters) {
+      return allPatients.critical_patients;
+    }
+
     // Criar filtros para o frontend que incluem "all"
     const frontendFilters = {
       period_from: filters.period.from ? formatDateForAPI(filters.period.from) : undefined,
       period_to: filters.period.to ? formatDateForAPI(filters.period.to) : undefined,
       age_range: filters.ageRange,
       region: filters.region,
-      classification: filters.riskClassification === "all" ? "all" : 
+      classification: filters.riskClassification === "all" ? "all" :
         filters.riskClassification === "fragile" ? "Frágil" :
-        filters.riskClassification === "risk" ? "Em Risco" :
-        filters.riskClassification === "robust" ? "Robusto" : "all"
+          filters.riskClassification === "risk" ? "Em Risco" :
+            filters.riskClassification === "robust" ? "Robusto" : "all"
     };
-    
+
     return getFilteredPatients(frontendFilters);
-  }, [getFilteredPatients, filters]);
-  
+  }, [getFilteredPatients, filters, allPatients]);
+
   const patientsList = filteredPatients;
   const totalPatients = filteredPatients.length;
 

@@ -34,6 +34,16 @@ from .ivcf import (
     CriticalPatient,
     CriticalPatientsResponse
 )
+from .factf import (
+    FACTFPatientCreate,
+    FACTFPatientUpdate,
+    FACTFPatientResponse,
+    FACTFPatientList,
+    FACTFEvaluationCreate,
+    FACTFEvaluationUpdate,
+    FACTFEvaluationResponse,
+    FACTFEvaluationList
+)
 
 __all__ = [
     "UserBase",
@@ -67,5 +77,13 @@ __all__ = [
     "MonthlyEvolution",
     "MonthlyEvolutionResponse",
     "CriticalPatient",
-    "CriticalPatientsResponse"
+    "CriticalPatientsResponse",
+    "FACTFPatientCreate",
+    "FACTFPatientUpdate",
+    "FACTFPatientResponse",
+    "FACTFPatientList",
+    "FACTFEvaluationCreate",
+    "FACTFEvaluationUpdate",
+    "FACTFEvaluationResponse",
+    "FACTFEvaluationList"
 ]

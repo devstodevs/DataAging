@@ -50,6 +50,7 @@ import {
   formatPercentage,
   prepareDataForExport,
 } from "../../utils/ivcfHelpers";
+import { LoadingDashboard, ErrorDashboard } from "../../components/ivcf";
 import "./IVCFDashboard.css";
 
 interface IVCFDashboardProps {
@@ -252,6 +253,22 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
       console.log("Voltando para home...");
     }
   };
+
+  // Show loading state
+  if (isAnyLoading && !summary) {
+    return <LoadingDashboard />;
+  }
+
+  // Show error state
+  if (hasAnyError && !summary) {
+    return (
+      <ErrorDashboard
+        error="Não foi possível carregar os dados do dashboard IVCF"
+        onRetry={() => refetchAll()}
+        onGoHome={() => onNavigate?.("home")}
+      />
+    );
+  }
 
   return (
     <div className="ivcf-dashboard">

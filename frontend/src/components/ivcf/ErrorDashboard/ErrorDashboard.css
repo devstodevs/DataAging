@@ -1,0 +1,153 @@
+.error-dashboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.error-card {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #fecaca;
+  background-color: #fef2f2;
+}
+
+.error-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+}
+
+.error-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background-color: #fee2e2;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+}
+
+.error-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #dc2626;
+  margin: 0;
+}
+
+.error-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.error-message {
+  font-size: 1rem;
+  color: #374151;
+  text-align: center;
+  margin: 0;
+}
+
+.error-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.error-suggestion {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.error-reasons {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.error-reasons li {
+  font-size: 0.875rem;
+  color: #6b7280;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.error-reasons li::before {
+  content: "•";
+  color: #dc2626;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.retry-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.home-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error-help {
+  padding-top: 1rem;
+  border-top: 1px solid #fecaca;
+}
+
+.help-text {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-align: center;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .error-dashboard {
+    padding: 1rem;
+    min-height: 50vh;
+  }
+
+  .error-card {
+    max-width: 100%;
+  }
+
+  .error-title {
+    font-size: 1.25rem;
+  }
+
+  .error-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .error-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .error-icon svg {
+    width: 2rem;
+    height: 2rem;
+  }
+}

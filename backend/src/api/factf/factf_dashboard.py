@@ -195,6 +195,61 @@ def get_domain_distribution(db: Session = Depends(get_db)) -> Dict:
     return FACTFDashboardService.get_domain_distribution(db)
 
 
+@router.get("/factf-dashboard/patient-domain-distribution/{patient_id}")
+def get_patient_domain_distribution(
+    patient_id: int,
+    db: Session = Depends(get_db)
+) -> Dict:
+    """
+    Get individual patient domain scores compared with regional average.
+    
+    **Parameters:**
+    - patient_id: ID of the patient to get individual scores
+    
+    **Returns:**
+    - Individual patient domain scores and regional averages for comparison
+    
+    **Example Response:**
+    ```json
+    {
+        "domains": [
+            {
+                "domain": "Físico",
+                "patient_score": 22.0,
+                "regional_average": 18.5,
+                "max_score": 28
+            },
+            {
+                "domain": "Social",
+                "patient_score": 25.0,
+                "regional_average": 20.2,
+                "max_score": 28
+            },
+            {
+                "domain": "Emocional",
+                "patient_score": 18.0,
+                "regional_average": 16.8,
+                "max_score": 24
+            },
+            {
+                "domain": "Funcional",
+                "patient_score": 21.0,
+                "regional_average": 19.1,
+                "max_score": 28
+            },
+            {
+                "domain": "Fadiga",
+                "patient_score": 40.0,
+                "regional_average": 35.8,
+                "max_score": 52
+            }
+        ]
+    }
+    ```
+    """
+    return FACTFDashboardService.get_patient_domain_distribution(db, patient_id)
+
+
 @router.get("/factf-dashboard/all-patients")
 def get_all_patients_summary(db: Session = Depends(get_db)) -> Dict:
     """

@@ -223,3 +223,63 @@ class FACTFDashboardService:
                 }
             ]
         }
+
+    @staticmethod
+    def get_patient_domain_distribution(db: Session, patient_id: int) -> Dict:
+        """
+        Get individual patient domain scores compared with regional average.
+        
+        Args:
+            db: Database session
+            patient_id: ID of the patient to get individual scores
+            
+        Returns:
+            Dict with individual patient scores and regional averages
+        """
+        # Get patient's latest evaluation scores
+        patient_scores = factf_evaluation_crud.get_patient_latest_domain_scores(db, patient_id)
+        
+        # Get regional averages (for now, using overall averages - could be filtered by patient's neighborhood)
+        regional_averages = factf_evaluation_crud.get_domain_averages(db)
+        
+        # If patient has no evaluations, return empty data
+        if not patient_scores:
+            return {
+                "domains": [],
+                "message": "Paciente não possui avaliações registradas"
+            }
+        
+        return {
+            "domains": [
+                {
+                    "domain": "Físico",
+                    "patient_score": round(patient_scores.get('bem_estar_fisico', 0), 1),
+                    "regional_average": round(regional_averages.get('bem_estar_fisico', 0), 1),
+                    "max_score": 28
+                },
+                {
+                    "domain": "Social", 
+                    "patient_score": round(patient_scores.get('bem_estar_social', 0), 1),
+                    "regional_average": round(regional_averages.get('bem_estar_social', 0), 1),
+                    "max_score": 28
+                },
+                {
+                    "domain": "Emocional",
+                    "patient_score": round(patient_scores.get('bem_estar_emocional', 0), 1),
+                    "regional_average": round(regional_averages.get('bem_estar_emocional', 0), 1),
+                    "max_score": 24
+                },
+                {
+                    "domain": "Funcional",
+                    "patient_score": round(patient_scores.get('bem_estar_funcional', 0), 1),
+                    "regional_average": round(regional_averages.get('bem_estar_funcional', 0), 1),
+                    "max_score": 28
+                },
+                {
+                    "domain": "Fadiga",
+                    "patient_score": round(patient_scores.get('subescala_fadiga', 0), 1),
+                    "regional_average": round(regional_averages.get('subescala_fadiga', 0), 1),
+                    "max_score": 52
+                }
+            ]
+        }

@@ -61,7 +61,6 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
   const {
     summary,
     criticalPatients,
-    fatigueDistribution,
     domainDistribution,
     allPatients,
     isLoading,

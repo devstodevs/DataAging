@@ -159,3 +159,22 @@ def get_domain_averages(db: Session, start_date: Optional[date] = None, end_date
         'subescala_fadiga': float(result.avg_fadiga or 0),
         'pontuacao_total': float(result.avg_total or 0)
     }
+
+
+def get_patient_latest_domain_scores(db: Session, patient_id: int) -> Optional[dict]:
+    """Get the latest domain scores for a specific patient"""
+    latest_evaluation = db.query(FACTFEvaluation).filter(
+        FACTFEvaluation.patient_id == patient_id
+    ).order_by(desc(FACTFEvaluation.data_avaliacao)).first()
+    
+    if not latest_evaluation:
+        return None
+    
+    return {
+        'bem_estar_fisico': float(latest_evaluation.bem_estar_fisico),
+        'bem_estar_social': float(latest_evaluation.bem_estar_social),
+        'bem_estar_emocional': float(latest_evaluation.bem_estar_emocional),
+        'bem_estar_funcional': float(latest_evaluation.bem_estar_funcional),
+        'subescala_fadiga': float(latest_evaluation.subescala_fadiga),
+        'pontuacao_total': float(latest_evaluation.pontuacao_total)
+    }

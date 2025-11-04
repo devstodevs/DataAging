@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, Download, Users, Activity, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,153 +39,68 @@ import { cn } from "@/lib/utils";
 import Title from "../../components/base/Title";
 import KPICard from "../../components/compound/KPICard";
 import Alert from "../../components/base/Alert";
+import { useFACTFData } from "../../hooks/factf";
+import { getClassificationVariant, formatDateForDisplay } from "../../utils/factfHelpers";
+import LoadingDashboard from "../../components/factf/LoadingDashboard/LoadingDashboard";
+import ErrorDashboard from "../../components/factf/ErrorDashboard/ErrorDashboard";
 import "./FACTFDashboard.css";
-
-interface Patient {
-  id: string;
-  name: string;
-  age: number;
-  lastScore: number;
-  status: "Leve" | "Grave";
-  date: string;
-  domainScores: {
-    fisico: number;
-    social: number;
-    funcional: number;
-    emocional: number;
-  };
-}
 
 interface FACTFDashboardProps {
   onNavigate?: (page: string) => void;
 }
 
 const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
-  const [selectedAgeRange, setSelectedAgeRange] = useState<string>("");
-  const [selectedCondition, setSelectedCondition] = useState<string>("");
-  const [selectedPatientId, setSelectedPatientId] = useState<string>("1");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>();
+  const [selectedAgeRange, setSelectedAgeRange] = useState<string>();
+  const [selectedCondition, setSelectedCondition] = useState<string>("all");
+  const [selectedPatientId, setSelectedPatientId] = useState<string>();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [patientsPerPage] = useState<number>(20); // Mostrar 20 pacientes por página
 
-  // Dados mockados
-  const trendData = [
-    { month: "Jan", escoreTotal: 35, subscalaFadiga: 40 },
-    { month: "Fev", escoreTotal: 38, subscalaFadiga: 42 },
-    { month: "Mar", escoreTotal: 42, subscalaFadiga: 45 },
-    { month: "Abr", escoreTotal: 40, subscalaFadiga: 43 },
-    { month: "Mai", escoreTotal: 45, subscalaFadiga: 48 },
-    { month: "Jun", escoreTotal: 48, subscalaFadiga: 50 },
-    { month: "Jul", escoreTotal: 50, subscalaFadiga: 52 },
-    { month: "Ago", escoreTotal: 52, subscalaFadiga: 54 },
-    { month: "Set", escoreTotal: 51, subscalaFadiga: 53 },
-    { month: "Out", escoreTotal: 53, subscalaFadiga: 55 },
-    { month: "Nov", escoreTotal: 55, subscalaFadiga: 57 },
-    { month: "Dez", escoreTotal: 54, subscalaFadiga: 56 },
-  ];
+  // Hook para dados FACT-F
+  const {
+    summary,
+    criticalPatients,
+    fatigueDistribution,
+    domainDistribution,
+    allPatients,
+    isLoading,
+    hasErrors,
+    getProcessedSummary,
+    getLineChartData,
+    getBarChartData,
+    getRadarChartData,
+    fetchPatientDomainDistribution,
+    refetchDashboard
+  } = useFACTFData();
 
-  const distributionData = [
-    {
-      comorbidade: "Diabetes",
-      semFadiga: 25,
-      fadigaLeve: 50,
-      fadigaGrave: 25,
-    },
-    {
-      comorbidade: "Hipertensão",
-      semFadiga: 20,
-      fadigaLeve: 55,
-      fadigaGrave: 25,
-    },
-    {
-      comorbidade: "Artrite",
-      semFadiga: 15,
-      fadigaLeve: 60,
-      fadigaGrave: 25,
-    },
-  ];
+  // Atualizar dados quando filtros mudarem
+  useEffect(() => {
+    // Por enquanto, apenas recarrega os dados
+    // Futuramente, pode aplicar filtros específicos
+    refetchDashboard();
+  }, [selectedPeriod, selectedAgeRange, selectedCondition]);
 
-  const patients: Patient[] = [
-    {
-      id: "1",
-      name: "Paciente #1",
-      age: 66,
-      lastScore: 32,
-      status: "Leve",
-      date: "1/12/2023",
-      domainScores: { fisico: 75, social: 60, funcional: 80, emocional: 70 },
-    },
-    {
-      id: "2",
-      name: "Paciente #2",
-      age: 67,
-      lastScore: 27,
-      status: "Grave",
-      date: "12/10/2023",
-      domainScores: { fisico: 45, social: 50, funcional: 55, emocional: 48 },
-    },
-    {
-      id: "3",
-      name: "Paciente #3",
-      age: 68,
-      lastScore: 34,
-      status: "Leve",
-      date: "13/12/2023",
-      domainScores: { fisico: 78, social: 65, funcional: 82, emocional: 72 },
-    },
-    {
-      id: "4",
-      name: "Paciente #4",
-      age: 69,
-      lastScore: 29,
-      status: "Grave",
-      date: "14/12/2023",
-      domainScores: { fisico: 50, social: 48, funcional: 52, emocional: 45 },
-    },
-    {
-      id: "5",
-      name: "Paciente #5",
-      age: 70,
-      lastScore: 30,
-      status: "Leve",
-      date: "15/12/2023",
-      domainScores: { fisico: 72, social: 68, funcional: 75, emocional: 70 },
-    },
-  ];
+  // Processar dados para os gráficos
+  const processedSummary = getProcessedSummary();
+  const trendData = getLineChartData();
+  const distributionData = getBarChartData();
+  const radarData = getRadarChartData();
 
-  const regionalAverage = {
-    fisico: 65,
-    social: 58,
-    funcional: 70,
-    emocional: 62,
-  };
+  // Usar dados reais dos pacientes
+  const patients = allPatients?.patients || [];
+  const selectedPatient = selectedPatientId
+    ? patients.find((p) => p.id.toString() === selectedPatientId)
+    : patients[0];
 
-  const selectedPatient = patients.find((p) => p.id === selectedPatientId) || patients[0];
 
-  const radarData = [
-    {
-      domain: "Físico",
-      paciente: selectedPatient.domainScores.fisico,
-      mediaRegional: regionalAverage.fisico,
-      fullMark: 100,
-    },
-    {
-      domain: "Social",
-      paciente: selectedPatient.domainScores.social,
-      mediaRegional: regionalAverage.social,
-      fullMark: 100,
-    },
-    {
-      domain: "Funcional",
-      paciente: selectedPatient.domainScores.funcional,
-      mediaRegional: regionalAverage.funcional,
-      fullMark: 100,
-    },
-    {
-      domain: "Emocional",
-      paciente: selectedPatient.domainScores.emocional,
-      mediaRegional: regionalAverage.emocional,
-      fullMark: 100,
-    },
-  ];
+
+  // Paginação
+  const totalPatients = patients.length;
+  const totalPages = Math.ceil(totalPatients / patientsPerPage);
+  const startIndex = (currentPage - 1) * patientsPerPage;
+  const endIndex = startIndex + patientsPerPage;
+  const currentPatients = patients.slice(startIndex, endIndex);
 
   const handleExportReport = () => {
     console.log("Exportando relatório FACT-F...");
@@ -200,7 +115,33 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
 
   const handlePatientSelect = (patientId: string) => {
     setSelectedPatientId(patientId);
+    // Fetch individual patient domain distribution
+    if (patientId) {
+      const patientIdNum = parseInt(patientId);
+      if (!isNaN(patientIdNum)) {
+        fetchPatientDomainDistribution(patientIdNum);
+      }
+    } else {
+      // If no patient selected, fetch general domain distribution
+      refetchDashboard();
+    }
   };
+
+  // Show loading state
+  if (isLoading && !summary) {
+    return <LoadingDashboard />;
+  }
+
+  // Show error state
+  if (hasErrors && !summary) {
+    return (
+      <ErrorDashboard
+        error="Não foi possível carregar os dados do dashboard FACT-F"
+        onRetry={refetchDashboard}
+        onGoHome={() => onNavigate?.("home")}
+      />
+    );
+  }
 
   return (
     <div className="factf-dashboard">
@@ -228,12 +169,32 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
       </div>
 
       {/* Alert */}
-      <div className="dashboard-alert">
-        <Alert
-          type="warning"
-          message="2 pacientes com vulnerabilidade crítica identificados"
-        />
-      </div>
+      {criticalPatients && criticalPatients.count > 0 && (
+        <div className="dashboard-alert">
+          <Alert
+            type="warning"
+            message={`${criticalPatients.count} paciente(s) com fadiga crítica identificado(s)`}
+          />
+        </div>
+      )}
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="loading-state">
+          <div className="loading-spinner" />
+          <p>Carregando dados do dashboard...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {hasErrors && (
+        <div className="error-state">
+          <Alert
+            type="error"
+            message="Erro ao carregar dados do dashboard. Tente novamente."
+          />
+        </div>
+      )}
 
       {/* Filters */}
       <Card className="filters-card">
@@ -272,12 +233,12 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
               <label className="filter-label">Condição de Saúde</label>
               <Select value={selectedCondition} onValueChange={setSelectedCondition}>
                 <SelectTrigger className="filter-select">
-                  <SelectValue placeholder="Digite para buscar" />
+                  <SelectValue placeholder="Todas as condições" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="all">Todas as condições</SelectItem>
                   <SelectItem value="diabetes">Diabetes</SelectItem>
                   <SelectItem value="hipertensao">Hipertensão</SelectItem>
-                  <SelectItem value="cardiopatia">Cardiopatia</SelectItem>
                   <SelectItem value="artrite">Artrite</SelectItem>
                 </SelectContent>
               </Select>
@@ -301,28 +262,32 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
       </Card>
 
       {/* KPIs */}
-      <div className="kpis-grid">
-        <KPICard
-          title="Total de Idosos Avaliados"
-          value="245"
-          subtitle="+12% em relação ao mês anterior"
-          icon={<Users />}
-        />
-        <KPICard
-          title="Fadiga Grave"
-          value="22%"
-          subtitle="54 pacientes com estado crítico"
-          trend="up"
-          trendValue="+3%"
-          icon={<Activity />}
-        />
-        <KPICard
-          title="Média de Escores"
-          value="35.8"
-          subtitle="Média geral dos domínios"
-          icon={<TrendingUp />}
-        />
-      </div>
+      {!isLoading && processedSummary && (
+        <div className="kpis-grid">
+          <KPICard
+            title="Total de Pacientes Avaliados"
+            value={processedSummary.totalPatients?.toString() || "0"}
+            subtitle={`${processedSummary.monthlyGrowth || "0%"} em relação ao mês anterior`}
+            icon={<Users />}
+          />
+          <KPICard
+            title="Fadiga Grave"
+            value={processedSummary.severeFatiguePercentage || "0%"}
+            subtitle={`${processedSummary.criticalPatientsCount || 0} pacientes com estado crítico`}
+            trend="up"
+            trendValue={processedSummary.monthlyGrowth || "0%"}
+            icon={<Activity />}
+          />
+          <KPICard
+            title="Média de Escores FACT-F"
+            value={processedSummary.averageTotalScore || "0.0"}
+            subtitle="Pontuação média total (0-136)"
+            icon={<TrendingUp />}
+          />
+        </div>
+      )}
+
+
 
       {/* Charts */}
       <div className="charts-grid">
@@ -364,35 +329,56 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
         <Card className="chart-card">
           <CardHeader>
             <CardTitle>Distribuição por Nível de Fadiga</CardTitle>
+            <p className="text-sm text-gray-600 mt-1">
+              Porcentagem de pacientes por nível de fadiga em cada condição de saúde
+            </p>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={distributionData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="comorbidade" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar
-                  dataKey="semFadiga"
-                  stackId="a"
-                  fill="#ef4444"
-                  name="Sem Fadiga"
-                />
-                <Bar
-                  dataKey="fadigaLeve"
-                  stackId="a"
-                  fill="#14b8a6"
-                  name="Fadiga Leve"
-                />
-                <Bar
-                  dataKey="fadigaGrave"
-                  stackId="a"
-                  fill="#1f2937"
-                  name="Fadiga Grave"
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            {isLoading ? (
+              <div className="loading-state">
+                <div className="loading-spinner" />
+                <p>Carregando distribuição de fadiga...</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={distributionData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="comorbidade"
+                    tick={{ fontSize: 12 }}
+                    interval={0}
+                  />
+                  <YAxis
+                    domain={[0, 100]}
+                    label={{ value: 'Porcentagem (%)', angle: -90, position: 'insideLeft' }}
+                    tickFormatter={(value) => `${value}%`}
+                  />
+                  <Tooltip
+                    formatter={(value, name) => [`${value}%`, name]}
+                    labelFormatter={(label) => `${label}`}
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey="semFadiga"
+                    stackId="a"
+                    fill="#10b981"
+                    name="Sem Fadiga"
+                  />
+                  <Bar
+                    dataKey="fadigaLeve"
+                    stackId="a"
+                    fill="#f59e0b"
+                    name="Fadiga Leve"
+                  />
+                  <Bar
+                    dataKey="fadigaGrave"
+                    stackId="a"
+                    fill="#ef4444"
+                    name="Fadiga Grave"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -414,13 +400,13 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {patients.map((patient) => (
+              {currentPatients.map((patient) => (
                 <TableRow
                   key={patient.id}
-                  onClick={() => handlePatientSelect(patient.id)}
+                  onClick={() => handlePatientSelect(patient.id.toString())}
                   className={cn(
                     "cursor-pointer hover:bg-gray-50 transition-colors",
-                    selectedPatientId === patient.id && "selected-row"
+                    selectedPatientId === patient.id.toString() && "selected-row"
                   )}
                 >
                   <TableCell className="font-medium">{patient.name}</TableCell>
@@ -429,24 +415,63 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
                     <span
                       className={cn(
                         "font-semibold",
-                        patient.lastScore < 30 && "text-red-600"
+                        patient.last_score && patient.last_score < 60 && "text-red-600"
                       )}
                     >
-                      {patient.lastScore}
+                      {patient.last_score?.toFixed(1) || "N/A"}
                     </span>
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={patient.status === "Grave" ? "destructive" : "default"}
-                    >
-                      {patient.status}
-                    </Badge>
+                    {patient.classification ? (
+                      <Badge variant={getClassificationVariant(patient.classification)}>
+                        {patient.classification}
+                      </Badge>
+                    ) : (
+                      <span className="text-gray-500">Sem avaliação</span>
+                    )}
                   </TableCell>
-                  <TableCell>{patient.date}</TableCell>
+                  <TableCell>
+                    {patient.evaluation_date
+                      ? formatDateForDisplay(patient.evaluation_date)
+                      : "N/A"
+                    }
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+
+          {/* Controles de Paginação */}
+          {totalPages > 1 && (
+            <div className="pagination-controls">
+              <div className="pagination-info">
+                <span>
+                  Mostrando {startIndex + 1} a {Math.min(endIndex, totalPatients)} de {totalPatients} pacientes
+                </span>
+              </div>
+              <div className="pagination-buttons">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  Anterior
+                </Button>
+                <span className="page-indicator">
+                  Página {currentPage} de {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                >
+                  Próxima
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -454,33 +479,58 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
       <Card className="radar-card">
         <CardHeader>
           <CardTitle>
-            Análise de Domínios - {selectedPatient.name}
+            {selectedPatient
+              ? `Domínios FACT-F - ${selectedPatient.name}`
+              : "Distribuição por Domínios FACT-F"
+            }
           </CardTitle>
+          {selectedPatient && (
+            <p className="text-sm text-gray-600">
+              Comparação individual vs. média regional
+            </p>
+          )}
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
-            <RadarChart data={radarData}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="domain" />
-              <PolarRadiusAxis domain={[0, 100]} />
-              <Tooltip />
-              <Legend />
-              <Radar
-                name="Paciente"
-                dataKey="paciente"
-                stroke="#ef4444"
-                fill="#ef4444"
-                fillOpacity={0.6}
-              />
-              <Radar
-                name="Média Regional"
-                dataKey="mediaRegional"
-                stroke="#14b8a6"
-                fill="#14b8a6"
-                fillOpacity={0.6}
-              />
-            </RadarChart>
-          </ResponsiveContainer>
+          {isLoading ? (
+            <div className="loading-state">
+              <div className="loading-spinner" />
+              <p>Carregando dados dos domínios...</p>
+            </div>
+          ) : !domainDistribution ? (
+            <div className="error-state">
+              <p>Erro ao carregar dados dos domínios</p>
+            </div>
+          ) : radarData.length === 0 ? (
+            <div className="error-state">
+              <p>Nenhum dado de domínio disponível</p>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={400}>
+              <RadarChart data={radarData}>
+                <PolarGrid />
+                <PolarAngleAxis dataKey="domain" />
+                <PolarRadiusAxis domain={[0, 'dataMax']} />
+                <Tooltip />
+                <Legend />
+                <Radar
+                  name={`1. ${selectedPatient?.name || "Paciente"}`}
+                  dataKey="paciente"
+                  stroke="#3b82f6"
+                  fill="#3b82f6"
+                  fillOpacity={0.6}
+                  strokeWidth={2}
+                />
+                <Radar
+                  name="2. Média Regional"
+                  dataKey="mediaRegional"
+                  stroke="#f59e0b"
+                  fill="#f59e0b"
+                  fillOpacity={0.3}
+                  strokeWidth={2}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
+          )}
         </CardContent>
       </Card>
     </div>

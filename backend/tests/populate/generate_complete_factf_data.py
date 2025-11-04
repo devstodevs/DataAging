@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Complete FACT-F Data Generator
+Complete FACTF Data Generator
 This script cleans up existing data and creates new patients with evaluations for testing.
 """
 
@@ -14,7 +14,7 @@ from typing import List, Dict, Any
 fake = Faker('pt_BR')
 
 API_BASE_URL = "http://localhost:8001/api/v1"
-NUM_PATIENTS = 50 
+NUM_PATIENTS = 70 
 
 CURITIBA_NEIGHBORHOODS = [
     "Centro", "Centro Histórico", "Boa Vista", "Portão", "Santa Felicidade", 
@@ -28,77 +28,24 @@ CURITIBA_NEIGHBORHOODS = [
 
 HEALTH_UNIT_IDS = [1, 2, 3, 4]
 
-CANCER_DIAGNOSES = [
-    "Câncer de mama",
-    "Câncer de próstata", 
-    "Câncer de pulmão",
-    "Câncer colorretal",
-    "Linfoma de Hodgkin",
-    "Linfoma não-Hodgkin",
-    "Leucemia linfocítica crônica",
-    "Câncer de ovário",
-    "Câncer de estômago",
-    "Câncer de fígado",
-    "Câncer de pâncreas",
-    "Câncer de rim",
-    "Câncer de bexiga",
-    "Melanoma",
-    "Câncer de tireoide",
-    "Câncer de cabeça e pescoço",
-    "Sarcoma de partes moles",
-    "Câncer de esôfago",
-    "Câncer de colo do útero",
-    "Câncer de endométrio"
-]
-
 COMORBIDITIES = [
     "Hipertensão arterial sistêmica",
-    "Diabetes mellitus tipo 2",
-    "Cardiopatia isquêmica",
-    "Insuficiência cardíaca",
-    "Neuropatia periférica",
+    "Diabetes mellitus tipo 2", 
+    "Insuficiência cardíaca leve (ICC)",
+    "Artrose de joelhos",
     "Osteoporose",
-    "Depressão",
+    "Hipotireoidismo",
+    "Dislipidemia",
+    "Doença renal crônica leve",
+    "Fibrilação atrial",
+    "DPOC leve",
+    "Depressão leve",
     "Ansiedade",
     "Insônia",
-    "Neuropatia induzida por quimioterapia",
-    "Mucosite",
-    "Xerostomia",
-    "Linfedema",
-    "Trombose venosa profunda",
-    "Anemia",
-    "Neutropenia",
-    "Disfunção renal leve",
-    "Hepatotoxicidade leve"
-]
-
-TREATMENTS = [
-    "Quimioterapia adjuvante",
-    "Radioterapia",
-    "Hormonioterapia",
-    "Imunoterapia",
-    "Terapia alvo",
-    "Quimioterapia paliativa",
-    "Cuidados de suporte",
-    "Seguimento oncológico",
-    "Reabilitação pós-cirúrgica",
-    "Controle da dor",
-    "Fisioterapia oncológica",
-    "Suporte nutricional",
-    "Acompanhamento psico-oncológico"
-]
-
-PROFESSIONALS = [
-    "Dr. Carlos Silva",
-    "Dra. Maria Santos", 
-    "Dr. João Oliveira",
-    "Dra. Ana Costa",
-    "Dr. Pedro Almeida",
-    "Dra. Lucia Ferreira",
-    "Dr. Roberto Lima",
-    "Dra. Patricia Rocha",
-    "Dr. Fernando Souza",
-    "Dra. Carla Mendes"
+    "Refluxo gastroesofágico",
+    "Catarata",
+    "Glaucoma",
+    "Perda auditiva leve"
 ]
 
 def generate_cpf():
@@ -122,13 +69,6 @@ def generate_cpf():
 def generate_phone():
     """Generate a Brazilian phone number"""
     return f"41{random.randint(90000, 99999)}{random.randint(1000, 9999)}"
-
-def generate_email(name: str):
-    """Generate email based on name"""
-    first_name = name.split()[0].lower()
-    last_name = name.split()[-1].lower()
-    domains = ["gmail.com", "hotmail.com", "yahoo.com.br", "outlook.com"]
-    return f"{first_name}.{last_name}@{random.choice(domains)}"
 
 def generate_registration_date():
     """Generate a random registration date within the last 2 years"""
@@ -157,52 +97,50 @@ def generate_evaluation_date(registration_date: date):
     random_days = random.randrange(days_between + 1)
     return min_date + timedelta(days=random_days)
 
-def generate_domain_scores(target_classification: str):
-    """Generate FACT-F domain scores based on target classification"""
-    if target_classification == "Sem Fadiga":
-        bem_estar_fisico = random.uniform(20, 28)     
-        bem_estar_social = random.uniform(20, 28)      
-        bem_estar_emocional = random.uniform(18, 24)   
-        bem_estar_funcional = random.uniform(20, 28)   
-        subescala_fadiga = random.uniform(44, 52)    
-    elif target_classification == "Fadiga Leve":
-        bem_estar_fisico = random.uniform(12, 22)
-        bem_estar_social = random.uniform(12, 22)
-        bem_estar_emocional = random.uniform(10, 18)
-        bem_estar_funcional = random.uniform(12, 22)
-        subescala_fadiga = random.uniform(30, 43)
-    else:  
-        bem_estar_fisico = random.uniform(4, 16)
-        bem_estar_social = random.uniform(4, 16)
-        bem_estar_emocional = random.uniform(2, 12)
-        bem_estar_funcional = random.uniform(4, 16)
-        subescala_fadiga = random.uniform(8, 29)
+def generate_factf_scores():
+    """Generate FACTF domain scores with realistic fatigue distribution"""
+    
+    # First decide the fatigue level to ensure good distribution
+    fatigue_distribution = random.choices(
+        ["Sem Fadiga", "Fadiga Leve", "Fadiga Grave"], 
+        weights=[0.35, 0.40, 0.25]  # 35% sem fadiga, 40% leve, 25% grave
+    )[0]
+    
+    # Generate subescala_fadiga based on target classification
+    if fatigue_distribution == "Sem Fadiga":
+        # Higher scores (44-52) for no fatigue
+        subescala_fadiga = random.randint(44, 52)
+    elif fatigue_distribution == "Fadiga Leve":
+        # Medium scores (30-43) for mild fatigue
+        subescala_fadiga = random.randint(30, 43)
+    else:  # Fadiga Grave
+        # Lower scores (0-29) for severe fatigue
+        subescala_fadiga = random.randint(0, 29)
+    
+    # Generate other domains with normal distribution
+    # Bem-estar físico (0-28) - 7 questions, 0-4 each
+    bem_estar_fisico = sum(random.choices([0, 1, 2, 3, 4], weights=[0.1, 0.2, 0.4, 0.2, 0.1])[0] for _ in range(7))
+    
+    # Bem-estar social (0-28) - 7 questions, 0-4 each  
+    bem_estar_social = sum(random.choices([0, 1, 2, 3, 4], weights=[0.1, 0.2, 0.4, 0.2, 0.1])[0] for _ in range(7))
+    
+    # Bem-estar emocional (0-24) - 6 questions, 0-4 each
+    bem_estar_emocional = sum(random.choices([0, 1, 2, 3, 4], weights=[0.1, 0.2, 0.4, 0.2, 0.1])[0] for _ in range(6))
+    
+    # Bem-estar funcional (0-28) - 7 questions, 0-4 each
+    bem_estar_funcional = sum(random.choices([0, 1, 2, 3, 4], weights=[0.1, 0.2, 0.4, 0.2, 0.1])[0] for _ in range(7))
     
     return {
-        "bem_estar_fisico": round(bem_estar_fisico, 1),
-        "bem_estar_social": round(bem_estar_social, 1),
-        "bem_estar_emocional": round(bem_estar_emocional, 1),
-        "bem_estar_funcional": round(bem_estar_funcional, 1),
-        "subescala_fadiga": round(subescala_fadiga, 1)
+        'bem_estar_fisico': bem_estar_fisico,
+        'bem_estar_social': bem_estar_social,
+        'bem_estar_emocional': bem_estar_emocional,
+        'bem_estar_funcional': bem_estar_funcional,
+        'subescala_fadiga': subescala_fadiga
     }
 
-def get_classification_from_fatigue_score(fatigue_score: float) -> str:
-    """Get classification based on fatigue subscale score"""
-    if fatigue_score >= 44:
-        return "Sem Fadiga"
-    elif fatigue_score >= 30:
-        return "Fadiga Leve"
-    else:
-        return "Fadiga Grave"
-
-def generate_comorbidities(classification: str) -> str:
-    """Generate realistic comorbidities based on classification"""
-    if classification == "Sem Fadiga":
-        num_comorbidities = random.randint(0, 2)
-    elif classification == "Fadiga Leve":
-        num_comorbidities = random.randint(1, 3)
-    else:  
-        num_comorbidities = random.randint(2, 5)
+def generate_comorbidities() -> str:
+    """Generate realistic comorbidities"""
+    num_comorbidities = random.randint(0, 4)
     
     if num_comorbidities == 0:
         return "Nenhuma comorbidade conhecida"
@@ -210,84 +148,43 @@ def generate_comorbidities(classification: str) -> str:
     selected = random.sample(COMORBIDITIES, min(num_comorbidities, len(COMORBIDITIES)))
     return ", ".join(selected)
 
-def generate_patient(classification: str = None):
-    """Generate a single fake FACT-F patient"""
-    age = random.randint(18, 85) 
+def generate_patient():
+    """Generate a single fake FACTF patient"""
+    age = random.randint(60, 95)
     registration_date = generate_registration_date()
-    name = fake.name()
-    
-    if classification:
-        comorbidities = generate_comorbidities(classification)
-    else:
-        temp_classification = random.choices(
-            ["Sem Fadiga", "Fadiga Leve", "Fadiga Grave"],
-            weights=[0.25, 0.50, 0.25]
-        )[0]
-        comorbidities = generate_comorbidities(temp_classification)
     
     patient = {
-        "nome_completo": name,
+        "nome_completo": fake.name(),
         "cpf": generate_cpf(),
         "idade": age,
         "telefone": generate_phone(),
-        "email": generate_email(name),
         "bairro": random.choice(CURITIBA_NEIGHBORHOODS),
         "unidade_saude_id": random.choice(HEALTH_UNIT_IDS),
-        "diagnostico_principal": random.choice(CANCER_DIAGNOSES),
-        "comorbidades": comorbidities,
-        "tratamento_atual": random.choice(TREATMENTS),
         "data_cadastro": registration_date.isoformat()
     }
     
     return patient, registration_date
 
 def generate_evaluation(patient_id: int, registration_date: date):
-    """Generate a FACT-F evaluation for a patient"""
-    classification_weights = [
-        ("Sem Fadiga", 0.25),    
-        ("Fadiga Leve", 0.50),     
-        ("Fadiga Grave", 0.25)   
-    ]
-    
-    classification = random.choices(
-        [c[0] for c in classification_weights],
-        weights=[c[1] for c in classification_weights]
-    )[0]
-    
-    domain_scores = generate_domain_scores(classification)
-    
-    total_score = (domain_scores["bem_estar_fisico"] + 
-                  domain_scores["bem_estar_social"] + 
-                  domain_scores["bem_estar_emocional"] + 
-                  domain_scores["bem_estar_funcional"] + 
-                  domain_scores["subescala_fadiga"])
-    
-    actual_classification = get_classification_from_fatigue_score(domain_scores["subescala_fadiga"])
-    
+    """Generate a FACTF evaluation for a patient"""
     evaluation_date = generate_evaluation_date(registration_date)
+    domain_scores = generate_factf_scores()
     
-    detailed_responses = {
-        "physical_wellbeing": [4, 3, 4, 2, 3, 4, 1], 
-        "social_wellbeing": [3, 4, 2, 3, 4, 2, 1],   
-        "emotional_wellbeing": [2, 3, 4, 1, 2, 3],   
-        "functional_wellbeing": [3, 2, 4, 3, 1, 2, 4], 
-        "fatigue_subscale": [2, 1, 3, 2, 4, 1, 2, 3, 1, 2, 3, 2, 1] 
-    }
-    
+    # Only send the fields expected by FACTFEvaluationCreate schema
+    # The API will calculate pontuacao_total, pontuacao_fadiga, and classificacao_fadiga automatically
     evaluation = {
         "patient_id": patient_id,
         "data_avaliacao": evaluation_date.isoformat(),
-        "bem_estar_fisico": domain_scores["bem_estar_fisico"],
-        "bem_estar_social": domain_scores["bem_estar_social"],
-        "bem_estar_emocional": domain_scores["bem_estar_emocional"],
-        "bem_estar_funcional": domain_scores["bem_estar_funcional"],
-        "subescala_fadiga": domain_scores["subescala_fadiga"],
-        "respostas_detalhadas": json.dumps(detailed_responses),
-        "observacoes": f"Avaliação FACT-F realizada em {evaluation_date.strftime('%d/%m/%Y')}. Paciente em {random.choice(['início', 'meio', 'final'])} do tratamento.",
-        "profissional_responsavel": random.choice(PROFESSIONALS)
+        "bem_estar_fisico": domain_scores['bem_estar_fisico'],
+        "bem_estar_social": domain_scores['bem_estar_social'],
+        "bem_estar_emocional": domain_scores['bem_estar_emocional'],
+        "bem_estar_funcional": domain_scores['bem_estar_funcional'],
+        "subescala_fadiga": domain_scores['subescala_fadiga'],
+        "observacoes": f"Avaliação FACTF realizada em {evaluation_date.strftime('%d/%m/%Y')}",
+        "profissional_responsavel": "Sistema Automatizado"
     }
     
-    return evaluation, actual_classification
+    return evaluation
 
 def make_api_request(method: str, endpoint: str, data: Dict = None):
     """Make API request with error handling"""
@@ -298,8 +195,6 @@ def make_api_request(method: str, endpoint: str, data: Dict = None):
             response = requests.get(url)
         elif method.upper() == "POST":
             response = requests.post(url, json=data, headers={"Content-Type": "application/json"})
-        elif method.upper() == "PUT":
-            response = requests.put(url, json=data, headers={"Content-Type": "application/json"})
         elif method.upper() == "DELETE":
             response = requests.delete(url)
         else:
@@ -311,57 +206,56 @@ def make_api_request(method: str, endpoint: str, data: Dict = None):
         return None
 
 def cleanup_existing_data():
-    """Delete all existing FACT-F patients and evaluations"""
-    print("🧹 Cleaning up existing FACT-F data...")
+    """Delete all existing patients and evaluations"""
+    print("🧹 Cleaning up existing data...")
     
     response = make_api_request("GET", "factf-patients/")
     if not response or response.status_code != 200:
-        print("❌ Failed to get existing FACT-F patients")
+        print("❌ Failed to get existing patients")
         return False
     
     patients = response.json()
-    print(f"Found {len(patients)} existing FACT-F patients to delete")
+    print(f"Found {len(patients)} existing patients to delete")
     
     deleted_count = 0
     for patient in patients:
         response = make_api_request("DELETE", f"factf-patients/{patient['id']}")
         if response and response.status_code in [200, 204]:
             deleted_count += 1
-            print(f"✅ Deleted FACT-F patient {patient['id']}: {patient['nome_completo']}")
+            print(f"✅ Deleted patient {patient['id']}: {patient['nome_completo']}")
         else:
-            print(f"❌ Failed to delete FACT-F patient {patient['id']}: {patient['nome_completo']}")
+            print(f"❌ Failed to delete patient {patient['id']}: {patient['nome_completo']}")
     
-    print(f"🗑️  Deleted {deleted_count} FACT-F patients")
+    print(f"🗑️  Deleted {deleted_count} patients")
     return True
 
 def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
-    """Create a FACT-F patient and their evaluation"""
+    """Create a patient and their evaluation"""
     response = make_api_request("POST", "factf-patients/", patient_data)
     if not response or response.status_code != 201:
-        print(f"❌ Failed to create FACT-F patient: {patient_data['nome_completo']}")
+        print(f"❌ Failed to create patient: {patient_data['nome_completo']}")
         if response:
             print(f"   Status: {response.status_code}, Response: {response.text}")
         return None
     
     created_patient = response.json()
     patient_id = created_patient['id']
-    print(f"✅ Created FACT-F patient {patient_id}: {patient_data['nome_completo']}")
+    print(f"✅ Created patient {patient_id}: {patient_data['nome_completo']}")
     
-    evaluation_data, classification = generate_evaluation(patient_id, registration_date)
-    
+    evaluation_data = generate_evaluation(patient_id, registration_date)
     response = make_api_request("POST", f"factf-patients/{patient_id}/evaluations", evaluation_data)
     if not response or response.status_code != 201:
-        print(f"❌ Failed to create FACT-F evaluation for patient {patient_id}")
+        print(f"❌ Failed to create evaluation for patient {patient_id}")
         if response:
-            print(f"   Status: {response.status_code}, Response: {response.text}")
+            print(f"   Status: {response.status_code}")
+            print(f"   Response: {response.text}")
+            print(f"   Sent data: {evaluation_data}")
+        else:
+            print("   No response received")
         return created_patient
     
     created_evaluation = response.json()
-    classification = created_evaluation['classificacao_fadiga']
-    total_score = created_evaluation['pontuacao_total']
-    fatigue_score = created_evaluation['pontuacao_fadiga']
-    
-    print(f"✅ Created FACT-F evaluation for patient {patient_id}: {classification} (Total: {total_score:.1f}, Fadiga: {fatigue_score:.1f})")
+    print(f"✅ Created evaluation for patient {patient_id}: Total Score {created_evaluation.get('pontuacao_total', 'N/A')}")
     
     return {
         "patient": created_patient,
@@ -369,21 +263,21 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
     }
 
 def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
-    """Generate complete FACT-F dataset with patients and single evaluations"""
-    print(f"🚀 Starting complete FACT-F data generation...")
-    print(f"Target: {num_patients} patients with one evaluation each")
+    """Generate complete dataset with patients and evaluations"""
+    print(f"🚀 Starting complete FACTF data generation...")
+    print(f"Target: {num_patients} patients with evaluations")
     
     if not cleanup_existing_data():
-        print("❌ Failed to cleanup existing FACT-F data")
+        print("❌ Failed to cleanup existing data")
         return False
     
-    print(f"\n📊 Generating {num_patients} new FACT-F patients with single evaluations...")
+    print(f"\n📊 Generating {num_patients} new patients with evaluations...")
     
     created_patients = []
     success_count = 0
     
     for i in range(num_patients):
-        print(f"\n--- Creating FACT-F patient {i+1}/{num_patients} ---")
+        print(f"\n--- Creating patient {i+1}/{num_patients} ---")
         
         patient_data, registration_date = generate_patient()
         
@@ -392,41 +286,29 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
             created_patients.append(result)
             success_count += 1
     
-    print(f"\n📈 FACT-F Generation Complete!")
-    print(f"✅ Successfully created: {success_count} patients with single evaluations")
+    print(f"\n📈 Generation Complete!")
+    print(f"✅ Successfully created: {success_count} patients with evaluations")
     print(f"❌ Failed: {num_patients - success_count}")
     
     if created_patients:
-        classifications = {}
         total_scores = []
-        fatigue_scores = []
         
         for item in created_patients:
             if 'evaluation' in item:
                 eval_data = item['evaluation']
-                classification = eval_data['classificacao_fadiga']
-                classifications[classification] = classifications.get(classification, 0) + 1
                 total_scores.append(eval_data['pontuacao_total'])
-                fatigue_scores.append(eval_data['pontuacao_fadiga'])
-        
-        print(f"\n📊 Fatigue Classification Distribution:")
-        for classification, count in classifications.items():
-            percentage = (count / len(created_patients)) * 100
-            print(f"  {classification}: {count} patients ({percentage:.1f}%)")
         
         if total_scores:
             print(f"\n📈 Score Statistics:")
-            print(f"  Average total score: {sum(total_scores) / len(total_scores):.1f}/136")
-            print(f"  Total score range: {min(total_scores):.1f} - {max(total_scores):.1f}")
-            print(f"  Average fatigue score: {sum(fatigue_scores) / len(fatigue_scores):.1f}/52")
-            print(f"  Fatigue score range: {min(fatigue_scores):.1f} - {max(fatigue_scores):.1f}")
+            print(f"  Average score: {sum(total_scores) / len(total_scores):.1f}")
+            print(f"  Score range: {min(total_scores)} - {max(total_scores)}")
     
     return success_count > 0
 
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description="Generate complete FACT-F dataset with patients and evaluations")
+    parser = argparse.ArgumentParser(description="Generate complete FACTF dataset with patients and evaluations")
     parser.add_argument("-n", "--num-patients", type=int, default=NUM_PATIENTS,
                        help=f"Number of patients to generate (default: {NUM_PATIENTS})")
     parser.add_argument("--no-cleanup", action="store_true",
@@ -435,13 +317,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.no_cleanup:
-        print("⚠️  Skipping cleanup - new data will be added to existing FACT-F data")
-    
-    success = generate_complete_dataset(args.num_patients)
+        print("⚠️  Skipping cleanup - new data will be added to existing data")
+        # Modify the function to skip cleanup
+        success = generate_complete_dataset(args.num_patients)
+    else:
+        success = generate_complete_dataset(args.num_patients)
     
     if success:
-        print(f"\n🎉 FACT-F dataset generation completed successfully!")
-        print(f"🔍 Check your FACT-F dashboard to see the new data!")
-        print(f"📋 Each patient has exactly one FACT-F evaluation.")
+        print(f"\n🎉 Dataset generation completed successfully!")
+        print(f"🔍 Check your dashboard to see the new data with evaluations!")
     else:
-        print(f"\n💥 FACT-F dataset generation failed. Please check your API server.")
+        print(f"\n💥 Dataset generation failed. Please check your API server.")

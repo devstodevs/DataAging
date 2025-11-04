@@ -65,6 +65,7 @@ export interface FACTFDataFetchers {
   fetchFatigueDistribution: () => Promise<void>;
   fetchMonthlyEvolution: (monthsBack?: number) => Promise<void>;
   fetchDomainDistribution: () => Promise<void>;
+  fetchPatientDomainDistribution: (patientId: number) => Promise<void>;
   fetchAllPatients: () => Promise<void>;
 
   // CRUD fetchers

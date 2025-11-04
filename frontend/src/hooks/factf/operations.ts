@@ -95,6 +95,17 @@ export const createDataFetchers = (
     }
   },
 
+  fetchPatientDomainDistribution: async (patientId: number) => {
+    const result = await handleAsyncOperation(
+      () => factfApiService.getPatientDomainDistribution(patientId),
+      'domainDistribution',
+      'domainDistribution'
+    );
+    if (result) {
+      setState(prev => ({ ...prev, domainDistribution: result }));
+    }
+  },
+
   fetchAllPatients: async () => {
     const result = await handleAsyncOperation(
       () => factfApiService.getAllPatients(),

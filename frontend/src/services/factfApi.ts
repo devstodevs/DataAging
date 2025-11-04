@@ -85,6 +85,13 @@ class FACTFApiService {
     return this.handleResponse<FACTFDomainDistributionResponse>(response);
   }
 
+  async getPatientDomainDistribution(patientId: number): Promise<FACTFDomainDistributionResponse> {
+    const response = await fetch(`${API_BASE_URL}/factf-dashboard/patient-domain-distribution/${patientId}`, {
+      headers: this.getAuthHeaders(),
+    });
+    return this.handleResponse<FACTFDomainDistributionResponse>(response);
+  }
+
   async getAllPatients(): Promise<FACTFAllPatientsResponse> {
     const response = await fetch(`${API_BASE_URL}/factf-dashboard/all-patients`, {
       headers: this.getAuthHeaders(),

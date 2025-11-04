@@ -172,7 +172,9 @@ export interface FACTFMonthlyEvolutionResponse {
 
 export interface FACTFDomainDistribution {
     domain: string;
-    average_score: number;
+    average_score?: number;
+    patient_score?: number;
+    regional_average?: number;
     max_score: number;
 }
 

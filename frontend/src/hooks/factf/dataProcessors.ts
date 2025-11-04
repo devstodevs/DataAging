@@ -69,8 +69,8 @@ export const createDataProcessors = (state: FACTFDataState): FACTFDataProcessors
 
     return state.domainDistribution.domains.map(domain => ({
       domain: domain.domain,
-      paciente: domain.average_score,
-      mediaRegional: domain.average_score, // This would be calculated differently in real scenario
+      paciente: domain.patient_score || domain.average_score || 0,
+      mediaRegional: domain.regional_average || domain.average_score || 0,
       fullMark: domain.max_score,
     }));
   },

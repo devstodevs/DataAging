@@ -61,7 +61,6 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
   const {
     summary,
     criticalPatients,
-    fatigueDistribution,
     domainDistribution,
     allPatients,
     isLoading,
@@ -74,10 +73,8 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
     refetchDashboard
   } = useFACTFData();
 
-  // Atualizar dados quando filtros mudarem
   useEffect(() => {
-    // Por enquanto, apenas recarrega os dados
-    // Futuramente, pode aplicar filtros específicos
+    // TODO: aplicar filtros específicos
     refetchDashboard();
   }, [selectedPeriod, selectedAgeRange, selectedCondition]);
 

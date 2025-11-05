@@ -1,0 +1,1 @@
+export { usePhysicalActivityData } from './usePhysicalActivityData'

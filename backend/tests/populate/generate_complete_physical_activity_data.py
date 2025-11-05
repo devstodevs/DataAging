@@ -164,53 +164,53 @@ def generate_physical_activity_data():
     
     # Define activity profiles with realistic distribution
     profiles = ["sedentario", "pouco_ativo", "moderadamente_ativo", "muito_ativo"]
-    weights = [0.25, 0.40, 0.25, 0.10]  # 25% sedentário, 40% pouco ativo, 25% moderado, 10% muito ativo
+    weights = [0.20, 0.35, 0.30, 0.15]  # 20% sedentário, 35% pouco ativo, 30% moderado, 15% muito ativo
     
     profile = random.choices(profiles, weights=weights)[0]
     
     if profile == "sedentario":
         # Sedentary profile: little to no activity
-        light_minutes = random.randint(0, 40)
-        light_days = random.randint(0, 4)
-        moderate_minutes = random.randint(0, 20)
+        light_minutes = random.randint(0, 25)
+        light_days = random.randint(0, 3)
+        moderate_minutes = random.randint(0, 15)
         moderate_days = random.randint(0, 2)
         vigorous_minutes = 0
         vigorous_days = 0
-        sedentary_hours = round(random.uniform(9.5, 15), 1)
-        screen_time = round(random.uniform(4, 9), 1)
+        sedentary_hours = round(random.uniform(10, 16), 1)
+        screen_time = round(random.uniform(5, 10), 1)
         
     elif profile == "pouco_ativo":
-        # Slightly active: some light activity
-        light_minutes = random.randint(15, 70)
+        # Slightly active: some light activity, rarely meets WHO
+        light_minutes = random.randint(20, 80)
         light_days = random.randint(2, 6)
-        moderate_minutes = random.randint(5, 35)
+        moderate_minutes = random.randint(10, 40)
         moderate_days = random.randint(1, 4)
-        vigorous_minutes = random.randint(0, 10)
+        vigorous_minutes = random.randint(0, 15)
         vigorous_days = random.randint(0, 2)
         sedentary_hours = round(random.uniform(7, 11), 1)
-        screen_time = round(random.uniform(2.5, 6.5), 1)
+        screen_time = round(random.uniform(3, 7), 1)
         
     elif profile == "moderadamente_ativo":
-        # Moderately active: partially meets WHO guidelines
-        light_minutes = random.randint(30, 100)
-        light_days = random.randint(3, 7)
-        moderate_minutes = random.randint(20, 50)
-        moderate_days = random.randint(2, 6)
-        vigorous_minutes = random.randint(5, 25)
+        # Moderately active: often meets WHO guidelines
+        light_minutes = random.randint(40, 120)
+        light_days = random.randint(4, 7)
+        moderate_minutes = random.randint(25, 60)
+        moderate_days = random.randint(3, 6)
+        vigorous_minutes = random.randint(10, 35)
         vigorous_days = random.randint(1, 4)
-        sedentary_hours = round(random.uniform(5, 9), 1)
-        screen_time = round(random.uniform(1.5, 5), 1)
+        sedentary_hours = round(random.uniform(4, 8), 1)
+        screen_time = round(random.uniform(2, 5), 1)
         
     else:  # muito_ativo
-        # Very active: meets or exceeds WHO guidelines
-        light_minutes = random.randint(50, 130)
+        # Very active: consistently exceeds WHO guidelines
+        light_minutes = random.randint(60, 150)
         light_days = random.randint(5, 7)
-        moderate_minutes = random.randint(30, 70)
+        moderate_minutes = random.randint(40, 90)
         moderate_days = random.randint(4, 7)
-        vigorous_minutes = random.randint(15, 50)
-        vigorous_days = random.randint(2, 5)
-        sedentary_hours = round(random.uniform(3, 7), 1)
-        screen_time = round(random.uniform(1, 4), 1)
+        vigorous_minutes = random.randint(20, 60)
+        vigorous_days = random.randint(3, 6)
+        sedentary_hours = round(random.uniform(2, 6), 1)
+        screen_time = round(random.uniform(1, 3), 1)
     
     # Calculate weekly totals
     total_weekly_moderate = moderate_minutes * moderate_days
@@ -289,6 +289,10 @@ def generate_evaluation(patient_id: int, registration_date: date):
         "vigorous_activity_days_per_week": activity_data['vigorous_activity_days_per_week'],
         "sedentary_hours_per_day": activity_data['sedentary_hours_per_day'],
         "screen_time_hours_per_day": activity_data['screen_time_hours_per_day'],
+        "total_weekly_moderate_minutes": activity_data['total_weekly_moderate_minutes'],
+        "total_weekly_vigorous_minutes": activity_data['total_weekly_vigorous_minutes'],
+        "who_compliance": activity_data['who_compliance'],
+        "sedentary_risk_level": activity_data['sedentary_risk_level'],
         "profissional_responsavel": random.choice(PROFESSIONALS),
         "observacoes": fake.text(max_nb_chars=200) if random.random() > 0.7 else None
     }
@@ -322,53 +326,71 @@ def make_api_request(method: str, endpoint: str, data: Dict = None):
 
 
 def cleanup_existing_data():
-    """Clean up existing physical activity data using direct database access"""
+    """Clean up existing physical activity data using SQLite directly"""
     print("🧹 Cleaning up existing physical activity data...")
     
     try:
-        # Import database dependencies
-        import sys
+        import sqlite3
         import os
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../src'))
         
-        from db.base import SessionLocal
-        from models.physical_activity.physical_activity_patient import PhysicalActivityPatient
-        from models.physical_activity.physical_activity_evaluation import PhysicalActivityEvaluation
+        # Path to database
+        db_path = os.path.join(os.path.dirname(__file__), '../../src/dataaging.db')
         
-        db = SessionLocal()
+        # Connect to SQLite database
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
         
-        try:
-            # Delete all evaluations first
-            evaluations_count = db.query(PhysicalActivityEvaluation).count()
-            db.query(PhysicalActivityEvaluation).delete()
-            print(f"✓ Deleted {evaluations_count} evaluations")
-            
-            # Delete all patients
-            patients_count = db.query(PhysicalActivityPatient).count()
-            db.query(PhysicalActivityPatient).delete()
-            print(f"✓ Deleted {patients_count} patients")
-            
-            db.commit()
-            print("✅ Cleanup completed!")
-            
-        finally:
-            db.close()
-            
+        # Count existing records
+        cursor.execute("SELECT COUNT(*) FROM physical_activity_evaluations")
+        evaluations_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM physical_activity_patients")
+        patients_count = cursor.fetchone()[0]
+        
+        # Delete all evaluations first (due to foreign key constraints)
+        cursor.execute("DELETE FROM physical_activity_evaluations")
+        print(f"✓ Deleted {evaluations_count} evaluations")
+        
+        # Delete all patients
+        cursor.execute("DELETE FROM physical_activity_patients")
+        print(f"✓ Deleted {patients_count} patients")
+        
+        # Commit changes
+        conn.commit()
+        conn.close()
+        
+        print("✅ Cleanup completed!")
+        
     except Exception as e:
-        print(f"⚠️ Direct database cleanup failed: {e}")
+        print(f"⚠️ Database cleanup failed: {e}")
         print("Trying API cleanup as fallback...")
         
-        # Fallback to API cleanup with active_only=False to get all patients
-        patients_response = make_api_request("GET", "/physical-activity-patients/?per_page=1000&active_only=false")
-        if patients_response and "patients" in patients_response:
+        # Fallback to API cleanup - get patients in batches
+        page = 1
+        all_patients = []
+        
+        while True:
+            patients_response = make_api_request("GET", f"/physical-activity-patients/?page={page}&per_page=100&active_only=false")
+            if not patients_response or "patients" not in patients_response:
+                break
+            
             patients = patients_response["patients"]
+            if not patients:
+                break
             
-            print(f"Found {len(patients)} existing patients. Deleting...")
+            all_patients.extend(patients)
             
-            for patient in patients:
+            # Check if there are more pages
+            if len(patients) < 100:
+                break
+            
+            page += 1
+        
+        if all_patients:
+            print(f"Found {len(all_patients)} existing patients. Deleting...")
+            
+            for patient in all_patients:
                 patient_id = patient["id"]
-                
-                # Delete patient
                 delete_response = make_api_request("DELETE", f"/physical-activity-patients/{patient_id}")
                 if delete_response:
                     print(f"✓ Soft deleted patient {patient_id}")
@@ -436,9 +458,10 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
             if evaluation:
                 created_evaluations.append(evaluation)
                 
-                # Update statistics
+                # Update statistics - use the actual values returned from backend
                 risk_level = evaluation.get('sedentary_risk_level', 'Baixo')
-                risk_levels[risk_level] += 1
+                if risk_level in risk_levels:
+                    risk_levels[risk_level] += 1
                 
                 if evaluation.get('who_compliance', False):
                     who_compliant += 1

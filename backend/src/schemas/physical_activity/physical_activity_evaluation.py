@@ -40,7 +40,11 @@ class PhysicalActivityEvaluationBase(BaseModel):
 
 class PhysicalActivityEvaluationCreate(PhysicalActivityEvaluationBase):
     """Schema for creating a Physical Activity Evaluation"""
-    pass
+    # Allow optional calculated fields to be provided
+    total_weekly_moderate_minutes: Optional[int] = Field(None, ge=0, description="Total de minutos semanais de atividade moderada")
+    total_weekly_vigorous_minutes: Optional[int] = Field(None, ge=0, description="Total de minutos semanais de atividade vigorosa")
+    who_compliance: Optional[bool] = Field(None, description="Conformidade com diretrizes da OMS")
+    sedentary_risk_level: Optional[str] = Field(None, description="Nível de risco sedentário")
 
 
 class PhysicalActivityEvaluationUpdate(BaseModel):

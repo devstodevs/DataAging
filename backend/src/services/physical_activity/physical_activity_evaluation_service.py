@@ -1,230 +1,169 @@
 from sqlalchemy.orm import Session
-from typing import List, Optional, Dict, Any
-from fastapi import HTTPException, status
-from db.physical_activity.physical_activity_evaluation_crud import (
-    create_physical_activity_evaluation,
-    get_physical_activity_evaluation,
-    get_physical_activity_evaluations_by_patient,
-    get_latest_evaluation_by_patient,
-    update_physical_activity_evaluation,
-    delete_physical_activity_evaluation
-)
-from db.physical_activity.physical_activity_patient_crud import get_physical_activity_patient
-from schemas.physical_activity.physical_activity_evaluation import (
-    PhysicalActivityEvaluationCreate,
-    PhysicalActivityEvaluationUpdate,
-    PhysicalActivityEvaluationResponse
-)
-from utils.physical_activity_calculator import (
-    calculate_evaluation_metrics,
-    validate_time_consistency
-)
+from sqlalchemy import and_, desc, func
+from typing import List, Optional
+from datetime import date, datetime, timedelta
+from models.physical_activity.physical_activity_evaluation import PhysicalActivityEvaluation
 
 
 class PhysicalActivityEvaluationService:
     """Service layer for Physical Activity Evaluation operations"""
     
     @staticmethod
-    def create_evaluation(
-        db: Session, 
-        patient_id: int, 
-        evaluation_data: PhysicalActivityEvaluationCreate
-    ) -> PhysicalActivityEvaluationResponse:
-        """Create a new physical activity evaluation"""
-        # Check if patient exists
-        patient = get_physical_activity_patient(db, patient_id)
-        if not patient:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Paciente não encontrado"
-            )
-        
-        # Validate time consistency
-        if not validate_time_consistency(
-            evaluation_data.light_activity_minutes_per_day,
-            evaluation_data.light_activity_days_per_week,
-            evaluation_data.moderate_activity_minutes_per_day,
-            evaluation_data.moderate_activity_days_per_week,
-            evaluation_data.vigorous_activity_minutes_per_day,
-            evaluation_data.vigorous_activity_days_per_week,
-            evaluation_data.sedentary_hours_per_day,
-            evaluation_data.screen_time_hours_per_day
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Inconsistência nos dados de tempo: soma de atividades e sedentarismo excede limites razoáveis"
-            )
-        
-        # Calculate metrics
-        total_weekly_moderate, total_weekly_vigorous, who_compliance, sedentary_risk_level = calculate_evaluation_metrics(
-            evaluation_data.light_activity_minutes_per_day,
-            evaluation_data.light_activity_days_per_week,
-            evaluation_data.moderate_activity_minutes_per_day,
-            evaluation_data.moderate_activity_days_per_week,
-            evaluation_data.vigorous_activity_minutes_per_day,
-            evaluation_data.vigorous_activity_days_per_week,
-            evaluation_data.sedentary_hours_per_day
-        )
-        
-        # Prepare evaluation data
-        evaluation_dict = evaluation_data.model_dump()
-        evaluation_dict.update({
-            "patient_id": patient_id,
-            "total_weekly_moderate_minutes": total_weekly_moderate,
-            "total_weekly_vigorous_minutes": total_weekly_vigorous,
-            "who_compliance": who_compliance,
-            "sedentary_risk_level": sedentary_risk_level
-        })
-        
-        # Create evaluation
-        db_evaluation = create_physical_activity_evaluation(db, evaluation_dict)
-        
-        return PhysicalActivityEvaluationResponse.model_validate(db_evaluation)
+    def create_evaluation(db: Session, evaluation_data: dict) -> PhysicalActivityEvaluation:
+        """Create a new Physical Activity evaluation"""
+        db_evaluation = PhysicalActivityEvaluation(**evaluation_data)
+        db.add(db_evaluation)
+        db.commit()
+        db.refresh(db_evaluation)
+        return db_evaluation
     
     @staticmethod
-    def get_evaluation(db: Session, evaluation_id: int) -> PhysicalActivityEvaluationResponse:
-        """Get a physical activity evaluation by ID"""
-        db_evaluation = get_physical_activity_evaluation(db, evaluation_id)
-        if not db_evaluation:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Avaliação não encontrada"
-            )
-        
-        return PhysicalActivityEvaluationResponse.model_validate(db_evaluation)
+    def get_evaluation(db: Session, evaluation_id: int) -> Optional[PhysicalActivityEvaluation]:
+        """Get a Physical Activity evaluation by ID"""
+        return db.query(PhysicalActivityEvaluation).filter(PhysicalActivityEvaluation.id == evaluation_id).first()
     
     @staticmethod
     def get_evaluations_by_patient(
-        db: Session,
+        db: Session, 
         patient_id: int,
         skip: int = 0,
         limit: int = 100
-    ) -> List[PhysicalActivityEvaluationResponse]:
-        """Get all evaluations for a patient"""
-        # Check if patient exists
-        patient = get_physical_activity_patient(db, patient_id)
-        if not patient:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Paciente não encontrado"
-            )
-        
-        evaluations = get_physical_activity_evaluations_by_patient(db, patient_id, skip, limit)
-        
-        return [
-            PhysicalActivityEvaluationResponse.model_validate(evaluation)
-            for evaluation in evaluations
-        ]
+    ) -> List[PhysicalActivityEvaluation]:
+        """Get all evaluations for a specific patient"""
+        return db.query(PhysicalActivityEvaluation).filter(
+            PhysicalActivityEvaluation.patient_id == patient_id
+        ).order_by(desc(PhysicalActivityEvaluation.data_avaliacao)).offset(skip).limit(limit).all()
     
     @staticmethod
-    def get_latest_evaluation(db: Session, patient_id: int) -> Optional[PhysicalActivityEvaluationResponse]:
-        """Get the latest evaluation for a patient"""
-        # Check if patient exists
-        patient = get_physical_activity_patient(db, patient_id)
-        if not patient:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Paciente não encontrado"
-            )
-        
-        evaluation = get_latest_evaluation_by_patient(db, patient_id)
-        if not evaluation:
-            return None
-        
-        return PhysicalActivityEvaluationResponse.model_validate(evaluation)
+    def get_latest_evaluation_by_patient(db: Session, patient_id: int) -> Optional[PhysicalActivityEvaluation]:
+        """Get the most recent evaluation for a patient"""
+        return db.query(PhysicalActivityEvaluation).filter(
+            PhysicalActivityEvaluation.patient_id == patient_id
+        ).order_by(desc(PhysicalActivityEvaluation.data_avaliacao)).first()
     
     @staticmethod
     def update_evaluation(
-        db: Session,
-        evaluation_id: int,
-        evaluation_data: PhysicalActivityEvaluationUpdate
-    ) -> PhysicalActivityEvaluationResponse:
-        """Update a physical activity evaluation"""
-        # Check if evaluation exists
-        existing_evaluation = get_physical_activity_evaluation(db, evaluation_id)
-        if not existing_evaluation:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Avaliação não encontrada"
-            )
+        db: Session, 
+        evaluation_id: int, 
+        evaluation_data: dict
+    ) -> Optional[PhysicalActivityEvaluation]:
+        """Update a Physical Activity evaluation"""
+        db_evaluation = db.query(PhysicalActivityEvaluation).filter(
+            PhysicalActivityEvaluation.id == evaluation_id
+        ).first()
         
-        # Get update data
-        update_dict = evaluation_data.model_dump(exclude_unset=True)
+        if not db_evaluation:
+            return None
         
-        # If any activity or sedentary data is being updated, recalculate metrics
-        activity_fields = [
-            'light_activity_minutes_per_day', 'light_activity_days_per_week',
-            'moderate_activity_minutes_per_day', 'moderate_activity_days_per_week',
-            'vigorous_activity_minutes_per_day', 'vigorous_activity_days_per_week',
-            'sedentary_hours_per_day', 'screen_time_hours_per_day'
-        ]
+        for key, value in evaluation_data.items():
+            if value is not None:
+                setattr(db_evaluation, key, value)
         
-        if any(field in update_dict for field in activity_fields):
-            # Get current values and update with new ones
-            current_data = {
-                'light_activity_minutes_per_day': existing_evaluation.light_activity_minutes_per_day,
-                'light_activity_days_per_week': existing_evaluation.light_activity_days_per_week,
-                'moderate_activity_minutes_per_day': existing_evaluation.moderate_activity_minutes_per_day,
-                'moderate_activity_days_per_week': existing_evaluation.moderate_activity_days_per_week,
-                'vigorous_activity_minutes_per_day': existing_evaluation.vigorous_activity_minutes_per_day,
-                'vigorous_activity_days_per_week': existing_evaluation.vigorous_activity_days_per_week,
-                'sedentary_hours_per_day': existing_evaluation.sedentary_hours_per_day,
-                'screen_time_hours_per_day': existing_evaluation.screen_time_hours_per_day
-            }
-            
-            # Update with new values
-            for field in activity_fields:
-                if field in update_dict:
-                    current_data[field] = update_dict[field]
-            
-            # Validate time consistency
-            if not validate_time_consistency(**current_data):
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Inconsistência nos dados de tempo: soma de atividades e sedentarismo excede limites razoáveis"
-                )
-            
-            # Recalculate metrics
-            total_weekly_moderate, total_weekly_vigorous, who_compliance, sedentary_risk_level = calculate_evaluation_metrics(
-                current_data['light_activity_minutes_per_day'],
-                current_data['light_activity_days_per_week'],
-                current_data['moderate_activity_minutes_per_day'],
-                current_data['moderate_activity_days_per_week'],
-                current_data['vigorous_activity_minutes_per_day'],
-                current_data['vigorous_activity_days_per_week'],
-                current_data['sedentary_hours_per_day']
-            )
-            
-            # Add calculated fields to update
-            update_dict.update({
-                "total_weekly_moderate_minutes": total_weekly_moderate,
-                "total_weekly_vigorous_minutes": total_weekly_vigorous,
-                "who_compliance": who_compliance,
-                "sedentary_risk_level": sedentary_risk_level
-            })
-        
-        # Update evaluation
-        db_evaluation = update_physical_activity_evaluation(db, evaluation_id, update_dict)
-        
-        return PhysicalActivityEvaluationResponse.model_validate(db_evaluation)
+        db.commit()
+        db.refresh(db_evaluation)
+        return db_evaluation
     
     @staticmethod
-    def delete_evaluation(db: Session, evaluation_id: int) -> Dict[str, str]:
-        """Delete a physical activity evaluation"""
-        # Check if evaluation exists
-        existing_evaluation = get_physical_activity_evaluation(db, evaluation_id)
-        if not existing_evaluation:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Avaliação não encontrada"
-            )
+    def delete_evaluation(db: Session, evaluation_id: int) -> bool:
+        """Delete a Physical Activity evaluation"""
+        db_evaluation = db.query(PhysicalActivityEvaluation).filter(
+            PhysicalActivityEvaluation.id == evaluation_id
+        ).first()
         
-        # Delete evaluation
-        success = delete_physical_activity_evaluation(db, evaluation_id)
-        if not success:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Erro ao deletar avaliação"
-            )
+        if not db_evaluation:
+            return False
         
-        return {"message": "Avaliação deletada com sucesso"}
+        db.delete(db_evaluation)
+        db.commit()
+        return True
+    
+    @staticmethod
+    def get_evaluations_by_date_range(
+        db: Session,
+        start_date: date,
+        end_date: date,
+        skip: int = 0,
+        limit: int = 100
+    ) -> List[PhysicalActivityEvaluation]:
+        """Get evaluations within a date range"""
+        return db.query(PhysicalActivityEvaluation).filter(
+            and_(
+                PhysicalActivityEvaluation.data_avaliacao >= start_date,
+                PhysicalActivityEvaluation.data_avaliacao <= end_date
+            )
+        ).order_by(desc(PhysicalActivityEvaluation.data_avaliacao)).offset(skip).limit(limit).all()
+    
+    @staticmethod
+    def get_evaluations_by_who_compliance(db: Session, compliant: bool) -> List[PhysicalActivityEvaluation]:
+        """Get evaluations by WHO compliance status"""
+        return db.query(PhysicalActivityEvaluation).filter(
+            PhysicalActivityEvaluation.who_compliance == compliant
+        ).all()
+    
+    @staticmethod
+    def get_evaluations_by_sedentary_risk(db: Session, risk_level: str) -> List[PhysicalActivityEvaluation]:
+        """Get evaluations by sedentary risk level"""
+        return db.query(PhysicalActivityEvaluation).filter(
+            PhysicalActivityEvaluation.sedentary_risk_level == risk_level
+        ).all()
+    
+    @staticmethod
+    def get_critical_sedentary_patients(db: Session) -> List[PhysicalActivityEvaluation]:
+        """Get patients with critical sedentary risk (>10 hours/day)"""
+        return db.query(PhysicalActivityEvaluation).filter(
+            PhysicalActivityEvaluation.sedentary_risk_level == "Crítico"
+        ).all()
+    
+    @staticmethod
+    def count_evaluations_by_patient(db: Session, patient_id: int) -> int:
+        """Count total evaluations for a patient"""
+        return db.query(PhysicalActivityEvaluation).filter(
+            PhysicalActivityEvaluation.patient_id == patient_id
+        ).count()
+    
+    @staticmethod
+    def get_monthly_evaluation_counts(db: Session, months: int = 12) -> List[dict]:
+        """Get evaluation counts by month for the last N months"""
+        start_date = date.today() - timedelta(days=months * 30)
+        
+        results = db.query(
+            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao).label('month'),
+            func.count(PhysicalActivityEvaluation.id).label('count')
+        ).filter(
+            PhysicalActivityEvaluation.data_avaliacao >= start_date
+        ).group_by(
+            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao)
+        ).order_by('month').all()
+        
+        return [{'month': result.month, 'count': result.count} for result in results]
+    
+    @staticmethod
+    def get_activity_distribution_stats(db: Session) -> dict:
+        """Get distribution statistics for activity levels"""
+        results = db.query(
+            func.avg(PhysicalActivityEvaluation.light_activity_minutes_per_day * PhysicalActivityEvaluation.light_activity_days_per_week).label('avg_light_weekly'),
+            func.avg(PhysicalActivityEvaluation.total_weekly_moderate_minutes).label('avg_moderate_weekly'),
+            func.avg(PhysicalActivityEvaluation.total_weekly_vigorous_minutes).label('avg_vigorous_weekly'),
+            func.avg(PhysicalActivityEvaluation.sedentary_hours_per_day).label('avg_sedentary_daily')
+        ).first()
+        
+        return {
+            'avg_light_weekly': float(results.avg_light_weekly or 0),
+            'avg_moderate_weekly': float(results.avg_moderate_weekly or 0),
+            'avg_vigorous_weekly': float(results.avg_vigorous_weekly or 0),
+            'avg_sedentary_daily': float(results.avg_sedentary_daily or 0)
+        }
+    
+    @staticmethod
+    def get_who_compliance_stats(db: Session) -> dict:
+        """Get WHO compliance statistics"""
+        total = db.query(PhysicalActivityEvaluation).count()
+        compliant = db.query(PhysicalActivityEvaluation).filter(
+            PhysicalActivityEvaluation.who_compliance == True
+        ).count()
+        
+        return {
+            'total_evaluations': total,
+            'compliant_count': compliant,
+            'compliance_percentage': round((compliant / total * 100) if total > 0 else 0, 1)
+        }

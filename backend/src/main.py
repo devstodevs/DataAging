@@ -4,9 +4,10 @@ from api.auth import auth_router
 from api.user import user_router
 from api.ivcf import health_unit_router, ivcf_patient_router, ivcf_evaluation_router, ivcf_dashboard_router
 from api.factf import factf_patient_router, factf_evaluation_router, factf_dashboard_router
+from api.physical_activity import physical_activity_patient_router, physical_activity_evaluation_router, physical_activity_dashboard_router
 from config import settings
 from db.base import engine, Base, ensure_schema
-from models import user, ivcf, factf  # Import models to register them
+from models import user, ivcf, factf, physical_activity  # Import models to register them
 
 # Create database tables and ensure runtime schema
 Base.metadata.create_all(bind=engine)
@@ -37,6 +38,9 @@ app.include_router(ivcf_dashboard_router, prefix=settings.API_V1_PREFIX, tags=["
 app.include_router(factf_patient_router, prefix=settings.API_V1_PREFIX, tags=["factf-patients"])
 app.include_router(factf_evaluation_router, prefix=settings.API_V1_PREFIX, tags=["factf-evaluations"])
 app.include_router(factf_dashboard_router, prefix=settings.API_V1_PREFIX, tags=["factf-dashboard"])
+app.include_router(physical_activity_patient_router, prefix=f"{settings.API_V1_PREFIX}/physical-activity-patients", tags=["physical-activity-patients"])
+app.include_router(physical_activity_evaluation_router, prefix=settings.API_V1_PREFIX, tags=["physical-activity-evaluations"])
+app.include_router(physical_activity_dashboard_router, prefix=f"{settings.API_V1_PREFIX}/physical-activity-dashboard", tags=["physical-activity-dashboard"])
 
 #DEBUG
 @app.get("/debug/routes")

@@ -1,415 +1,446 @@
-import React, { useState } from "react";
-import { ArrowLeft, Download, Users, Activity, Clock, AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import React, { useState } from 'react';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Alert from "../../components/base/Alert";
-import Title from "../../components/base/Title";
-import KPICard from "../../components/compound/KPICard";
+  Activity,
+  Users,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  RefreshCw
+} from 'lucide-react';
 import {
   PieChart,
   Pie,
   Cell,
-  ResponsiveContainer,
-  Legend,
-  Tooltip,
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
+  Tooltip,
+  Legend,
   LineChart,
   Line,
-} from "recharts";
-import "./PhysicalActivityDashboard.css";
+  ResponsiveContainer
+} from 'recharts';
+import { usePhysicalActivityData } from '../../hooks/physicalActivity/usePhysicalActivityData';
+import { PhysicalActivityApiService } from '../../services/physicalActivityApi';
+import {
+  SEDENTARY_RISK_COLORS,
+  type SedentaryRiskLevel
+} from '../../types/physicalActivity';
+import './PhysicalActivityDashboard.css';
 
-interface Patient {
-  id: string;
-  name: string;
-  age: number;
-  factScore: number;
-  sedentaryHours: number;
-  status: "Abaixo" | "Conforme";
-}
+const PhysicalActivityDashboard: React.FC = () => {
+  const {
+    data,
+    loading,
+    error,
+    lastUpdated,
+    refreshData
+  } = usePhysicalActivityData();
 
-interface PhysicalActivityDashboardProps {
-  onNavigate?: (page: string) => void;
-}
+  const [refreshing, setRefreshing] = useState(false);
 
-const PhysicalActivityDashboard: React.FC<PhysicalActivityDashboardProps> = ({
-  onNavigate,
-}) => {
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
-  const [selectedAgeRange, setSelectedAgeRange] = useState<string>("");
-  const [selectedCondition, setSelectedCondition] = useState<string>("");
-
-  // Dados de exemplo para os gráficos
-  const activityDistributionData = [
-    { name: "Leve", value: 45, color: "#ef4444" },
-    { name: "Moderada", value: 35, color: "#14b8a6" },
-    { name: "Vigorosa", value: 20, color: "#1f2937" },
-  ];
-
-  const sedentaryByAgeData = [
-    { ageRange: "60-70", hours: 7.2 },
-    { ageRange: "71-80", hours: 6.8 },
-    { ageRange: "81+", hours: 8.5 },
-  ];
-
-  const sedentaryTrendData = [
-    { month: "Jan", diabetes: 6.2, hipertensao: 6.0 },
-    { month: "Fev", diabetes: 6.0, hipertensao: 6.1 },
-    { month: "Mar", diabetes: 6.2, hipertensao: 6.0 },
-    { month: "Abr", diabetes: 6.0, hipertensao: 5.9 },
-    { month: "Mai", diabetes: 6.1, hipertensao: 6.2 },
-    { month: "Jun", diabetes: 6.5, hipertensao: 6.5 },
-  ];
-
-  const patientsAtRisk: Patient[] = [
-    {
-      id: "001",
-      name: "Paciente 001",
-      age: 75,
-      factScore: 32,
-      sedentaryHours: 8.5,
-      status: "Abaixo",
-    },
-    {
-      id: "002",
-      name: "Paciente 002",
-      age: 68,
-      factScore: 41,
-      sedentaryHours: 6.2,
-      status: "Conforme",
-    },
-    {
-      id: "003",
-      name: "Paciente 003",
-      age: 82,
-      factScore: 28,
-      sedentaryHours: 9.1,
-      status: "Abaixo",
-    },
-  ];
-
-  const handleExportReport = () => {
-    console.log("Exportando relatório...");
-    alert("Relatório exportado com sucesso!");
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refreshData();
+    setRefreshing(false);
   };
 
-  const handleBack = () => {
-    if (onNavigate) {
-      onNavigate("dashboard");
-    }
-  };
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="custom-tooltip">
-          <p className="tooltip-label">{payload[0].name}</p>
-          <p className="tooltip-value">{`${payload[0].value}${
-            payload[0].name === "hours" ? "h" : ""
-          }`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  const renderCustomLegend = (props: any) => {
-    const { payload } = props;
+  if (loading && !data.summary) {
     return (
-      <div className="custom-legend">
-        {payload.map((entry: any, index: number) => (
-          <div key={`legend-${index}`} className="legend-item">
-            <div
-              className="legend-color"
-              style={{ backgroundColor: entry.color }}
-            />
-            <span className="legend-text">{entry.value}</span>
-          </div>
-        ))}
+      <div className="physical-activity-dashboard">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Carregando dados de atividade física...</p>
+        </div>
       </div>
     );
+  }
+
+  if (error && !data.summary) {
+    return (
+      <div className="physical-activity-dashboard">
+        <div className="error-container">
+          <AlertTriangle className="error-icon" />
+          <h3>Erro ao carregar dados</h3>
+          <p>{error}</p>
+          <button onClick={handleRefresh} className="retry-button">
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Prepare chart data
+  const activityChartData = data.activityDistribution ?
+    PhysicalActivityApiService.formatActivityDataForChart(data.activityDistribution) : [];
+
+  const sedentaryTrendData = data.sedentaryTrend ?
+    PhysicalActivityApiService.formatSedentaryTrendForChart(data.sedentaryTrend) : [];
+
+  const whoComplianceData = data.whoCompliance ? [
+    {
+      name: data.whoCompliance.compliant.label,
+      value: data.whoCompliance.compliant.count,
+      percentage: data.whoCompliance.compliant.percentage,
+      color: '#4CAF50'
+    },
+    {
+      name: data.whoCompliance.non_compliant.label,
+      value: data.whoCompliance.non_compliant.count,
+      percentage: data.whoCompliance.non_compliant.percentage,
+      color: '#F44336'
+    }
+  ] : [];
+
+  const getRiskLevelColor = (level: SedentaryRiskLevel) => {
+    return SEDENTARY_RISK_COLORS[level] || '#666';
   };
 
   return (
     <div className="physical-activity-dashboard">
       {/* Header */}
       <div className="dashboard-header">
-        <div className="header-left">
-          <Button variant="outline" onClick={handleBack}>
-            <ArrowLeft />
-            Voltar
-          </Button>
-        </div>
-        
-        <div className="header-center">
-          <Title level="h1" className="dashboard-title">
-            Dashboard Atividade Física e Sedentarismo
-          </Title>
-        </div>
-        
-        <div className="header-right">
-          <Button onClick={handleExportReport}>
-            <Download />
-            Exportar Relatório
-          </Button>
-        </div>
-      </div>
-
-      {/* Alert */}
-      <div className="dashboard-alert">
-        <Alert 
-          type="warning" 
-          message="3 pacientes com sedentarismo crítico identificados"
-        />
-      </div>
-
-      {/* Filters */}
-      <Card className="filters-card">
-        <CardContent className="filters-content">
-          <div className="filters-grid">
-            <div className="filter-item">
-              <label className="filter-label">Período</label>
-              <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-                <SelectTrigger className="filter-select">
-                  <SelectValue placeholder="Selecionar data" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="last-7-days">Últimos 7 dias</SelectItem>
-                  <SelectItem value="last-30-days">Últimos 30 dias</SelectItem>
-                  <SelectItem value="last-90-days">Últimos 90 dias</SelectItem>
-                  <SelectItem value="last-year">Último ano</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="filter-item">
-              <label className="filter-label">Faixa Etária</label>
-              <Select value={selectedAgeRange} onValueChange={setSelectedAgeRange}>
-                <SelectTrigger className="filter-select">
-                  <SelectValue placeholder="Todas as faixas" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="60-70">60-70 anos</SelectItem>
-                  <SelectItem value="71-80">71-80 anos</SelectItem>
-                  <SelectItem value="81+">81+ anos</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="filter-item">
-              <label className="filter-label">Condição de Saúde</label>
-              <Select value={selectedCondition} onValueChange={setSelectedCondition}>
-                <SelectTrigger className="filter-select">
-                  <SelectValue placeholder="Digite para buscar" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="diabetes">Diabetes</SelectItem>
-                  <SelectItem value="hipertensao">Hipertensão</SelectItem>
-                  <SelectItem value="cardiopatia">Cardiopatia</SelectItem>
-                  <SelectItem value="artrite">Artrite</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="filter-item">
-              <label className="filter-label">Profissional Responsável</label>
-              <Select>
-                <SelectTrigger className="filter-select">
-                  <SelectValue placeholder="Digite para buscar" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="dr-silva">Dr. Silva</SelectItem>
-                  <SelectItem value="dra-santos">Dra. Santos</SelectItem>
-                  <SelectItem value="dr-oliveira">Dr. Oliveira</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="header-content">
+          <h1>
+            <Activity className="header-icon" />
+            Dashboard - Atividade Física e Sedentarismo
+          </h1>
+          <div className="header-actions">
+            {lastUpdated && (
+              <span className="last-updated">
+                Última atualização: {lastUpdated.toLocaleString('pt-BR')}
+              </span>
+            )}
+            <button
+              onClick={handleRefresh}
+              className={`refresh-button ${refreshing ? 'refreshing' : ''}`}
+              disabled={refreshing}
+            >
+              <RefreshCw className={`refresh-icon ${refreshing ? 'spinning' : ''}`} />
+              Atualizar
+            </button>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* KPIs */}
-      <div className="kpis-grid">
-        <KPICard
-          title="Total de Idosos Avaliados"
-          value="245"
-          subtitle="+12% em relação ao mês anterior"
-          trend="up"
-          trendValue="+12%"
-          icon={<Users />}
-        />
-        <KPICard
-          title="Conformidade com OMS"
-          value="62%"
-          subtitle="38% não conformes"
-          trend="down"
-          trendValue="-5%"
-          icon={<Activity />}
-        />
-        <KPICard
-          title="Média de Horas Sedentárias"
-          value="6.8h"
-          subtitle="+0.3h em relação ao mês anterior"
-          trend="up"
-          trendValue="+0.3h"
-          icon={<Clock />}
-        />
+        </div>
       </div>
 
-      {/* Charts */}
+      {/* Summary Cards */}
+      <div className="summary-cards">
+        <div className="summary-card">
+          <div className="card-icon users">
+            <Users />
+          </div>
+          <div className="card-content">
+            <h3>Total Avaliados</h3>
+            <p className="card-value">{data.summary?.total_patients_evaluated || 0}</p>
+            <span className="card-subtitle">Idosos cadastrados</span>
+          </div>
+        </div>
+
+        <div className="summary-card">
+          <div className="card-icon compliance">
+            <CheckCircle />
+          </div>
+          <div className="card-content">
+            <h3>Conformidade OMS</h3>
+            <p className="card-value">{data.summary?.who_compliance_percentage || 0}%</p>
+            <span className="card-subtitle">
+              {data.summary?.compliant_patients || 0} de {data.summary?.total_evaluations || 0} avaliações
+            </span>
+          </div>
+        </div>
+
+        <div className="summary-card">
+          <div className="card-icon sedentary">
+            <Clock />
+          </div>
+          <div className="card-content">
+            <h3>Média Sedentária</h3>
+            <p className="card-value">{data.summary?.average_sedentary_hours || 0}h</p>
+            <span className="card-subtitle">Horas por dia</span>
+          </div>
+        </div>
+
+        <div className="summary-card">
+          <div className="card-icon critical">
+            <AlertTriangle />
+          </div>
+          <div className="card-content">
+            <h3>Pacientes Críticos</h3>
+            <p className="card-value">{data.criticalPatients.length}</p>
+            <span className="card-subtitle">&gt;10h sedentárias/dia</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Charts Grid */}
       <div className="charts-grid">
-        {/* Distribuição de Atividade Física */}
-        <Card className="chart-card">
-          <CardHeader>
-            <CardTitle>Distribuição de Atividade Física</CardTitle>
-          </CardHeader>
-          <CardContent>
+        {/* Activity Distribution */}
+        <div className="chart-container">
+          <div className="chart-header">
+            <h3>Distribuição por Intensidade de Atividade</h3>
+            <span className="chart-subtitle">Minutos semanais médios</span>
+          </div>
+          <div className="chart-content">
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={activityDistributionData}
+                  data={activityChartData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
                   outerRadius={100}
-                  paddingAngle={2}
+                  fill="#8884d8"
                   dataKey="value"
+                  label={({ name, value }) => `${name}: ${value}min`}
                 >
-                  {activityDistributionData.map((entry, index) => (
+                  {activityChartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                <Legend content={renderCustomLegend} />
+                <Tooltip formatter={(value) => [`${value} min/semana`, 'Média']} />
+                <Legend />
               </PieChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Horas Sedentárias por Faixa Etária */}
-        <Card className="chart-card">
-          <CardHeader>
-            <CardTitle>Horas Sedentárias por Faixa Etária</CardTitle>
-          </CardHeader>
-          <CardContent>
+        {/* WHO Compliance */}
+        <div className="chart-container">
+          <div className="chart-header">
+            <h3>Conformidade com Diretrizes OMS</h3>
+            <span className="chart-subtitle">≥150min moderada OU ≥75min vigorosa/semana</span>
+          </div>
+          <div className="chart-content">
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart
-                data={sedentaryByAgeData}
-                layout="vertical"
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
+              <PieChart>
+                <Pie
+                  data={whoComplianceData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, percentage }) => `${name}: ${percentage}%`}
+                >
+                  {whoComplianceData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value, name, props) => [
+                  `${value} pacientes (${props.payload.percentage}%)`,
+                  name
+                ]} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Sedentary by Age */}
+        <div className="chart-container">
+          <div className="chart-header">
+            <h3>Horas Sedentárias por Faixa Etária</h3>
+            <span className="chart-subtitle">Média diária por grupo</span>
+          </div>
+          <div className="chart-content">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={data.sedentaryByAge}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" domain={[0, 12]} />
-                <YAxis dataKey="ageRange" type="category" />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="hours" fill="#eab308" radius={[0, 4, 4, 0]} />
+                <XAxis dataKey="age_range" />
+                <YAxis />
+                <Tooltip
+                  formatter={(value, name) => [
+                    `${value}h`,
+                    name === 'average_sedentary_hours' ? 'Média Sedentária' : name
+                  ]}
+                  labelFormatter={(label) => `Faixa etária: ${label}`}
+                />
+                <Legend />
+                <Bar
+                  dataKey="average_sedentary_hours"
+                  fill="#FF9800"
+                  name="Horas Sedentárias"
+                />
               </BarChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+
+        {/* Sedentary Trend */}
+        <div className="chart-container">
+          <div className="chart-header">
+            <h3>Tendência de Sedentarismo (12 meses)</h3>
+            <span className="chart-subtitle">Diabéticos vs Hipertensos</span>
+          </div>
+          <div className="chart-content">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={sedentaryTrendData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip
+                  formatter={(value, name) => [
+                    `${value}h`,
+                    name === 'diabetics' ? 'Diabéticos' : 'Hipertensos'
+                  ]}
+                  labelFormatter={(label) => `Mês: ${label}`}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="diabetics"
+                  stroke="#2196F3"
+                  strokeWidth={2}
+                  name="Diabéticos"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="hypertensives"
+                  stroke="#FF5722"
+                  strokeWidth={2}
+                  name="Hipertensos"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
 
-      {/* Tendência de Sedentarismo */}
-      <Card className="chart-card-full">
-        <CardHeader>
-          <CardTitle>Tendência de Sedentarismo (12 meses)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart
-              data={sedentaryTrendData}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis domain={[0, 8]} />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="diabetes"
-                stroke="#ef4444"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                name="Diabetes"
-              />
-              <Line
-                type="monotone"
-                dataKey="hipertensao"
-                stroke="#14b8a6"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                name="Hipertensão"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* Tabela de Pacientes em Risco */}
-      <Card className="table-card">
-        <CardHeader>
-          <CardTitle>Lista de Pacientes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Idade</TableHead>
-                <TableHead>Pontuação FACT-F</TableHead>
-                <TableHead>Horas Sedentárias/dia</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {patientsAtRisk.map((patient) => (
-                <TableRow key={patient.id}>
-                  <TableCell className="font-medium">{patient.name}</TableCell>
-                  <TableCell>{patient.age}</TableCell>
-                  <TableCell>{patient.factScore}</TableCell>
-                  <TableCell>
-                    <div className="sedentary-hours-cell">
-                      {patient.sedentaryHours}h
-                      {patient.sedentaryHours >= 8.5 && (
-                        <AlertTriangle className="risk-icon" size={16} />
+      {/* Critical Patients Table */}
+      {data.criticalPatients.length > 0 && (
+        <div className="critical-patients-section">
+          <div className="section-header">
+            <h3>
+              <AlertTriangle className="section-icon" />
+              Pacientes com Sedentarismo Crítico
+            </h3>
+            <span className="section-subtitle">
+              Pacientes com mais de 10 horas sedentárias por dia
+            </span>
+          </div>
+          <div className="table-container">
+            <table className="critical-patients-table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Idade</th>
+                  <th>Bairro</th>
+                  <th>Horas Sedentárias</th>
+                  <th>Conformidade OMS</th>
+                  <th>Data Avaliação</th>
+                  <th>Unidade de Saúde</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.criticalPatients.map((patient) => (
+                  <tr key={patient.patient_id}>
+                    <td>{patient.patient_name}</td>
+                    <td>{patient.age} anos</td>
+                    <td>{patient.bairro}</td>
+                    <td className="sedentary-hours">
+                      {patient.sedentary_hours_per_day}h
+                    </td>
+                    <td>
+                      {patient.who_compliance ? (
+                        <span className="compliance-badge compliant">
+                          <CheckCircle size={16} />
+                          Conforme
+                        </span>
+                      ) : (
+                        <span className="compliance-badge non-compliant">
+                          <XCircle size={16} />
+                          Não Conforme
+                        </span>
                       )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        patient.status === "Abaixo" ? "destructive" : "secondary"
-                      }
-                    >
-                      {patient.status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
+                    </td>
+                    <td>{new Date(patient.evaluation_date).toLocaleDateString('pt-BR')}</td>
+                    <td>{patient.health_unit || 'N/A'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* All Patients Summary */}
+      <div className="all-patients-section">
+        <div className="section-header">
+          <h3>
+            <Users className="section-icon" />
+            Resumo de Todos os Pacientes
+          </h3>
+          <span className="section-subtitle">
+            {data.allPatients.length} pacientes cadastrados
+          </span>
+        </div>
+        <div className="table-container">
+          <table className="patients-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Idade</th>
+                <th>Bairro</th>
+                <th>Avaliado</th>
+                <th>Última Avaliação</th>
+                <th>Risco Sedentário</th>
+                <th>OMS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.allPatients.map((patient) => (
+                <tr key={patient.id}>
+                  <td>{patient.nome_completo}</td>
+                  <td>{patient.idade} anos</td>
+                  <td>{patient.bairro}</td>
+                  <td>
+                    {patient.has_evaluation ? (
+                      <span className="status-badge evaluated">Sim</span>
+                    ) : (
+                      <span className="status-badge not-evaluated">Não</span>
+                    )}
+                  </td>
+                  <td>
+                    {patient.last_evaluation_date
+                      ? new Date(patient.last_evaluation_date).toLocaleDateString('pt-BR')
+                      : 'N/A'
+                    }
+                  </td>
+                  <td>
+                    {patient.sedentary_risk_level ? (
+                      <span
+                        className="risk-badge"
+                        style={{
+                          backgroundColor: getRiskLevelColor(patient.sedentary_risk_level),
+                          color: 'white'
+                        }}
+                      >
+                        {patient.sedentary_risk_level}
+                      </span>
+                    ) : (
+                      'N/A'
+                    )}
+                  </td>
+                  <td>
+                    {patient.who_compliance !== undefined ? (
+                      patient.who_compliance ? (
+                        <CheckCircle className="compliance-icon compliant" size={16} />
+                      ) : (
+                        <XCircle className="compliance-icon non-compliant" size={16} />
+                      )
+                    ) : (
+                      'N/A'
+                    )}
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.auth import auth_router
 from api.user import user_router
-from api.ivcf import health_unit_router, ivcf_patient_router, ivcf_evaluation_router, ivcf_dashboard_router
+from api.health_unit import router as health_unit_router
+from api.ivcf import ivcf_patient_router, ivcf_evaluation_router, ivcf_dashboard_router
 from api.factf import factf_patient_router, factf_evaluation_router, factf_dashboard_router
 from api.physical_activity import physical_activity_patient_router, physical_activity_evaluation_router, physical_activity_dashboard_router
 from config import settings

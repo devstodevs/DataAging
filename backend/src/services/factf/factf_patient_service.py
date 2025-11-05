@@ -4,7 +4,7 @@ from typing import List, Optional
 from datetime import date
 from schemas.factf.factf_patient import FACTFPatientCreate, FACTFPatientUpdate
 from db.factf import factf_patient_crud
-from db.ivcf import health_unit_crud
+from db import health_unit_crud
 from models.factf.factf_patient import FACTFPatient
 
 

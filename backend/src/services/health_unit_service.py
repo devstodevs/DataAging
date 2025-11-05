@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from typing import List, Optional
-from schemas.ivcf.health_unit import HealthUnitCreate, HealthUnitUpdate, HealthUnitResponse
-from db.ivcf import health_unit_crud
-from models.ivcf.health_unit import HealthUnit
+from schemas.health_unit import HealthUnitCreate, HealthUnitUpdate, HealthUnitResponse
+from db import health_unit_crud
+from models.health_unit import HealthUnit
 
 
 class HealthUnitService:

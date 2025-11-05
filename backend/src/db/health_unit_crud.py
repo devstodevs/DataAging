@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from typing import List, Optional
-from models.ivcf.health_unit import HealthUnit
+from models.health_unit import HealthUnit
 
 
 def create_health_unit(db: Session, health_unit_data: dict) -> HealthUnit:

@@ -1,9 +1,3 @@
-from .health_unit import (
-    HealthUnitBase,
-    HealthUnitCreate,
-    HealthUnitUpdate,
-    HealthUnitResponse
-)
 from .ivcf_patient import (
     IVCFPatientBase,
     IVCFPatientCreate,
@@ -35,10 +29,6 @@ from .ivcf_dashboard import (
 )
 
 __all__ = [
-    "HealthUnitBase",
-    "HealthUnitCreate",
-    "HealthUnitUpdate",
-    "HealthUnitResponse",
     "IVCFPatientBase",
     "IVCFPatientCreate",
     "IVCFPatientUpdate",

@@ -1,5 +1,6 @@
 from .user import User
-from .ivcf import HealthUnit, IVCFPatient, IVCFEvaluation
+from .health_unit import HealthUnit
+from .ivcf import IVCFPatient, IVCFEvaluation
 from .factf import FACTFPatient, FACTFEvaluation
 from .physical_activity import PhysicalActivityPatient, PhysicalActivityEvaluation
 

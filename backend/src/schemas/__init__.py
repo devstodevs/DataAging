@@ -7,11 +7,13 @@ from .user import (
     GestorData,
     TecnicoData
 )
-from .ivcf import (
+from .health_unit import (
     HealthUnitBase,
     HealthUnitCreate,
     HealthUnitUpdate,
-    HealthUnitResponse,
+    HealthUnitResponse
+)
+from .ivcf import (
     IVCFPatientBase,
     IVCFPatientCreate,
     IVCFPatientUpdate,

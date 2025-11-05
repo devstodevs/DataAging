@@ -1,6 +1,7 @@
 from .user import UserService
 from .auth import AuthService
-from .ivcf import HealthUnitService, IVCFPatientService, IVCFEvaluationService, IVCFDashboardService
+from .health_unit_service import HealthUnitService
+from .ivcf import IVCFPatientService, IVCFEvaluationService, IVCFDashboardService
 from .factf import FACTFPatientService, FACTFEvaluationService, FACTFDashboardService
 
 __all__ = [

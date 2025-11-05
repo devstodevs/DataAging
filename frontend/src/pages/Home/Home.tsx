@@ -112,12 +112,16 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                 title={test.title}
                 description={test.description}
                 onClick={() => {
-                  if (test.id === "ivcf-20" && onNavigate) {
-                    onNavigate("ivcf-dashboard");
-                  } else if (test.id === "atividade-fisica" && onNavigate) {
-                    onNavigate("physical-activity");
-                  } else {
-                    console.log(`Navegando para: ${test.link}`);
+                  if (onNavigate) {
+                    if (test.id === "ivcf-20") {
+                      onNavigate("ivcf-dashboard");
+                    } else if (test.id === "atividade-fisica") {
+                      onNavigate("physical-activity-dashboard");
+                    } else if (test.id === "fact-f") {
+                      onNavigate("factf-dashboard");
+                    } else {
+                      console.log(`Teste ${test.id} ainda não implementado`);
+                    }
                   }
                 }}
               />

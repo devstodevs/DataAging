@@ -214,8 +214,20 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     return getFilteredPatients(frontendFilters);
   }, [getFilteredPatients, filters, allPatients]);
 
-  const patientsList = filteredPatients;
+  // Paginação
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(10);
+  
   const totalPatients = filteredPatients.length;
+  const totalPages = Math.ceil(totalPatients / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const patientsList = filteredPatients.slice(startIndex, endIndex);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters.ageRange, filters.region, filters.riskClassification, filters.administrativeUnit]);
 
   // Handlers
   const handleFilterChange = (filterType: string, value: any) => {
@@ -564,6 +576,63 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
           ) : (
             <div className="flex items-center justify-center py-8 text-gray-500">
               Nenhum paciente encontrado
+            </div>
+          )}
+          
+          {/* Paginação */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4 pt-4 border-t">
+              <div className="text-sm text-gray-600">
+                Mostrando {startIndex + 1} a {Math.min(endIndex, totalPatients)} de {totalPatients} pacientes
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Anterior
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(page => {
+                      // Show first page, last page, current page, and pages around current
+                      return page === 1 || 
+                             page === totalPages || 
+                             Math.abs(page - currentPage) <= 1;
+                    })
+                    .map((page, index, array) => {
+                      // Add ellipsis if there's a gap
+                      const prevPage = array[index - 1];
+                      const showEllipsis = prevPage && page - prevPage > 1;
+                      
+                      return (
+                        <React.Fragment key={page}>
+                          {showEllipsis && (
+                            <span className="px-2 text-gray-400">...</span>
+                          )}
+                          <Button
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(page)}
+                            className="min-w-[40px]"
+                          >
+                            {page}
+                          </Button>
+                        </React.Fragment>
+                      );
+                    })}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Próxima
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>

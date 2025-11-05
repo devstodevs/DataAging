@@ -457,15 +457,15 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(page => {
                       // Show first page, last page, current page, and pages around current
-                      return page === 1 || 
-                             page === totalPages || 
-                             Math.abs(page - currentPage) <= 1;
+                      return page === 1 ||
+                        page === totalPages ||
+                        Math.abs(page - currentPage) <= 1;
                     })
                     .map((page, index, array) => {
                       // Add ellipsis if there's a gap
                       const prevPage = array[index - 1];
                       const showEllipsis = prevPage && page - prevPage > 1;
-                      
+
                       return (
                         <React.Fragment key={page}>
                           {showEllipsis && (

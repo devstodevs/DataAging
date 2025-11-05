@@ -327,3 +327,4 @@ class PhysicalActivityApiService {
 }
 
 export const physicalActivityApiService = new PhysicalActivityApiService();
+export { PhysicalActivityApiService };

@@ -19,7 +19,10 @@ def create_physical_activity_evaluation(
     db: Session = Depends(get_db)
 ):
     """Create a new physical activity evaluation for a patient"""
-    return PhysicalActivityEvaluationService.create_evaluation(db, patient_id, evaluation_data)
+    # Add patient_id to evaluation data
+    evaluation_dict = evaluation_data.model_dump()
+    evaluation_dict['patient_id'] = patient_id
+    return PhysicalActivityEvaluationService.create_evaluation(db, evaluation_dict)
 
 
 @router.get("/physical-activity-evaluations/{evaluation_id}", response_model=PhysicalActivityEvaluationResponse)
@@ -48,7 +51,7 @@ def get_latest_patient_evaluation(
     db: Session = Depends(get_db)
 ):
     """Get the latest evaluation for a patient"""
-    return PhysicalActivityEvaluationService.get_latest_evaluation(db, patient_id)
+    return PhysicalActivityEvaluationService.get_latest_evaluation_by_patient(db, patient_id)
 
 
 @router.put("/physical-activity-evaluations/{evaluation_id}", response_model=PhysicalActivityEvaluationResponse)
@@ -58,7 +61,8 @@ def update_physical_activity_evaluation(
     db: Session = Depends(get_db)
 ):
     """Update a physical activity evaluation"""
-    return PhysicalActivityEvaluationService.update_evaluation(db, evaluation_id, evaluation_data)
+    update_dict = evaluation_data.model_dump(exclude_unset=True)
+    return PhysicalActivityEvaluationService.update_evaluation(db, evaluation_id, update_dict)
 
 
 @router.delete("/physical-activity-evaluations/{evaluation_id}")

@@ -77,17 +77,17 @@ class PhysicalActivityDashboardService:
             "light_activity": {
                 "label": "Leve",
                 "average_weekly_minutes": round(activity_stats.get('avg_light_weekly', 0), 1),
-                "color": "#E3F2FD"
+                "color": "#2A9D90"
             },
             "moderate_activity": {
                 "label": "Moderada", 
                 "average_weekly_minutes": round(activity_stats.get('avg_moderate_weekly', 0), 1),
-                "color": "#2196F3"
+                "color": "#E76E50"
             },
             "vigorous_activity": {
                 "label": "Vigorosa",
                 "average_weekly_minutes": round(activity_stats.get('avg_vigorous_weekly', 0), 1),
-                "color": "#0D47A1"
+                "color": "#274754"
             }
         }
     
@@ -133,9 +133,6 @@ class PhysicalActivityDashboardService:
     @staticmethod
     def get_sedentary_trend(db: Session, months: int = 12) -> Dict[str, List[Dict[str, Any]]]:
         """Get sedentary trend over time for diabetics and hypertensives"""
-        # Get monthly data
-        monthly_counts = get_monthly_evaluation_counts(db, months)
-        
         # Get patients with diabetes and hypertension
         diabetic_patients = get_patients_with_conditions(db, ["diabetes", "diabético", "diabética"])
         hypertensive_patients = get_patients_with_conditions(db, ["hipertensão", "hipertenso", "hipertensa", "pressão alta"])
@@ -146,43 +143,43 @@ class PhysicalActivityDashboardService:
         # Calculate trends for each condition
         start_date = date.today() - timedelta(days=months * 30)
         
-        # Get monthly averages for diabetics
+        # Get monthly averages for diabetics using SQLite-compatible date functions
         diabetic_trend = db.query(
-            func.date_trunc('month', PhysicalActivityEvaluation.data_avaliacao).label('month'),
+            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao).label('month'),
             func.avg(PhysicalActivityEvaluation.sedentary_hours_per_day).label('avg_sedentary')
         ).filter(
             and_(
-                PhysicalActivityEvaluation.patient_id.in_(diabetic_ids),
+                PhysicalActivityEvaluation.patient_id.in_(diabetic_ids) if diabetic_ids else False,
                 PhysicalActivityEvaluation.data_avaliacao >= start_date
             )
         ).group_by(
-            func.date_trunc('month', PhysicalActivityEvaluation.data_avaliacao)
+            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao)
         ).order_by('month').all()
         
-        # Get monthly averages for hypertensives
+        # Get monthly averages for hypertensives using SQLite-compatible date functions
         hypertensive_trend = db.query(
-            func.date_trunc('month', PhysicalActivityEvaluation.data_avaliacao).label('month'),
+            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao).label('month'),
             func.avg(PhysicalActivityEvaluation.sedentary_hours_per_day).label('avg_sedentary')
         ).filter(
             and_(
-                PhysicalActivityEvaluation.patient_id.in_(hypertensive_ids),
+                PhysicalActivityEvaluation.patient_id.in_(hypertensive_ids) if hypertensive_ids else False,
                 PhysicalActivityEvaluation.data_avaliacao >= start_date
             )
         ).group_by(
-            func.date_trunc('month', PhysicalActivityEvaluation.data_avaliacao)
+            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao)
         ).order_by('month').all()
         
         return {
             "diabetics": [
                 {
-                    "month": result.month.strftime("%Y-%m"),
+                    "month": result.month,
                     "average_sedentary_hours": round(float(result.avg_sedentary), 1)
                 }
                 for result in diabetic_trend
             ],
             "hypertensives": [
                 {
-                    "month": result.month.strftime("%Y-%m"),
+                    "month": result.month,
                     "average_sedentary_hours": round(float(result.avg_sedentary), 1)
                 }
                 for result in hypertensive_trend

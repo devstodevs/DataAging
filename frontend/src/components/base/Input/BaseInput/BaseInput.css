@@ -140,10 +140,14 @@
 
 .input-icon:first-child {
   left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .input-icon:last-child {
   right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /* Icon variants */
@@ -166,11 +170,26 @@
 
 .input-icon.error-icon {
   color: #ef4444;
+  background: none !important;
+  cursor: default;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .input-icon.error-icon:hover {
-  color: #dc2626;
-  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  background: none !important;
+}
+
+.input-icon.error-icon svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+  flex-shrink: 0;
 }
 
 .input-icon.custom-icon {

@@ -90,6 +90,8 @@ const Login: React.FC<LoginProps> = ({ onNavigateToRegister, onNavigateToPasswor
               value={cpf}
               onChange={setCpf}
               required
+              autoComplete="username"
+              name="cpf"
             />
           </div>
 
@@ -102,6 +104,8 @@ const Login: React.FC<LoginProps> = ({ onNavigateToRegister, onNavigateToPasswor
               onChange={setPassword}
               required
               iconPosition="right"
+              autoComplete="current-password"
+              name="password"
             />
           </div>
 

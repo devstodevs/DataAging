@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LogOut, FileText, LayoutDashboard, BarChart3, Activity, Heart, User } from "lucide-react";
+import { LogOut, LayoutDashboard, BarChart3, Activity, Heart, User } from "lucide-react";
 import "./App.css";
 import ComponentExamples from "./pages/ComponentExamples/ComponentExamples";
 import Login from "./pages/Login/Login";
@@ -49,7 +49,7 @@ const AuthenticatedApp: React.FC = () => {
     { id: "ivcf-dashboard", label: "Teste IVCF-20", icon: BarChart3 },
     { id: "physical-activity", label: "Atividade Física", icon: Activity },
     { id: "factf-dashboard", label: "Teste FACT-F", icon: Heart },
-    { id: "examples", label: "Exemplos", icon: FileText },
+    //{ id: "examples", label: "Exemplos", icon: FileText },
   ];
 
   return (

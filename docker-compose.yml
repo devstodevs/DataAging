@@ -1,4 +1,5 @@
 services:
+  # Database Service
   pgtecnoaging:
     image: postgres:16-alpine
     container_name: pgdataaging
@@ -9,18 +10,57 @@ services:
       POSTGRES_USER: pgdataaging
       POSTGRES_PASSWORD: "testing"
     ports:
-      - 55434:5434
+      - "55434:5434"
     volumes:
       - dataaging-volume:/var/lib/postgresql/data
-      #- ./pgtecnoaging/init-tecnoaging.sh:/docker-entrypoint-initdb.d/init-tecnoaging.sh
-      #- ./pgtecnoaging/init-pg-tecnoaging.sql:/tmp/init-pg-tecnoaging.sql
     networks:
-      - dataging
+      - dataaging-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgdataaging -d pgdataaging -p 5434"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Backend Service
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://pgdataaging:testing@pgtecnoaging:5434/pgdataaging
+    networks:
+      - dataaging-network
+    depends_on:
+      pgtecnoaging:
+        condition: service_healthy
+
+  # Frontend Service
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    networks:
+      - dataaging-network
+    depends_on:
+      - backend
+
+  # Reverse Proxy Service
+  proxy:
+    build: ./proxy
+    container_name: proxy
+    ports:
+      - "80:80"
+    networks:
+      - dataaging-network
+    depends_on:
+      - frontend
+      - backend
+
 volumes:
   dataaging-volume:
     driver: local
     name: dataaging-volume
+
 networks:
-  dataging:
-    name: "dataging"
+  dataaging-network:
     driver: bridge

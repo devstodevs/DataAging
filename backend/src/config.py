@@ -5,7 +5,8 @@ class Settings(BaseSettings):
     """Application settings and configuration"""
     
     # Database
-    DATABASE_URL: str = "sqlite:///./dataaging.db"
+    # DATABASE_URL: str = "sqlite:///./dataaging.db"
+    DATABASE_URL: str = "postgresql://pgdataaging:testing@localhost:55434/pgdataaging"
     
     # Security
     SECRET_KEY: str = "your-secret-key-change-in-production"

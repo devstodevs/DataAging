@@ -230,9 +230,9 @@ export interface FACTFBarChartData {
 }
 
 // Form Types
-export interface FACTFPatientFormData extends FACTFPatientCreate { }
+export type FACTFPatientFormData = FACTFPatientCreate;
 
-export interface FACTFEvaluationFormData extends Omit<FACTFEvaluationCreate, 'patient_id'> { }
+export type FACTFEvaluationFormData = Omit<FACTFEvaluationCreate, 'patient_id'>;
 
 // API Response Types
 export interface FACTFApiResponse<T> {

@@ -8,7 +8,18 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import type { TooltipProps } from "recharts";
 import "./RadarChart.css";
+
+interface CustomTooltipProps extends TooltipProps<number, string> {
+  active?: boolean;
+  payload?: Array<{
+    payload: {
+      domain: string;
+      score: number | string;
+    };
+  }>;
+}
 
 interface RadarData {
   domain: string;
@@ -37,7 +48,7 @@ const RadarChartComponent: React.FC<RadarChartProps> = ({
     if (maxFullMark === 8) return [0, 8];
     return [0, maxFullMark];
   })();
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       const isIVCFScale = chartDomain[0] === 0 && chartDomain[1] === 8;

@@ -3,11 +3,10 @@ import "./CurrencyInput.css";
 import BaseInput, { type BaseInputProps } from "../BaseInput";
 import { getMaskConfig } from "../shared";
 
-export interface CurrencyInputProps
-  extends Omit<
-    BaseInputProps,
-    "type" | "mask" | "customErrorMessage" | "maxLength"
-  > {}
+export type CurrencyInputProps = Omit<
+  BaseInputProps,
+  "type" | "mask" | "customErrorMessage" | "maxLength"
+>;
 
 const CurrencyInput: React.FC<CurrencyInputProps> = ({
   placeholder,

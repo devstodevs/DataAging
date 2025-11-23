@@ -58,7 +58,7 @@ export interface IVCFDataActions {
 export interface IVCFDataHelpers {
   getRadarChartData: () => RadarChartData[];
   getLineChartData: () => LineChartData[];
-  getFilteredPatients: (filters: any) => IVCFPatient[];
+  getFilteredPatients: (filters: IVCFFilters) => IVCFPatient[];
   isAnyLoading: boolean;
   hasAnyError: boolean;
 }

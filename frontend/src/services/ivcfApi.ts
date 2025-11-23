@@ -116,7 +116,7 @@ class IVCFApiService {
     age_range?: string;
     classification?: string;
   }): Promise<{ valid: boolean; errors: string[] }> {
-    const queryParams = this.buildQueryParams(filters as any);
+    const queryParams = this.buildQueryParams(filters as Record<string, string | number | boolean | undefined>);
     const url = `${API_BASE_URL}/ivcf-dashboard/validate-filters${queryParams ? `?${queryParams}` : ''}`;
 
     const response = await fetch(url, {

@@ -230,7 +230,7 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
   }, [filters.ageRange, filters.region, filters.riskClassification, filters.administrativeUnit]);
 
   // Handlers
-  const handleFilterChange = (filterType: string, value: any) => {
+  const handleFilterChange = (filterType: string, value: string | number | undefined) => {
     setFilters((prev) => ({
       ...prev,
       [filterType]: value,

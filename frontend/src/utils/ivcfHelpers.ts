@@ -152,7 +152,7 @@ export const generateRadarColors = (count: number): string[] => {
 /**
  * Processar dados para exportação
  */
-export const prepareDataForExport = (data: any[], filename: string) => {
+export const prepareDataForExport = (data: Record<string, unknown>[], filename: string) => {
   const csvContent = convertToCSV(data);
   downloadCSV(csvContent, filename);
 };
@@ -160,7 +160,7 @@ export const prepareDataForExport = (data: any[], filename: string) => {
 /**
  * Converter dados para CSV
  */
-const convertToCSV = (data: any[]): string => {
+const convertToCSV = (data: Record<string, unknown>[]): string => {
   if (data.length === 0) return '';
 
   const headers = Object.keys(data[0]);
@@ -201,7 +201,7 @@ const downloadCSV = (csvContent: string, filename: string): void => {
 /**
  * Debounce para otimizar chamadas de API
  */
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) => {

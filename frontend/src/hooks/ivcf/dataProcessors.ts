@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { type RadarChartData, type LineChartData, type IVCFFilters, type IVCFPatient } from '../../types/ivcf';
 import { type IVCFDataState } from './types';
 
@@ -10,7 +9,7 @@ interface InternalFilters extends Omit<IVCFFilters, 'age_range' | 'region' | 'cl
 }
 
 export const createDataProcessors = (state: IVCFDataState) => {
-  const getRadarChartData = useCallback((): RadarChartData[] => {
+  const getRadarChartData = (): RadarChartData[] => {
     if (!state.domainDistribution?.domains) return [];
     
     return state.domainDistribution.domains.map(domain => ({
@@ -18,9 +17,9 @@ export const createDataProcessors = (state: IVCFDataState) => {
       score: domain.average_score,
       fullMark: 8, // Escala de 2 a 8 para médias dos domínios
     }));
-  }, [state.domainDistribution]);
+  };
 
-  const getLineChartData = useCallback((): LineChartData[] => {
+  const getLineChartData = (): LineChartData[] => {
     if (!state.monthlyEvolution?.evolution) return [];
     
     return state.monthlyEvolution.evolution.map(month => ({
@@ -29,9 +28,9 @@ export const createDataProcessors = (state: IVCFDataState) => {
       Risco: month.risk,
       Frágil: month.fragile,
     }));
-  }, [state.monthlyEvolution]);
+  };
 
-  const getFilteredPatients = useCallback((filters: InternalFilters): IVCFPatient[] => {
+  const getFilteredPatients = (filters: InternalFilters): IVCFPatient[] => {
     if (!state.allPatients?.critical_patients) return [];
     
     return state.allPatients.critical_patients.filter(patient => {
@@ -80,7 +79,7 @@ export const createDataProcessors = (state: IVCFDataState) => {
       
       return true;
     });
-  }, [state.allPatients]);
+  };
 
   return {
     getRadarChartData,

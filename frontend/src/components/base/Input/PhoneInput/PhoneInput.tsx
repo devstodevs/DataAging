@@ -3,11 +3,10 @@ import "./PhoneInput.css";
 import BaseInput, { type BaseInputProps } from "../BaseInput";
 import { getMaskConfig } from "../shared";
 
-export interface PhoneInputProps
-  extends Omit<
-    BaseInputProps,
-    "type" | "mask" | "customErrorMessage" | "maxLength"
-  > {}
+export type PhoneInputProps = Omit<
+  BaseInputProps,
+  "type" | "mask" | "customErrorMessage" | "maxLength"
+>;
 
 const PhoneInput: React.FC<PhoneInputProps> = ({
   placeholder,

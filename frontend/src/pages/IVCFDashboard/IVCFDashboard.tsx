@@ -200,18 +200,26 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     }
 
     // Criar filtros para o frontend que incluem "all"
-    const frontendFilters = {
+    type InternalFilters = {
+      period_from?: string;
+      period_to?: string;
+      age_range?: '60-70' | '71-80' | '81+' | 'all';
+      region?: string | 'all';
+      classification?: 'Robusto' | 'Em Risco' | 'Frágil' | 'all';
+    };
+    
+    const internalFilters: InternalFilters = {
       period_from: filters.period.from ? formatDateForAPI(filters.period.from) : undefined,
       period_to: filters.period.to ? formatDateForAPI(filters.period.to) : undefined,
-      age_range: filters.ageRange,
-      region: filters.region,
-      classification: filters.riskClassification === "all" ? "all" :
+      age_range: filters.ageRange === 'all' ? 'all' : (filters.ageRange as '60-70' | '71-80' | '81+'),
+      region: filters.region === 'all' ? 'all' : filters.region,
+      classification: filters.riskClassification === "all" ? 'all' :
         filters.riskClassification === "fragile" ? "Frágil" :
           filters.riskClassification === "risk" ? "Em Risco" :
-            filters.riskClassification === "robust" ? "Robusto" : "all"
+            filters.riskClassification === "robust" ? "Robusto" : 'all'
     };
 
-    return getFilteredPatients(frontendFilters);
+    return getFilteredPatients(internalFilters as Parameters<typeof getFilteredPatients>[0]);
   }, [getFilteredPatients, filters, allPatients]);
 
   // Paginação
@@ -230,7 +238,7 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
   }, [filters.ageRange, filters.region, filters.riskClassification, filters.administrativeUnit]);
 
   // Handlers
-  const handleFilterChange = (filterType: string, value: string | number | undefined) => {
+  const handleFilterChange = (filterType: string, value: string | number | DateRange | undefined) => {
     setFilters((prev) => ({
       ...prev,
       [filterType]: value,

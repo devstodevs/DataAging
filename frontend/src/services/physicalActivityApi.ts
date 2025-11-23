@@ -28,7 +28,7 @@ class PhysicalActivityApiService {
     };
   }
 
-  private buildQueryParams(filters: Record<string, string | number | boolean | undefined>): string {
+  private buildQueryParams(filters: PhysicalActivityFilters | Record<string, string | number | boolean | undefined>): string {
     const params = new URLSearchParams();
 
     Object.entries(filters).forEach(([key, value]) => {

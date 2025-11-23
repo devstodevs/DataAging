@@ -254,6 +254,7 @@ const RegisterUser: React.FC<RegisterUserProps> = ({ onNavigateToLogin }) => {
       setFormData({
         password: "",
         confirmPassword: "",
+        recoveryPassword: "",
         matricula: "",
         nomeCompleto: "",
         cpf: "",

@@ -16,7 +16,7 @@ export { default as PhoneInput } from "./PhoneInput";
 export type { PhoneInputProps } from "./PhoneInput";
 
 export { default as CepInput } from "./CepInput";
-export type { CepInputProps } from "./CepInput";
+export type { CEPInputProps as CepInputProps } from "./CepInput";
 
 export { default as DocumentInput } from "./DocumentInput";
 export type { DocumentInputProps, DocumentType } from "./DocumentInput";

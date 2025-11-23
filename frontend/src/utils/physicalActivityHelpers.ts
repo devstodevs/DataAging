@@ -273,14 +273,14 @@ export const calculateSummaryStats = (patients: PatientSummary[]) => {
   }
 
   const totalPatients = patients.length;
-  const totalSedentaryHours = patients.reduce((sum, p) => sum + (p.sedentary_hours_per_day || 0), 0);
+  const totalSedentaryHours = patients.reduce((sum, p) => sum + (p.sedentary_hours_per_day ?? 0), 0);
   const averageSedentaryHours = totalSedentaryHours / totalPatients;
   
   const compliantCount = patients.filter(p => p.who_compliance === true).length;
   const compliancePercentage = (compliantCount / totalPatients) * 100;
   
   const criticalCount = patients.filter(p => 
-    p.sedentary_risk_level === 'Crítico' || p.sedentary_hours_per_day >= 10
+    p.sedentary_risk_level === 'Crítico' || (p.sedentary_hours_per_day ?? 0) >= 10
   ).length;
 
   return {
@@ -292,6 +292,7 @@ export const calculateSummaryStats = (patients: PatientSummary[]) => {
 };
 
 interface FilterablePatient {
+  id?: number;
   idade?: number;
   age?: number;
   sedentary_risk_level?: SedentaryRiskLevel;
@@ -299,6 +300,9 @@ interface FilterablePatient {
   nome_completo?: string;
   patient_name?: string;
   cpf?: string;
+  bairro?: string;
+  sedentary_hours_per_day?: number;
+  last_evaluation_date?: string;
 }
 
 /**
@@ -315,7 +319,8 @@ export const filterPatients = (patients: FilterablePatient[], filters: {
   return patients.filter(patient => {
     // Filtro por faixa etária
     if (filters.ageRange && filters.ageRange !== 'all') {
-      const age = patient.idade || patient.age;
+      const age = patient.idade ?? patient.age;
+      if (age === undefined) return false;
       if (filters.ageRange === '60-70' && (age < 60 || age > 70)) return false;
       if (filters.ageRange === '71-80' && (age < 71 || age > 80)) return false;
       if (filters.ageRange === '81+' && age < 81) return false;
@@ -368,8 +373,8 @@ export const sortPatients = (patients: FilterablePatient[], sortBy: string, sort
         valueB = b.idade || b.age || 0;
         break;
       case 'sedentaryHours':
-        valueA = a.sedentary_hours_per_day || 0;
-        valueB = b.sedentary_hours_per_day || 0;
+        valueA = a.sedentary_hours_per_day ?? 0;
+        valueB = b.sedentary_hours_per_day ?? 0;
         break;
       case 'riskLevel': {
         const riskOrder = { 'Baixo': 1, 'Moderado': 2, 'Alto': 3, 'Crítico': 4 };

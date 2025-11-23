@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useEffect, ReactNode } from "react";
+import React, { useState, useCallback, useEffect } from "react";
+import type { ReactNode } from "react";
 
 interface ExampleContainerProps {
   children: ReactNode;

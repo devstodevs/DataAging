@@ -159,13 +159,9 @@ const PhysicalActivityDashboard: React.FC<PhysicalActivityDashboardProps> = ({
     return null;
   };
 
-  interface LegendPayload {
-    color: string;
-    value: string;
-  }
-
-  const renderCustomLegend = (props: { payload?: LegendPayload[] }) => {
-    const { payload } = props;
+  const renderCustomLegend = (props: unknown) => {
+    const legendProps = props as { payload?: Array<{ color?: string; value?: string }> };
+    const { payload } = legendProps;
     if (!payload) return null;
     return (
       <div className="custom-legend">
@@ -173,9 +169,9 @@ const PhysicalActivityDashboard: React.FC<PhysicalActivityDashboardProps> = ({
           <div key={`legend-${index}`} className="legend-item">
             <div
               className="legend-color"
-              style={{ backgroundColor: entry.color }}
+              style={{ backgroundColor: entry.color || '#000' }}
             />
-            <span className="legend-text">{entry.value}</span>
+            <span className="legend-text">{entry.value || ''}</span>
           </div>
         ))}
       </div>

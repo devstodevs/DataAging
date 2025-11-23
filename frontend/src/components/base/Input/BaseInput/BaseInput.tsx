@@ -102,53 +102,65 @@ const BaseInput: React.FC<BaseInputProps> = ({
   const renderIcon = (
     iconType: "password" | "success" | "error" | "custom"
   ) => {
-    const iconProps = {
-      password: {
-        condition: type === "password",
-        element: "button" as const,
-        className: "input-icon password-toggle",
-        onClick: togglePasswordVisibility,
-        tabIndex: -1,
-        icon: showPassword ? ICONS.eyeClosed : ICONS.eyeOpen,
-      },
-      success: {
-        condition:
-          (success || isValid) &&
-          !error &&
-          shouldShowIcons &&
-          !disableSuccessValidation,
-        element: "div" as const,
-        className: "input-icon success-icon",
-        icon: ICONS.success,
-      },
-      error: {
-        condition: (error || (hasValue && !isValid)) && shouldShowIcons,
-        element: "div" as const,
-        className: "input-icon error-icon",
-        icon: ICONS.error,
-      },
-      custom: {
-        condition: icon && !error && !success && type !== "password",
-        element: "button" as const,
-        className: `input-icon custom-icon ${onIconClick ? "clickable" : ""}`,
-        onClick: onIconClick,
-        tabIndex: onIconClick ? 0 : -1,
-        icon,
-      },
-    };
+    if (iconType === "password" && type === "password") {
+      return (
+        <button
+          type="button"
+          className="input-icon password-toggle"
+          onClick={togglePasswordVisibility}
+          tabIndex={-1}
+        >
+          {showPassword ? ICONS.eyeClosed : ICONS.eyeOpen}
+        </button>
+      );
+    }
 
-    const config = iconProps[iconType];
-    if (!config.condition) return null;
+    if (
+      iconType === "success" &&
+      (success || isValid) &&
+      !error &&
+      shouldShowIcons &&
+      !disableSuccessValidation
+    ) {
+      return (
+        <div className="input-icon success-icon">
+          {ICONS.success}
+        </div>
+      );
+    }
 
-    const Element = config.element;
-    const commonProps = {
-      className: config.className,
-      ...(config.onClick && { onClick: config.onClick }),
-      ...(config.tabIndex !== undefined && { tabIndex: config.tabIndex }),
-      ...(config.element === "button" && { type: "button" as const }),
-    };
+    if (
+      iconType === "error" &&
+      (error || (hasValue && !isValid)) &&
+      shouldShowIcons
+    ) {
+      return (
+        <div className="input-icon error-icon">
+          {ICONS.error}
+        </div>
+      );
+    }
 
-    return <Element {...commonProps}>{config.icon}</Element>;
+    if (
+      iconType === "custom" &&
+      icon &&
+      !error &&
+      !success &&
+      type !== "password"
+    ) {
+      return (
+        <button
+          type="button"
+          className={`input-icon custom-icon ${onIconClick ? "clickable" : ""}`}
+          onClick={onIconClick}
+          tabIndex={onIconClick ? 0 : -1}
+        >
+          {icon}
+        </button>
+      );
+    }
+
+    return null;
   };
 
   const hasPasswordIcon = type === "password";
@@ -168,9 +180,9 @@ const BaseInput: React.FC<BaseInputProps> = ({
 
   const finalInputClasses = buildClassNames(
     inputClasses,
-    disabled && "disabled",
-    hasLeftIcon && "icon-left",
-    hasRightIcon && "has-right-icon",
+    disabled ? "disabled" : undefined,
+    hasLeftIcon ? "icon-left" : undefined,
+    hasRightIcon ? "has-right-icon" : undefined,
     className
   );
 

@@ -27,7 +27,7 @@ class FACTFApiService {
     };
   }
 
-  private buildQueryParams(filters: Record<string, string | number | boolean | undefined>): string {
+  private buildQueryParams(filters: FACTFFilters | Record<string, string | number | boolean | undefined>): string {
     const params = new URLSearchParams();
 
     Object.entries(filters).forEach(([key, value]) => {

@@ -6,8 +6,7 @@ from typing import Set
 
 # Create database engine
 engine = create_engine(
-    settings.DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {}
+    settings.DATABASE_URL
 )
 
 # Create session factory
@@ -37,16 +36,4 @@ def _get_sqlite_columns(table_name: str) -> Set[str]:
 
 
 def ensure_schema():
-    """Ensure runtime schema updates for SQLite without a migrations tool.
-
-    Currently ensures the `users.recovery_hashed_password` column exists.
-    Safe to run multiple times.
-    """
-    if "sqlite" in settings.DATABASE_URL:
-        existing = _get_sqlite_columns("users")
-        if existing and "recovery_hashed_password" not in existing:
-            with engine.connect() as conn:
-                with conn.begin():
-                    conn.exec_driver_sql(
-                        "ALTER TABLE users ADD COLUMN recovery_hashed_password VARCHAR"
-                    )
+    pass

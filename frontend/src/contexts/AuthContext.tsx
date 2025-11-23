@@ -141,7 +141,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (errorData.detail) {
           if (Array.isArray(errorData.detail)) {
             // Erros de validação do Pydantic
-            const errorMessages = errorData.detail.map((err: any) => 
+            interface ValidationError {
+              loc?: (string | number)[];
+              msg?: string;
+            }
+            const errorMessages = (errorData.detail as ValidationError[]).map((err) => 
               `${err.loc?.join('.')}: ${err.msg}`
             ).join(', ');
             throw new Error(errorMessages);
@@ -178,6 +182,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 };
 
 // Hook para usar o contexto
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {

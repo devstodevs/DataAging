@@ -9,6 +9,9 @@ import {
   type FACTFPatientList,
   type FACTFEvaluation,
   type FACTFFilters,
+  type FACTFRadarChartData,
+  type FACTFLineChartData,
+  type FACTFBarChartData,
 } from '../../types/factf';
 
 export interface FACTFDataState {
@@ -81,16 +84,16 @@ export interface FACTFDataFetchers {
 
 export interface FACTFDataProcessors {
   // Data transformation methods
-  getProcessedSummary: () => any;
-  getProcessedCriticalPatients: () => any;
-  getProcessedFatigueDistribution: () => any;
-  getProcessedMonthlyEvolution: () => any;
-  getProcessedDomainDistribution: () => any;
+  getProcessedSummary: () => FACTFSummary | null;
+  getProcessedCriticalPatients: () => FACTFCriticalPatientsResponse | null;
+  getProcessedFatigueDistribution: () => FACTFFatigueDistributionResponse | null;
+  getProcessedMonthlyEvolution: () => FACTFMonthlyEvolutionResponse | null;
+  getProcessedDomainDistribution: () => FACTFDomainDistributionResponse | null;
 
   // Chart data processors
-  getRadarChartData: () => any[];
-  getLineChartData: () => any[];
-  getBarChartData: () => any[];
+  getRadarChartData: () => FACTFRadarChartData[];
+  getLineChartData: () => FACTFLineChartData[];
+  getBarChartData: () => FACTFBarChartData[];
 }
 
 export interface FACTFStateHelpers {

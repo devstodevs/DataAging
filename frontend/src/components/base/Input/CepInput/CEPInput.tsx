@@ -3,11 +3,10 @@ import "./CEPInput.css";
 import BaseInput, { type BaseInputProps } from "../BaseInput";
 import { getMaskConfig } from "../shared";
 
-export interface CEPInputProps
-  extends Omit<
-    BaseInputProps,
-    "type" | "mask" | "customErrorMessage" | "maxLength"
-  > {}
+export type CEPInputProps = Omit<
+  BaseInputProps,
+  "type" | "mask" | "customErrorMessage" | "maxLength"
+>;
 
 const CEPInput: React.FC<CEPInputProps> = ({
   placeholder,

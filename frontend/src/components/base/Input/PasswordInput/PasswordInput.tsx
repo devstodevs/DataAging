@@ -2,8 +2,7 @@ import React from "react";
 import "./PasswordInput.css";
 import BaseInput, { type BaseInputProps } from "../BaseInput";
 
-export interface PasswordInputProps
-  extends Omit<BaseInputProps, "type" | "icon" | "onIconClick"> {}
+export type PasswordInputProps = Omit<BaseInputProps, "type" | "icon" | "onIconClick">;
 
 const PasswordInput: React.FC<PasswordInputProps> = ({
   placeholder = "Digite sua senha",

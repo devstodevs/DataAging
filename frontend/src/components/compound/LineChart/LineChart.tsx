@@ -9,11 +9,35 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import type { TooltipProps } from "recharts";
 import "./LineChart.css";
 
 interface LineData {
   month: string;
   [key: string]: string | number;
+}
+
+interface TooltipPayload {
+  color: string;
+  name: string;
+  value: string | number;
+}
+
+interface CustomTooltipProps extends TooltipProps<number, string> {
+  active?: boolean;
+  payload?: Array<{
+    color: string;
+  } & TooltipPayload>;
+  label?: string;
+}
+
+interface LegendPayload {
+  color: string;
+  value: string;
+}
+
+interface CustomLegendProps {
+  payload?: LegendPayload[];
 }
 
 interface LineChartProps {
@@ -35,12 +59,12 @@ const LineChartComponent: React.FC<LineChartProps> = ({
   height = 300,
   lines,
 }) => {
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <div className="line-chart__tooltip">
           <p className="line-chart__tooltip-label">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index: number) => (
             <p key={index} className="line-chart__tooltip-item">
               <span
                 className="line-chart__tooltip-color"
@@ -55,10 +79,11 @@ const LineChartComponent: React.FC<LineChartProps> = ({
     return null;
   };
 
-  const CustomLegend = ({ payload }: any) => {
+  const CustomLegend = ({ payload }: CustomLegendProps) => {
+    if (!payload) return null;
     return (
       <div className="line-chart__legend">
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index: number) => (
           <div key={index} className="line-chart__legend-item">
             <span
               className="line-chart__legend-color"

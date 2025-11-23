@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from "react";
+import React, { useState, useCallback, useEffect, ReactNode } from "react";
 
 interface ExampleContainerProps {
   children: ReactNode;
@@ -51,19 +51,19 @@ const ExampleContainer: React.FC<ExampleContainerProps> = ({
     setIsResizing(true);
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizing) return;
     const newWidth = e.clientX - 40; // 40px offset for padding
     if (newWidth > parseInt(minWidth) && newWidth < window.innerWidth - 80) {
       setWidth(`${newWidth}px`);
     }
-  };
+  }, [isResizing, minWidth]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsResizing(false);
-  };
+  }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isResizing) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
@@ -72,7 +72,7 @@ const ExampleContainer: React.FC<ExampleContainerProps> = ({
         document.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [isResizing]);
+  }, [isResizing, handleMouseMove, handleMouseUp]);
 
   const containerStyle: React.CSSProperties = {
     width: width,

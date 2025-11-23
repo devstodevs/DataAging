@@ -185,7 +185,7 @@ export const validateActivityData = (data: {
 /**
  * Preparar dados para exportação
  */
-export const prepareDataForExport = (data: any[], filename: string): void => {
+export const prepareDataForExport = (data: Record<string, unknown>[], filename: string): void => {
   try {
     // Converter para CSV
     if (data.length === 0) {
@@ -253,10 +253,16 @@ export const getComplianceDescription = (isCompliant: boolean): string => {
     : 'Não atende às diretrizes da OMS para atividade física';
 };
 
+interface PatientSummary {
+  sedentary_hours_per_day?: number;
+  who_compliance?: boolean;
+  sedentary_risk_level?: SedentaryRiskLevel;
+}
+
 /**
  * Calcular estatísticas resumidas de um conjunto de pacientes
  */
-export const calculateSummaryStats = (patients: any[]) => {
+export const calculateSummaryStats = (patients: PatientSummary[]) => {
   if (!patients || patients.length === 0) {
     return {
       totalPatients: 0,
@@ -285,10 +291,20 @@ export const calculateSummaryStats = (patients: any[]) => {
   };
 };
 
+interface FilterablePatient {
+  idade?: number;
+  age?: number;
+  sedentary_risk_level?: SedentaryRiskLevel;
+  who_compliance?: boolean;
+  nome_completo?: string;
+  patient_name?: string;
+  cpf?: string;
+}
+
 /**
  * Filtrar pacientes por critérios
  */
-export const filterPatients = (patients: any[], filters: {
+export const filterPatients = (patients: FilterablePatient[], filters: {
   ageRange?: string;
   riskLevel?: string;
   compliance?: string;
@@ -336,7 +352,7 @@ export const filterPatients = (patients: any[], filters: {
 /**
  * Ordenar pacientes por critério
  */
-export const sortPatients = (patients: any[], sortBy: string, sortOrder: 'asc' | 'desc' = 'asc') => {
+export const sortPatients = (patients: FilterablePatient[], sortBy: string, sortOrder: 'asc' | 'desc' = 'asc') => {
   if (!patients) return [];
 
   return [...patients].sort((a, b) => {
@@ -355,11 +371,12 @@ export const sortPatients = (patients: any[], sortBy: string, sortOrder: 'asc' |
         valueA = a.sedentary_hours_per_day || 0;
         valueB = b.sedentary_hours_per_day || 0;
         break;
-      case 'riskLevel':
+      case 'riskLevel': {
         const riskOrder = { 'Baixo': 1, 'Moderado': 2, 'Alto': 3, 'Crítico': 4 };
         valueA = riskOrder[a.sedentary_risk_level as SedentaryRiskLevel] || 0;
         valueB = riskOrder[b.sedentary_risk_level as SedentaryRiskLevel] || 0;
         break;
+      }
       case 'compliance':
         valueA = a.who_compliance ? 1 : 0;
         valueB = b.who_compliance ? 1 : 0;

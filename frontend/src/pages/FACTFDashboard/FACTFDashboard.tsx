@@ -76,7 +76,7 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
   useEffect(() => {
     // TODO: aplicar filtros específicos
     refetchDashboard();
-  }, [selectedPeriod, selectedAgeRange, selectedCondition]);
+  }, [selectedPeriod, selectedAgeRange, selectedCondition, refetchDashboard]);
 
   // Processar dados para os gráficos
   const processedSummary = getProcessedSummary();

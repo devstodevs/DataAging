@@ -65,7 +65,7 @@ export interface PhysicalActivityEvaluation {
     total_weekly_vigorous_minutes: number;
     who_compliance: boolean;
     sedentary_risk_level: SedentaryRiskLevel;
-    respostas_detalhadas?: Record<string, any>;
+    respostas_detalhadas?: Record<string, unknown>;
     observacoes?: string;
     profissional_responsavel?: string;
 }
@@ -80,7 +80,7 @@ export interface PhysicalActivityEvaluationCreate {
     vigorous_activity_days_per_week: number;
     sedentary_hours_per_day: number;
     screen_time_hours_per_day: number;
-    respostas_detalhadas?: Record<string, any>;
+    respostas_detalhadas?: Record<string, unknown>;
     observacoes?: string;
     profissional_responsavel?: string;
 }
@@ -95,7 +95,7 @@ export interface PhysicalActivityEvaluationUpdate {
     vigorous_activity_days_per_week?: number;
     sedentary_hours_per_day?: number;
     screen_time_hours_per_day?: number;
-    respostas_detalhadas?: Record<string, any>;
+    respostas_detalhadas?: Record<string, unknown>;
     observacoes?: string;
     profissional_responsavel?: string;
 }
@@ -234,9 +234,9 @@ export interface PhysicalActivityLineChartData {
 }
 
 // Form Types
-export interface PhysicalActivityPatientFormData extends PhysicalActivityPatientCreate {}
+export type PhysicalActivityPatientFormData = PhysicalActivityPatientCreate;
 
-export interface PhysicalActivityEvaluationFormData extends Omit<PhysicalActivityEvaluationCreate, 'patient_id'> {}
+export type PhysicalActivityEvaluationFormData = Omit<PhysicalActivityEvaluationCreate, 'patient_id'>;
 
 // API Response Types
 export interface PhysicalActivityApiResponse<T> {

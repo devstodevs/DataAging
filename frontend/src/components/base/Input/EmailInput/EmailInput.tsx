@@ -2,11 +2,10 @@ import React from "react";
 import "./EmailInput.css";
 import BaseInput, { type BaseInputProps } from "../BaseInput";
 
-export interface EmailInputProps
-  extends Omit<
-    BaseInputProps,
-    "type" | "customValidation" | "customErrorMessage"
-  > {}
+export type EmailInputProps = Omit<
+  BaseInputProps,
+  "type" | "customValidation" | "customErrorMessage"
+>;
 
 const EmailInput: React.FC<EmailInputProps> = ({
   placeholder = "Digite seu email",

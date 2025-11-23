@@ -135,7 +135,13 @@ const PhysicalActivityDashboard: React.FC<PhysicalActivityDashboardProps> = ({
     }
   };
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  interface TooltipPayload {
+    name: string;
+    dataKey: string;
+    value: number;
+  }
+
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: TooltipPayload[] }) => {
     if (active && payload && payload.length) {
       const data = payload[0];
       return (
@@ -153,11 +159,17 @@ const PhysicalActivityDashboard: React.FC<PhysicalActivityDashboardProps> = ({
     return null;
   };
 
-  const renderCustomLegend = (props: any) => {
+  interface LegendPayload {
+    color: string;
+    value: string;
+  }
+
+  const renderCustomLegend = (props: { payload?: LegendPayload[] }) => {
     const { payload } = props;
+    if (!payload) return null;
     return (
       <div className="custom-legend">
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index: number) => (
           <div key={`legend-${index}`} className="legend-item">
             <div
               className="legend-color"
@@ -361,7 +373,7 @@ const PhysicalActivityDashboard: React.FC<PhysicalActivityDashboardProps> = ({
                     paddingAngle={2}
                     dataKey="value"
                   >
-                    {donutData.map((entry: any, index: number) => (
+                    {donutData.map((entry: { color: string }, index: number) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>

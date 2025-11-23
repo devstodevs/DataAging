@@ -60,7 +60,7 @@ export const createDataProcessors = (state: FACTFDataState): FACTFDataProcessors
       domain: domain.domain,
       averageScore: domain.average_score,
       maxScore: domain.max_score,
-      percentage: ((domain.average_score / domain.max_score) * 100).toFixed(1),
+      percentage: ((domain.average_score ?? 0) / domain.max_score * 100).toFixed(1),
     }));
   },
 

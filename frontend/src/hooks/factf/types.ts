@@ -82,13 +82,62 @@ export interface FACTFDataFetchers {
   refetchDashboard: () => Promise<void>;
 }
 
+// Processed data types for UI display
+export interface ProcessedFACTFSummary {
+  totalPatients: number;
+  severeFatiguePercentage: string;
+  criticalPatientsCount: number;
+  averageTotalScore: string;
+  monthlyGrowth: string;
+  domainAverages: {
+    physical: number;
+    social: number;
+    emotional: number;
+    functional: number;
+    fatigue: number;
+  };
+}
+
+export interface ProcessedFACTFCriticalPatient {
+  id: number;
+  name: string;
+  age: number;
+  neighborhood: string;
+  totalScore: string;
+  fatigueScore: string;
+  classification: string;
+  evaluationDate: string;
+  status: string;
+}
+
+export interface ProcessedFACTFFatigueDistribution {
+  condition: string;
+  'Sem Fadiga': number;
+  'Fadiga Leve': number;
+  'Fadiga Grave': number;
+}
+
+export interface ProcessedFACTFMonthlyEvolution {
+  month: string;
+  'Escore Total': number;
+  'Subescala Fadiga': number;
+  evaluationsCount: number;
+}
+
+export interface ProcessedFACTFDomainDistribution {
+  domain: string;
+  averageScore: number | undefined;
+  maxScore: number;
+  percentage: string;
+}
+
 export interface FACTFDataProcessors {
   // Data transformation methods
-  getProcessedSummary: () => FACTFSummary | null;
-  getProcessedCriticalPatients: () => FACTFCriticalPatientsResponse | null;
-  getProcessedFatigueDistribution: () => FACTFFatigueDistributionResponse | null;
-  getProcessedMonthlyEvolution: () => FACTFMonthlyEvolutionResponse | null;
-  getProcessedDomainDistribution: () => FACTFDomainDistributionResponse | null;
+  getProcessedSummary: () => ProcessedFACTFSummary | null;
+  getProcessedCriticalPatients: () => ProcessedFACTFCriticalPatient[];
+  getProcessedFatigueDistribution: () => ProcessedFACTFFatigueDistribution[];
+  getProcessedMonthlyEvolution: () => ProcessedFACTFMonthlyEvolution[];
+  getProcessedDomainDistribution: () => ProcessedFACTFDomainDistribution[];
 
   // Chart data processors
   getRadarChartData: () => FACTFRadarChartData[];

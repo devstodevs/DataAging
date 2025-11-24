@@ -16,6 +16,12 @@ fake = Faker('pt_BR')
 API_BASE_URL = "http://localhost:8000/api/v1"
 NUM_PATIENTS = 70
 
+
+TEST_USER_CPF = "11144477735"
+TEST_USER_PASSWORD = "senha123"
+
+auth_token = None
+
 CURITIBA_NEIGHBORHOODS = [
     "Centro", "Centro Histórico", "Boa Vista", "Portão", "Santa Felicidade", 
     "Cabral", "Rebouças", "Xaxim", "Juvevê", "Água Verde", "Batel", 
@@ -26,7 +32,7 @@ CURITIBA_NEIGHBORHOODS = [
     "Pinheirinho", "Santa Cândida", "Seminário", "Tarumã", "Uberaba"
 ]
 
-HEALTH_UNIT_IDS = [1, 2, 3, 4]  # Will be populated from API if available
+HEALTH_UNIT_IDS = [1, 2, 3, 4]  
 
 COMORBIDITIES = [
     "Hipertensão arterial sistêmica",
@@ -94,9 +100,8 @@ def generate_email(name: str):
 
 def generate_registration_date():
     """Generate a random registration date within the last 18 months"""
-    # Most patients registered in the last 18 months
-    start_date = date.today() - timedelta(days=540)  # ~18 months
-    end_date = date.today() - timedelta(days=30)  # At least 30 days ago
+    start_date = date.today() - timedelta(days=540) 
+    end_date = date.today() - timedelta(days=30)
     
     time_between = end_date - start_date
     days_between = time_between.days
@@ -107,11 +112,9 @@ def generate_registration_date():
 
 def generate_evaluation_date(registration_date: date):
     """Generate evaluation date after registration date, spread over last 12 months"""
-    # Spread evaluations over the last 12 months for better trend visualization
     min_date = date.today() - timedelta(days=365)
     max_date = date.today()
     
-    # Ensure evaluation is after registration
     if registration_date > min_date:
         min_date = registration_date
     
@@ -130,7 +133,6 @@ def generate_evaluation_date(registration_date: date):
 def generate_comorbidities(classification: str = None) -> str:
     """Generate realistic comorbidities based on activity level"""
     
-    # More comorbidities for sedentary patients
     if classification == "Crítico":
         num_comorbidities = random.randint(2, 4)
     elif classification == "Alto":
@@ -162,14 +164,12 @@ def get_sedentary_risk_from_hours(sedentary_hours: float) -> str:
 def generate_physical_activity_data():
     """Generate physical activity data with realistic and varied distribution"""
     
-    # Define activity profiles with realistic distribution
     profiles = ["sedentario", "pouco_ativo", "moderadamente_ativo", "muito_ativo"]
     weights = [0.20, 0.35, 0.30, 0.15]  # 20% sedentário, 35% pouco ativo, 30% moderado, 15% muito ativo
     
     profile = random.choices(profiles, weights=weights)[0]
     
     if profile == "sedentario":
-        # Sedentary profile: little to no activity
         light_minutes = random.randint(0, 25)
         light_days = random.randint(0, 3)
         moderate_minutes = random.randint(0, 15)
@@ -180,7 +180,6 @@ def generate_physical_activity_data():
         screen_time = round(random.uniform(5, 10), 1)
         
     elif profile == "pouco_ativo":
-        # Slightly active: some light activity, rarely meets WHO
         light_minutes = random.randint(20, 80)
         light_days = random.randint(2, 6)
         moderate_minutes = random.randint(10, 40)
@@ -191,7 +190,6 @@ def generate_physical_activity_data():
         screen_time = round(random.uniform(3, 7), 1)
         
     elif profile == "moderadamente_ativo":
-        # Moderately active: often meets WHO guidelines
         light_minutes = random.randint(40, 120)
         light_days = random.randint(4, 7)
         moderate_minutes = random.randint(25, 60)
@@ -202,7 +200,6 @@ def generate_physical_activity_data():
         screen_time = round(random.uniform(2, 5), 1)
         
     else:  # muito_ativo
-        # Very active: consistently exceeds WHO guidelines
         light_minutes = random.randint(60, 150)
         light_days = random.randint(5, 7)
         moderate_minutes = random.randint(40, 90)
@@ -212,14 +209,11 @@ def generate_physical_activity_data():
         sedentary_hours = round(random.uniform(2, 6), 1)
         screen_time = round(random.uniform(1, 3), 1)
     
-    # Calculate weekly totals
     total_weekly_moderate = moderate_minutes * moderate_days
     total_weekly_vigorous = vigorous_minutes * vigorous_days
     
-    # Calculate WHO compliance
     who_compliance = total_weekly_moderate >= 150 or total_weekly_vigorous >= 75
     
-    # Calculate sedentary risk level
     sedentary_risk_level = get_sedentary_risk_from_hours(sedentary_hours)
     
     return {
@@ -242,7 +236,7 @@ def generate_physical_activity_data():
 def generate_patient(classification: str = None):
     """Generate a patient with realistic data"""
     name = fake.name()
-    age = random.randint(60, 95)  # Focus on elderly (60+)
+    age = random.randint(60, 95) 
     
     patient_data = {
         "nome_completo": name,
@@ -254,11 +248,10 @@ def generate_patient(classification: str = None):
         "unidade_saude_id": random.choice(HEALTH_UNIT_IDS),
         "diagnostico_principal": random.choice(COMORBIDITIES) if random.random() > 0.4 else None,
         "comorbidades": generate_comorbidities(classification),
-        "medicamentos_atuais": None,  # Will be filled based on comorbidities
+        "medicamentos_atuais": None,  
         "ativo": True
     }
     
-    # Generate medications based on comorbidities
     medications = []
     if "Hipertensão" in patient_data["comorbidades"]:
         medications.extend(random.sample(["Losartana", "Enalapril", "Amlodipina"], random.randint(1, 2)))
@@ -300,27 +293,66 @@ def generate_evaluation(patient_id: int, registration_date: date):
     return evaluation_data, activity_data['sedentary_risk_level']
 
 
+def authenticate():
+    """Authenticate and get access token"""
+    global auth_token
+    if auth_token:
+        return auth_token
+    
+    login_url = f"{API_BASE_URL}/login"
+    try:
+        response = requests.post(
+            login_url,
+            data={
+                "username": TEST_USER_CPF,
+                "password": TEST_USER_PASSWORD
+            },
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            token_data = response.json()
+            auth_token = token_data.get("access_token")
+            print("✓ Authenticated successfully")
+            return auth_token
+        else:
+            print(f"✗ Authentication failed: {response.status_code}")
+            print(f"  Error: {response.text}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"✗ Authentication error: {e}")
+        return None
+
+
 def make_api_request(method: str, endpoint: str, data: Dict = None):
-    """Make API request with error handling"""
-    # Ensure endpoint starts with /
+    """Make API request with error handling and authentication"""
+    token = authenticate()
+    if not token:
+        print("✗ Cannot make request: Authentication failed")
+        return {"error": True, "detail": "Authentication failed"}
+    
     if not endpoint.startswith('/'):
         endpoint = '/' + endpoint
     url = f"{API_BASE_URL}{endpoint}"
     
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}"
+    }
+    
     try:
         if method.upper() == "POST":
-            response = requests.post(url, json=data, timeout=30)
+            response = requests.post(url, json=data, headers=headers, timeout=30)
         elif method.upper() == "GET":
-            response = requests.get(url, timeout=30)
+            response = requests.get(url, headers=headers, timeout=30)
         elif method.upper() == "DELETE":
-            response = requests.delete(url, timeout=30)
+            response = requests.delete(url, headers=headers, timeout=30)
         else:
             raise ValueError(f"Unsupported HTTP method: {method}")
         
         if response.status_code in [200, 201]:
             return response.json()
         else:
-            # Return error dict instead of None for better error handling
             error_info = {"status_code": response.status_code, "error": True}
             try:
                 error_data = response.json()
@@ -343,7 +375,6 @@ def get_available_health_units():
     try:
         response = make_api_request("GET", "/health-units/")
         if response and not (isinstance(response, dict) and response.get('error')):
-            # Response can be a list or a single dict
             if isinstance(response, list):
                 health_units = response
             elif isinstance(response, dict) and 'id' in response:
@@ -379,29 +410,23 @@ def cleanup_existing_data():
         import sqlite3
         import os
         
-        # Path to database
         db_path = os.path.join(os.path.dirname(__file__), '../../src/dataaging.db')
         
-        # Connect to SQLite database
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         
-        # Count existing records
         cursor.execute("SELECT COUNT(*) FROM physical_activity_evaluations")
         evaluations_count = cursor.fetchone()[0]
         
         cursor.execute("SELECT COUNT(*) FROM physical_activity_patients")
         patients_count = cursor.fetchone()[0]
         
-        # Delete all evaluations first (due to foreign key constraints)
         cursor.execute("DELETE FROM physical_activity_evaluations")
         print(f"✓ Deleted {evaluations_count} evaluations")
         
-        # Delete all patients
         cursor.execute("DELETE FROM physical_activity_patients")
         print(f"✓ Deleted {patients_count} patients")
         
-        # Commit changes
         conn.commit()
         conn.close()
         
@@ -411,7 +436,6 @@ def cleanup_existing_data():
         print(f"⚠️ Database cleanup failed: {e}")
         print("Trying API cleanup as fallback...")
         
-        # Fallback to API cleanup - get patients in batches
         page = 1
         all_patients = []
         
@@ -426,7 +450,6 @@ def cleanup_existing_data():
             
             all_patients.extend(patients)
             
-            # Check if there are more pages
             if len(patients) < 100:
                 break
             
@@ -449,7 +472,6 @@ def cleanup_existing_data():
 def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
     """Create a patient and their evaluation"""
     
-    # Create patient
     patient_response = make_api_request("POST", "/physical-activity-patients/", patient_data)
     
     if not patient_response:
@@ -472,7 +494,6 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
     patient_id = patient_response["id"]
     print(f"✓ Created patient: {patient_data['nome_completo']} (ID: {patient_id})")
     
-    # Create evaluation
     evaluation_data, sedentary_risk = generate_evaluation(patient_id, registration_date)
     
     evaluation_response = make_api_request(
@@ -501,7 +522,6 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
     
     print(f"🚀 Generating {num_patients} physical activity patients with evaluations...")
     
-    # Get available health units
     print("\n🏥 Checking available health units...")
     if not get_available_health_units():
         print("⚠️  Warning: Could not verify health units. Proceeding with default IDs.")
@@ -514,17 +534,14 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
     created_patients = []
     created_evaluations = []
     
-    # Track statistics
     risk_levels = {"Baixo": 0, "Moderado": 0, "Alto": 0, "Crítico": 0}
     who_compliant = 0
     
     for i in range(num_patients):
         registration_date = generate_registration_date()
         
-        # Generate patient data
         patient_data = generate_patient()
         
-        # Create patient and evaluation
         result = create_patient_with_evaluation(patient_data, registration_date)
         
         if result:
@@ -534,7 +551,6 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
             if evaluation:
                 created_evaluations.append(evaluation)
                 
-                # Update statistics - use the actual values returned from backend
                 risk_level = evaluation.get('sedentary_risk_level', 'Baixo')
                 if risk_level in risk_levels:
                     risk_levels[risk_level] += 1
@@ -542,11 +558,9 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
                 if evaluation.get('who_compliance', False):
                     who_compliant += 1
         
-        # Progress indicator
         if (i + 1) % 10 == 0:
             print(f"Progress: {i + 1}/{num_patients} patients created")
     
-    # Print final statistics
     print("\n" + "="*60)
     print("📊 FINAL STATISTICS")
     print("="*60)
@@ -574,10 +588,8 @@ def main():
     print("="*50)
     
     try:
-        # Step 1: Cleanup existing data
         cleanup_existing_data()
         
-        # Step 2: Generate new dataset
         patients, evaluations = generate_complete_dataset(NUM_PATIENTS)
         
         print(f"\n🎉 Successfully created {len(patients)} patients and {len(evaluations)} evaluations!")

@@ -14,7 +14,12 @@ from typing import List, Dict, Any
 fake = Faker('pt_BR')
 
 API_BASE_URL = "http://localhost:8000/api/v1"
-NUM_PATIENTS = 50  # Number of patients to generate
+NUM_PATIENTS = 50 
+
+TEST_USER_CPF = "11144477735"
+TEST_USER_PASSWORD = "senha123"
+
+auth_token = None
 
 CURITIBA_NEIGHBORHOODS = [
     "Centro", "Centro Histórico", "Boa Vista", "Portão", "Santa Felicidade", 
@@ -26,7 +31,7 @@ CURITIBA_NEIGHBORHOODS = [
     "Pinheirinho", "Santa Cândida", "Seminário", "Tarumã", "Uberaba"
 ]
 
-HEALTH_UNIT_IDS = [1, 2, 3, 4]  # Will be populated from API if available
+HEALTH_UNIT_IDS = [1, 2, 3, 4]
 
 COMORBIDITIES = [
     "Hipertensão arterial sistêmica",
@@ -169,9 +174,9 @@ def generate_patient():
 def generate_evaluation(patient_id: int, registration_date: date):
     """Generate an IVCF evaluation for a patient"""
     classification_weights = [
-        ("Robusto", 0.3),      # 30% robust
-        ("Em Risco", 0.45),    # 45% at risk  
-        ("Frágil", 0.25)       # 25% fragile
+        ("Robusto", 0.3),      # 30% robusto
+        ("Em Risco", 0.45),    # 45% em risco  
+        ("Frágil", 0.25)       # 25% frágil
     ]
     
     classification = random.choices(
@@ -206,19 +211,60 @@ def generate_evaluation(patient_id: int, registration_date: date):
     
     return evaluation
 
+def authenticate():
+    """Authenticate and get access token"""
+    global auth_token
+    if auth_token:
+        return auth_token
+    
+    login_url = f"{API_BASE_URL}/login"
+    try:
+        response = requests.post(
+            login_url,
+            data={
+                "username": TEST_USER_CPF,
+                "password": TEST_USER_PASSWORD
+            },
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            token_data = response.json()
+            auth_token = token_data.get("access_token")
+            print("✓ Authenticated successfully")
+            return auth_token
+        else:
+            print(f"✗ Authentication failed: {response.status_code}")
+            print(f"  Error: {response.text}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"✗ Authentication error: {e}")
+        return None
+
+
 def make_api_request(method: str, endpoint: str, data: Dict = None):
-    """Make API request with error handling"""
+    """Make API request with error handling and authentication"""
+    token = authenticate()
+    if not token:
+        print("✗ Cannot make request: Authentication failed")
+        return None
+    
     if endpoint.startswith('/'):
         endpoint = endpoint[1:]
     url = f"{API_BASE_URL}/{endpoint}"
     
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}"
+    }
+    
     try:
         if method.upper() == "GET":
-            response = requests.get(url, timeout=30)
+            response = requests.get(url, headers=headers, timeout=30)
         elif method.upper() == "POST":
-            response = requests.post(url, json=data, headers={"Content-Type": "application/json"}, timeout=30)
+            response = requests.post(url, json=data, headers=headers, timeout=30)
         elif method.upper() == "DELETE":
-            response = requests.delete(url, timeout=30)
+            response = requests.delete(url, headers=headers, timeout=30)
         else:
             raise ValueError(f"Unsupported method: {method}")
         
@@ -339,7 +385,6 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
     print(f"🚀 Starting complete IVCF data generation...")
     print(f"Target: {num_patients} patients with evaluations")
     
-    # Get available health units
     print("\n🏥 Checking available health units...")
     if not get_available_health_units():
         print("⚠️  Warning: Could not verify health units. Proceeding with default IDs.")
@@ -349,7 +394,6 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
         print("   Please create health units first using the API or database.")
         return False
     
-    # Cleanup existing data
     if not cleanup_existing_data():
         print("Failed to cleanup existing data")
         return False

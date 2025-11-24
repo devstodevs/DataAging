@@ -14,7 +14,12 @@ from typing import List, Dict, Any
 fake = Faker('pt_BR')
 
 API_BASE_URL = "http://localhost:8000/api/v1"
-NUM_PATIENTS = 70 
+NUM_PATIENTS = 70
+
+TEST_USER_CPF = "11144477735"
+TEST_USER_PASSWORD = "senha123"
+
+auth_token = None 
 
 CURITIBA_NEIGHBORHOODS = [
     "Centro", "Centro Histórico", "Boa Vista", "Portão", "Santa Felicidade", 
@@ -26,7 +31,7 @@ CURITIBA_NEIGHBORHOODS = [
     "Pinheirinho", "Santa Cândida", "Seminário", "Tarumã", "Uberaba"
 ]
 
-HEALTH_UNIT_IDS = [1, 2, 3, 4]  # Will be populated from API if available
+HEALTH_UNIT_IDS = [1, 2, 3, 4]
 
 COMORBIDITIES = [
     "Hipertensão arterial sistêmica",
@@ -100,34 +105,28 @@ def generate_evaluation_date(registration_date: date):
 def generate_factf_scores():
     """Generate FACTF domain scores with realistic fatigue distribution"""
     
-    # First decide the fatigue level to ensure good distribution
     fatigue_distribution = random.choices(
         ["Sem Fadiga", "Fadiga Leve", "Fadiga Grave"], 
         weights=[0.35, 0.40, 0.25]  # 35% sem fadiga, 40% leve, 25% grave
     )[0]
     
-    # Generate subescala_fadiga based on target classification
     if fatigue_distribution == "Sem Fadiga":
-        # Higher scores (44-52) for no fatigue
         subescala_fadiga = random.randint(44, 52)
     elif fatigue_distribution == "Fadiga Leve":
-        # Medium scores (30-43) for mild fatigue
         subescala_fadiga = random.randint(30, 43)
     else:  # Fadiga Grave
-        # Lower scores (0-29) for severe fatigue
         subescala_fadiga = random.randint(0, 29)
     
-    # Generate other domains with normal distribution
-    # Bem-estar físico (0-28) - 7 questions, 0-4 each
+    # Bem-estar físico (0-28) - 7 questões, 0-4 cada
     bem_estar_fisico = sum(random.choices([0, 1, 2, 3, 4], weights=[0.1, 0.2, 0.4, 0.2, 0.1])[0] for _ in range(7))
     
-    # Bem-estar social (0-28) - 7 questions, 0-4 each  
+    # Bem-estar social (0-28) - 7 questões, 0-4 cada  
     bem_estar_social = sum(random.choices([0, 1, 2, 3, 4], weights=[0.1, 0.2, 0.4, 0.2, 0.1])[0] for _ in range(7))
     
-    # Bem-estar emocional (0-24) - 6 questions, 0-4 each
+    # Bem-estar emocional (0-24) - 6 questões, 0-4 cada
     bem_estar_emocional = sum(random.choices([0, 1, 2, 3, 4], weights=[0.1, 0.2, 0.4, 0.2, 0.1])[0] for _ in range(6))
     
-    # Bem-estar funcional (0-28) - 7 questions, 0-4 each
+    # Bem-estar funcional (0-28) - 7 questões, 0-4 cada
     bem_estar_funcional = sum(random.choices([0, 1, 2, 3, 4], weights=[0.1, 0.2, 0.4, 0.2, 0.1])[0] for _ in range(7))
     
     return {
@@ -170,8 +169,6 @@ def generate_evaluation(patient_id: int, registration_date: date):
     evaluation_date = generate_evaluation_date(registration_date)
     domain_scores = generate_factf_scores()
     
-    # Only send the fields expected by FACTFEvaluationCreate schema
-    # The API will calculate pontuacao_total, pontuacao_fadiga, and classificacao_fadiga automatically
     evaluation = {
         "patient_id": patient_id,
         "data_avaliacao": evaluation_date.isoformat(),
@@ -186,19 +183,60 @@ def generate_evaluation(patient_id: int, registration_date: date):
     
     return evaluation
 
+def authenticate():
+    """Authenticate and get access token"""
+    global auth_token
+    if auth_token:
+        return auth_token
+    
+    login_url = f"{API_BASE_URL}/login"
+    try:
+        response = requests.post(
+            login_url,
+            data={
+                "username": TEST_USER_CPF,
+                "password": TEST_USER_PASSWORD
+            },
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            token_data = response.json()
+            auth_token = token_data.get("access_token")
+            print("✓ Authenticated successfully")
+            return auth_token
+        else:
+            print(f"✗ Authentication failed: {response.status_code}")
+            print(f"  Error: {response.text}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"✗ Authentication error: {e}")
+        return None
+
+
 def make_api_request(method: str, endpoint: str, data: Dict = None):
-    """Make API request with error handling"""
+    """Make API request with error handling and authentication"""
+    token = authenticate()
+    if not token:
+        print("✗ Cannot make request: Authentication failed")
+        return None
+    
     if endpoint.startswith('/'):
         endpoint = endpoint[1:]
     url = f"{API_BASE_URL}/{endpoint}"
     
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}"
+    }
+    
     try:
         if method.upper() == "GET":
-            response = requests.get(url, timeout=30)
+            response = requests.get(url, headers=headers, timeout=30)
         elif method.upper() == "POST":
-            response = requests.post(url, json=data, headers={"Content-Type": "application/json"}, timeout=30)
+            response = requests.post(url, json=data, headers=headers, timeout=30)
         elif method.upper() == "DELETE":
-            response = requests.delete(url, timeout=30)
+            response = requests.delete(url, headers=headers, timeout=30)
         else:
             raise ValueError(f"Unsupported method: {method}")
         
@@ -320,7 +358,6 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
     print(f"🚀 Starting complete FACTF data generation...")
     print(f"Target: {num_patients} patients with evaluations")
     
-    # Get available health units
     print("\n🏥 Checking available health units...")
     if not get_available_health_units():
         print("⚠️  Warning: Could not verify health units. Proceeding with default IDs.")
@@ -381,7 +418,6 @@ if __name__ == "__main__":
     
     if args.no_cleanup:
         print("⚠️  Skipping cleanup - new data will be added to existing data")
-        # Modify the function to skip cleanup
         success = generate_complete_dataset(args.num_patients)
     else:
         success = generate_complete_dataset(args.num_patients)

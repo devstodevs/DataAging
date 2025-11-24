@@ -9,10 +9,16 @@ from api.physical_activity import physical_activity_patient_router, physical_act
 from config import settings
 from db.base import engine, Base, ensure_schema
 from models import user, ivcf, factf, physical_activity  # Import models to register them
+from init_data import create_test_user
 
-# Create database tables and ensure runtime schema
 Base.metadata.create_all(bind=engine)
 ensure_schema()
+
+# Pequeno delay para garantir que as tabelas foram criadas
+import time
+time.sleep(1)
+
+create_test_user()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

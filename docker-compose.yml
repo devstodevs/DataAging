@@ -29,20 +29,43 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://pgdataaging:testing@pgtecnoaging:5434/pgdataaging
+    volumes:
+      - ./backend/src:/app
+      - ./backend/requirements.txt:/app/requirements.txt
     networks:
       - dataaging-network
     depends_on:
       pgtecnoaging:
         condition: service_healthy
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
   # Frontend Service
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/tsconfig.app.json:/app/tsconfig.app.json
+      - ./frontend/tsconfig.node.json:/app/tsconfig.node.json
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/components.json:/app/components.json
+      - ./frontend/eslint.config.js:/app/eslint.config.js
+      - /app/node_modules
+      - /app/dist
     networks:
       - dataaging-network
     depends_on:
       - backend
+    environment:
+      - VITE_API_URL=http://backend:8000
+      - VITE_API_BASE_URL=/api/v1
 
   # Reverse Proxy Service
   proxy:

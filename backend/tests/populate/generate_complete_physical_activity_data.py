@@ -353,7 +353,7 @@ def get_available_health_units():
             
             if health_units:
                 HEALTH_UNIT_IDS = [unit['id'] for unit in health_units if 'id' in unit]
-                print(f"✅ Found {len(HEALTH_UNIT_IDS)} health units: {HEALTH_UNIT_IDS}")
+                print(f"Found {len(HEALTH_UNIT_IDS)} health units: {HEALTH_UNIT_IDS}")
                 return True
             else:
                 print("⚠️  No health units found in database")
@@ -405,7 +405,7 @@ def cleanup_existing_data():
         conn.commit()
         conn.close()
         
-        print("✅ Cleanup completed!")
+        print("Cleanup completed!")
         
     except Exception as e:
         print(f"⚠️ Database cleanup failed: {e}")
@@ -443,7 +443,7 @@ def cleanup_existing_data():
                 else:
                     print(f"✗ Failed to delete patient {patient_id}")
         
-        print("✅ Cleanup completed!")
+        print("Cleanup completed!")
 
 
 def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
@@ -507,7 +507,7 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
         print("⚠️  Warning: Could not verify health units. Proceeding with default IDs.")
     
     if not HEALTH_UNIT_IDS:
-        print("❌ No health units available. Cannot create patients.")
+        print("No health units available. Cannot create patients.")
         print("   Please create health units first using the API or database.")
         return [], []
     
@@ -563,7 +563,7 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
     else:
         print("⚠️ No evaluations were created. Check API endpoint and data.")
     
-    print("\n✅ Dataset generation completed!")
+    print("\nDataset generation completed!")
     
     return created_patients, created_evaluations
 
@@ -586,7 +586,7 @@ def main():
     except KeyboardInterrupt:
         print("\n⚠️ Operation cancelled by user")
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\nError: {e}")
         raise
 
 

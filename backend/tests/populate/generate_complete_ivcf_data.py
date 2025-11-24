@@ -224,7 +224,7 @@ def make_api_request(method: str, endpoint: str, data: Dict = None):
         
         return response
     except requests.exceptions.RequestException as e:
-        print(f"❌ Network error: {e}")
+        print(f"Network error: {e}")
         return None
 
 def get_available_health_units():
@@ -236,7 +236,7 @@ def get_available_health_units():
             health_units = response.json()
             if health_units:
                 HEALTH_UNIT_IDS = [unit['id'] for unit in health_units]
-                print(f"✅ Found {len(HEALTH_UNIT_IDS)} health units: {HEALTH_UNIT_IDS}")
+                print(f"Found {len(HEALTH_UNIT_IDS)} health units: {HEALTH_UNIT_IDS}")
                 return True
             else:
                 print("⚠️  No health units found in database")
@@ -258,7 +258,7 @@ def cleanup_existing_data():
     
     response = make_api_request("GET", "ivcf-patients/")
     if not response or response.status_code != 200:
-        print("❌ Failed to get existing patients")
+        print("Failed to get existing patients")
         return False
     
     patients = response.json()
@@ -269,9 +269,9 @@ def cleanup_existing_data():
         response = make_api_request("DELETE", f"ivcf-patients/{patient['id']}")
         if response and response.status_code in [200, 204]:
             deleted_count += 1
-            print(f"✅ Deleted patient {patient['id']}: {patient['nome_completo']}")
+            print(f"Deleted patient {patient['id']}: {patient['nome_completo']}")
         else:
-            print(f"❌ Failed to delete patient {patient['id']}: {patient['nome_completo']}")
+            print(f"Failed to delete patient {patient['id']}: {patient['nome_completo']}")
     
     print(f"🗑️  Deleted {deleted_count} patients")
     return True
@@ -280,7 +280,7 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
     """Create a patient and their evaluation"""
     response = make_api_request("POST", "ivcf-patients/", patient_data)
     if not response:
-        print(f"❌ Failed to create patient: {patient_data['nome_completo']} - No response from server")
+        print(f"Failed to create patient: {patient_data['nome_completo']} - No response from server")
         return None
     
     if response.status_code != 201:
@@ -294,7 +294,7 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
         except:
             error_msg = response.text[:200] if response.text else "No error message"
         
-        print(f"❌ Failed to create patient: {patient_data['nome_completo']}")
+        print(f"Failed to create patient: {patient_data['nome_completo']}")
         print(f"   Status: {response.status_code}")
         print(f"   Error: {error_msg}")
         print(f"   Data sent: {patient_data}")
@@ -302,12 +302,12 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
     
     created_patient = response.json()
     patient_id = created_patient['id']
-    print(f"✅ Created patient {patient_id}: {patient_data['nome_completo']}")
+    print(f"Created patient {patient_id}: {patient_data['nome_completo']}")
     
     evaluation_data = generate_evaluation(patient_id, registration_date)
     response = make_api_request("POST", "ivcf-evaluations/", evaluation_data)
     if not response:
-        print(f"❌ Failed to create evaluation for patient {patient_id} - No response from server")
+        print(f"Failed to create evaluation for patient {patient_id} - No response from server")
         return {"patient": created_patient}
     
     if response.status_code != 201:
@@ -321,13 +321,13 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
         except:
             error_msg = response.text[:200] if response.text else "No error message"
         
-        print(f"❌ Failed to create evaluation for patient {patient_id}")
+        print(f"Failed to create evaluation for patient {patient_id}")
         print(f"   Status: {response.status_code}")
         print(f"   Error: {error_msg}")
         return {"patient": created_patient}
     
     created_evaluation = response.json()
-    print(f"✅ Created evaluation for patient {patient_id}: {evaluation_data['classificacao']} (Score: {evaluation_data['pontuacao_total']})")
+    print(f"Created evaluation for patient {patient_id}: {evaluation_data['classificacao']} (Score: {evaluation_data['pontuacao_total']})")
     
     return {
         "patient": created_patient,
@@ -345,13 +345,13 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
         print("⚠️  Warning: Could not verify health units. Proceeding with default IDs.")
     
     if not HEALTH_UNIT_IDS:
-        print("❌ No health units available. Cannot create patients.")
+        print("No health units available. Cannot create patients.")
         print("   Please create health units first using the API or database.")
         return False
     
     # Cleanup existing data
     if not cleanup_existing_data():
-        print("❌ Failed to cleanup existing data")
+        print("Failed to cleanup existing data")
         return False
     
     print(f"\n📊 Generating {num_patients} new patients with evaluations...")
@@ -370,8 +370,8 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
             success_count += 1
     
     print(f"\n📈 Generation Complete!")
-    print(f"✅ Successfully created: {success_count} patients with evaluations")
-    print(f"❌ Failed: {num_patients - success_count}")
+    print(f"Successfully created: {success_count} patients with evaluations")
+    print(f"Failed: {num_patients - success_count}")
     
     if created_patients:
         classifications = {}

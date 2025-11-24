@@ -85,7 +85,7 @@ def make_api_request(method: str, endpoint: str, data: Dict = None):
         
         return response
     except requests.exceptions.RequestException as e:
-        print(f"❌ Network error: {e}")
+        print(f"Network error: {e}")
         return None
 
 
@@ -102,12 +102,12 @@ def create_health_unit(health_unit_data: Dict) -> bool:
     response = make_api_request("POST", "health-units/", health_unit_data)
     
     if not response:
-        print(f"❌ Failed to create health unit: {health_unit_data['nome']} - No response from server")
+        print(f"Failed to create health unit: {health_unit_data['nome']} - No response from server")
         return False
     
     if response.status_code == 201:
         created_unit = response.json()
-        print(f"✅ Created health unit: {created_unit['nome']} (ID: {created_unit['id']}) - {created_unit['bairro']}, {created_unit['regiao']}")
+        print(f"Created health unit: {created_unit['nome']} (ID: {created_unit['id']}) - {created_unit['bairro']}, {created_unit['regiao']}")
         return True
     elif response.status_code == 409:
         print(f"⚠️  Health unit already exists: {health_unit_data['nome']}")
@@ -123,7 +123,7 @@ def create_health_unit(health_unit_data: Dict) -> bool:
         except:
             error_msg = response.text[:200] if response.text else "No error message"
         
-        print(f"❌ Failed to create health unit: {health_unit_data['nome']}")
+        print(f"Failed to create health unit: {health_unit_data['nome']}")
         print(f"   Status: {response.status_code}")
         print(f"   Error: {error_msg}")
         return False
@@ -167,9 +167,9 @@ def main():
     print("\n" + "=" * 50)
     print("📊 SUMMARY")
     print("=" * 50)
-    print(f"✅ Created: {created_count}")
+    print(f"Created: {created_count}")
     print(f"⚠️  Skipped (already exists): {skipped_count}")
-    print(f"❌ Failed: {failed_count}")
+    print(f"Failed: {failed_count}")
     print(f"📋 Total: {len(HEALTH_UNITS)}")
     
     # List all health units
@@ -181,7 +181,7 @@ def main():
     else:
         print("  No health units found.")
     
-    print("\n✅ Done!")
+    print("\nDone!")
 
 
 if __name__ == "__main__":

@@ -171,19 +171,19 @@ Authorization: Bearer <token>
 ## Security Features
 
 ### Password Security
-- ✅ Passwords hashed with bcrypt
-- ✅ Passwords never returned in responses
-- ✅ Minimum 6 characters required
+- Passwords hashed with bcrypt
+- Passwords never returned in responses
+- Minimum 6 characters required
 
 ### Token Security
-- ✅ JWT signed with secret key
-- ✅ Tokens expire after configured time
-- ✅ Tokens validated on each request
+- JWT signed with secret key
+- Tokens expire after configured time
+- Tokens validated on each request
 
 ### Authentication
-- ✅ CPF-based authentication
-- ✅ Automatic CPF cleaning (removes formatting)
-- ✅ Secure password verification
+- CPF-based authentication
+- Automatic CPF cleaning (removes formatting)
+- Secure password verification
 
 ---
 

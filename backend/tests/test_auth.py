@@ -122,7 +122,7 @@ def main():
         token = test_login_success()
         
         if not token:
-            print("\n❌ Login failed, cannot continue with token tests")
+            print("\nLogin failed, cannot continue with token tests")
             return
         
         # Test 3: Login with wrong password
@@ -146,7 +146,7 @@ def main():
         print("\n" + "="*60)
         print("ALL AUTHENTICATION TESTS COMPLETED")
         print("="*60)
-        print("\n✅ Summary:")
+        print("\nSummary:")
         print("- User creation: OK")
         print("- Login with correct credentials: OK")
         print("- Login with wrong password: Correctly rejected")
@@ -158,11 +158,11 @@ def main():
         print("\n🎉 Authentication system is working correctly!")
         
     except requests.exceptions.ConnectionError:
-        print("\n❌ ERROR: Could not connect to the server.")
+        print("\nERROR: Could not connect to the server.")
         print("Please make sure the server is running:")
         print("  cd src && python main.py")
     except Exception as e:
-        print(f"\n❌ ERROR: {e}")
+        print(f"\nERROR: {e}")
         import traceback
         traceback.print_exc()
 

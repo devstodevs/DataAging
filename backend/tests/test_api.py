@@ -154,11 +154,11 @@ def main():
         print("="*60)
         
     except requests.exceptions.ConnectionError:
-        print("\n❌ ERROR: Could not connect to the server.")
+        print("\nERROR: Could not connect to the server.")
         print("Please make sure the server is running:")
         print("  cd src && python main.py")
     except Exception as e:
-        print(f"\n❌ ERROR: {e}")
+        print(f"\nERROR: {e}")
 
 if __name__ == "__main__":
     main()

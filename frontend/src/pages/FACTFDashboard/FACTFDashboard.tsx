@@ -76,7 +76,8 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
   useEffect(() => {
     // TODO: aplicar filtros específicos
     refetchDashboard();
-  }, [selectedPeriod, selectedAgeRange, selectedCondition, refetchDashboard]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPeriod, selectedAgeRange, selectedCondition]); // refetchDashboard is stable now
 
   // Processar dados para os gráficos
   const processedSummary = getProcessedSummary();

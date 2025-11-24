@@ -41,7 +41,7 @@ curl -X POST "http://localhost:8000/api/v1/users/" \
   -H "Content-Type: application/json" \
   -d '{
     "nome_completo": "João Silva",
-    "cpf": "12345678901",
+    "cpf": "11144477735",
     "matricula": "GES001",
     "password": "senha123",
     "profile_type": "gestor"
@@ -54,7 +54,7 @@ curl -X POST "http://localhost:8000/api/v1/users/" \
   -H "Content-Type: application/json" \
   -d '{
     "nome_completo": "Maria Santos",
-    "cpf": "98765432109",
+    "cpf": "12345678909",
     "registro_profissional": "CREA-SP 123456",
     "especialidade": "Engenharia Civil",
     "password": "senha456",
@@ -65,7 +65,7 @@ curl -X POST "http://localhost:8000/api/v1/users/" \
 **Fazer login:**
 ```bash
 curl -X POST "http://localhost:8000/api/v1/login" \
-  -d "username=12345678901&password=senha123"
+  -d "username=11144477735&password=senha123"
 ```
 
 **Acessar dados do usuário logado:**

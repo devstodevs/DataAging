@@ -11,7 +11,7 @@ curl -X POST "http://localhost:8000/api/v1/users/" \
   -H "Content-Type: application/json" \
   -d '{
     "nome_completo": "João Silva",
-    "cpf": "12345678901",
+    "cpf": "11144477735",
     "telefone": "(11) 98765-4321",
     "sexo": "Masculino",
     "data_nascimento": "1985-03-15",
@@ -35,7 +35,7 @@ curl -X POST "http://localhost:8000/api/v1/users/" \
   -H "Content-Type: application/json" \
   -d '{
     "nome_completo": "Maria Santos",
-    "cpf": "98765432109",
+    "cpf": "12345678909",
     "telefone": "(11) 91234-5678",
     "sexo": "Feminino",
     "data_nascimento": "1990-07-22",
@@ -87,7 +87,7 @@ curl -X POST "http://localhost:8000/api/v1/users/" \
   -H "Content-Type: application/json" \
   -d '{
     "nome_completo": "Outro Usuário",
-    "cpf": "12345678901",
+    "cpf": "11144477735",
     "matricula": "GES003",
     "password": "senha999",
     "profile_type": "gestor"
@@ -117,7 +117,7 @@ curl -X POST "http://localhost:8000/api/v1/users/" \
 ```bash
 curl -X POST "http://localhost:8000/api/v1/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=12345678901&password=senha123"
+  -d "username=11144477735&password=senha123"
 ```
 
 **💡 Copie o `access_token`**
@@ -127,7 +127,7 @@ curl -X POST "http://localhost:8000/api/v1/login" \
 ```bash
 curl -X POST "http://localhost:8000/api/v1/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=123.456.789-01&password=senha123"
+  -d "username=111.444.777-35&password=senha123"
 ```
 
 

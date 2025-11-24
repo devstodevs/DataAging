@@ -1,14 +1,37 @@
 ### DataAging API - Testes de Usuários
 @baseUrl = http://localhost:8000/api/v1
 
-### 1. Criar Usuário Gestor
+### 1. Criar Usuário Gestor (Credenciais da página de login)
 POST {{baseUrl}}/users/
 Content-Type: application/json
 
 {
   "profile_type": "gestor",
-  "nome_completo": "João Silva Gestor 2",
-  "cpf": "12345678902",
+  "nome_completo": "Usuário de Teste",
+  "cpf": "11144477735",
+  "telefone": "(41) 99999-9999",
+  "sexo": "M",
+  "data_nascimento": "1990-01-15",
+  "cep": "80010-000",
+  "logradouro": "Rua das Flores",
+  "numero": "123",
+  "complemento": "Apto 45",
+  "bairro": "Centro",
+  "municipio": "Curitiba",
+  "uf": "PR",
+  "matricula": "TEST001",
+  "password": "senha123",
+  "recovery_password": "senha123"
+}
+
+### 1.1. Criar Usuário Gestor (Alternativo)
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+  "profile_type": "gestor",
+  "nome_completo": "João Silva Gestor",
+  "cpf": "12345678909",
   "telefone": "(11) 99999-9999",
   "sexo": "M",
   "data_nascimento": "1990-01-15",
@@ -20,7 +43,8 @@ Content-Type: application/json
   "municipio": "São Paulo",
   "uf": "SP",
   "matricula": "GEST002",
-  "password": "senha123"
+  "password": "senha123",
+  "recovery_password": "senha123"
 }
 
 ### 2. Criar Usuário Técnico
@@ -30,7 +54,7 @@ Content-Type: application/json
 {
   "profile_type": "tecnico",
   "nome_completo": "Maria Santos Técnico",
-  "cpf": "98765432100",
+  "cpf": "12345678909",
   "telefone": "(11) 88888-8888",
   "sexo": "F",
   "data_nascimento": "1985-05-20",
@@ -44,7 +68,8 @@ Content-Type: application/json
   "registro_profissional": "CRF12345",
   "especialidade": "Fisioterapia",
   "unidade_lotacao_id": 1,
-  "password": "senha456"
+  "password": "senha456",
+  "recovery_password": "senha456"
 }
 
 ### 3. Criar Usuário com CPF Duplicado (deve falhar)
@@ -54,10 +79,11 @@ Content-Type: application/json
 {
   "profile_type": "gestor",
   "nome_completo": "Outro Gestor",
-  "cpf": "12345678901",
+  "cpf": "11144477735",
   "telefone": "(11) 77777-7777",
-  "matricula": "GEST002",
-  "password": "senha789"
+  "matricula": "GEST003",
+  "password": "senha789",
+  "recovery_password": "senha789"
 }
 
 ### 4. Criar Gestor com Matrícula Duplicada (deve falhar)
@@ -67,10 +93,11 @@ Content-Type: application/json
 {
   "profile_type": "gestor",
   "nome_completo": "Terceiro Gestor",
-  "cpf": "11111111111",
+  "cpf": "00000000191",
   "telefone": "(11) 66666-6666",
-  "matricula": "GEST001",
-  "password": "senha000"
+  "matricula": "TEST001",
+  "password": "senha000",
+  "recovery_password": "senha000"
 }
 
 ### 5. Listar Todos os Usuários
@@ -116,3 +143,15 @@ DELETE {{baseUrl}}/users/3
 
 ### 13. Deletar Usuário Inexistente (deve falhar)
 DELETE {{baseUrl}}/users/999
+
+### 14. Login com usuário criado (Credenciais da página de login)
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=11144477735&password=senha123
+
+### 15. Login com usuário técnico
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=12345678909&password=senha456

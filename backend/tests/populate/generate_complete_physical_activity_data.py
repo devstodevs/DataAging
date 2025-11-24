@@ -13,7 +13,7 @@ from typing import List, Dict, Any
 
 fake = Faker('pt_BR')
 
-API_BASE_URL = "http://localhost:8001/api/v1"
+API_BASE_URL = "http://localhost:8000/api/v1"
 NUM_PATIENTS = 70
 
 CURITIBA_NEIGHBORHOODS = [
@@ -26,7 +26,7 @@ CURITIBA_NEIGHBORHOODS = [
     "Pinheirinho", "Santa Cândida", "Seminário", "Tarumã", "Uberaba"
 ]
 
-HEALTH_UNIT_IDS = [1, 2, 3, 4]
+HEALTH_UNIT_IDS = [1, 2, 3, 4]  # Will be populated from API if available
 
 COMORBIDITIES = [
     "Hipertensão arterial sistêmica",
@@ -302,6 +302,9 @@ def generate_evaluation(patient_id: int, registration_date: date):
 
 def make_api_request(method: str, endpoint: str, data: Dict = None):
     """Make API request with error handling"""
+    # Ensure endpoint starts with /
+    if not endpoint.startswith('/'):
+        endpoint = '/' + endpoint
     url = f"{API_BASE_URL}{endpoint}"
     
     try:
@@ -317,13 +320,56 @@ def make_api_request(method: str, endpoint: str, data: Dict = None):
         if response.status_code in [200, 201]:
             return response.json()
         else:
-            print(f"API Error {response.status_code}: {response.text}")
-            return None
+            # Return error dict instead of None for better error handling
+            error_info = {"status_code": response.status_code, "error": True}
+            try:
+                error_data = response.json()
+                if isinstance(error_data, dict):
+                    error_info["detail"] = error_data.get('detail', str(error_data))
+                else:
+                    error_info["detail"] = str(error_data)
+            except:
+                error_info["detail"] = response.text[:200] if response.text else "No error message"
+            return error_info
             
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
-        return None
+        return {"error": True, "detail": str(e)}
 
+
+def get_available_health_units():
+    """Get available health units from API"""
+    global HEALTH_UNIT_IDS
+    try:
+        response = make_api_request("GET", "/health-units/")
+        if response and not (isinstance(response, dict) and response.get('error')):
+            # Response can be a list or a single dict
+            if isinstance(response, list):
+                health_units = response
+            elif isinstance(response, dict) and 'id' in response:
+                health_units = [response]
+            else:
+                health_units = []
+            
+            if health_units:
+                HEALTH_UNIT_IDS = [unit['id'] for unit in health_units if 'id' in unit]
+                print(f"✅ Found {len(HEALTH_UNIT_IDS)} health units: {HEALTH_UNIT_IDS}")
+                return True
+            else:
+                print("⚠️  No health units found in database")
+                print("   Please create health units first or update HEALTH_UNIT_IDS in the script")
+                return False
+        else:
+            print("⚠️  Could not fetch health units from API")
+            if isinstance(response, dict):
+                print(f"   Status: {response.get('status_code', 'N/A')}")
+                print(f"   Error: {response.get('detail', 'Unknown error')}")
+            print("   Using default IDs: [1, 2, 3, 4]")
+            return False
+    except Exception as e:
+        print(f"⚠️  Error fetching health units: {e}")
+        print("   Using default IDs: [1, 2, 3, 4]")
+        return False
 
 def cleanup_existing_data():
     """Clean up existing physical activity data using SQLite directly"""
@@ -407,7 +453,20 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
     patient_response = make_api_request("POST", "/physical-activity-patients/", patient_data)
     
     if not patient_response:
+        print(f"✗ Failed to create patient: {patient_data['nome_completo']} - No response from server")
+        return None
+    
+    if isinstance(patient_response, dict) and patient_response.get('error'):
+        error_msg = patient_response.get('detail', 'Unknown error')
         print(f"✗ Failed to create patient: {patient_data['nome_completo']}")
+        print(f"   Status: {patient_response.get('status_code', 'N/A')}")
+        print(f"   Error: {error_msg}")
+        print(f"   Data sent: {patient_data}")
+        return None
+    
+    if not isinstance(patient_response, dict) or "id" not in patient_response:
+        print(f"✗ Failed to create patient: {patient_data['nome_completo']} - Invalid response format")
+        print(f"   Response: {patient_response}")
         return None
     
     patient_id = patient_response["id"]
@@ -422,11 +481,18 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
         evaluation_data
     )
     
-    if evaluation_response:
-        print(f"  ✓ Created evaluation (Risk: {sedentary_risk}, WHO: {'✓' if evaluation_response.get('who_compliance') else '✗'})")
-        return patient_response, evaluation_response
+    if evaluation_response and isinstance(evaluation_response, dict):
+        if evaluation_response.get('error'):
+            error_msg = evaluation_response.get('detail', 'Unknown error')
+            print(f"  ✗ Failed to create evaluation for patient {patient_id}")
+            print(f"     Status: {evaluation_response.get('status_code', 'N/A')}")
+            print(f"     Error: {error_msg}")
+            return patient_response, None
+        else:
+            print(f"  ✓ Created evaluation (Risk: {sedentary_risk}, WHO: {'✓' if evaluation_response.get('who_compliance') else '✗'})")
+            return patient_response, evaluation_response
     else:
-        print(f"  ✗ Failed to create evaluation for patient {patient_id}")
+        print(f"  ✗ Failed to create evaluation for patient {patient_id} - Invalid response")
         return patient_response, None
 
 
@@ -434,6 +500,16 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
     """Generate complete dataset with patients and evaluations"""
     
     print(f"🚀 Generating {num_patients} physical activity patients with evaluations...")
+    
+    # Get available health units
+    print("\n🏥 Checking available health units...")
+    if not get_available_health_units():
+        print("⚠️  Warning: Could not verify health units. Proceeding with default IDs.")
+    
+    if not HEALTH_UNIT_IDS:
+        print("❌ No health units available. Cannot create patients.")
+        print("   Please create health units first using the API or database.")
+        return [], []
     
     created_patients = []
     created_evaluations = []

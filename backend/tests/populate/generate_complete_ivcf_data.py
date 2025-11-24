@@ -54,7 +54,7 @@ COMORBIDITIES = [
 ]
 
 def generate_cpf():
-    """Generate a valid Brazilian CPF number"""
+    """Generate a valid Brazilian CPF number with exactly 11 digits"""
     cpf = [random.randint(0, 9) for _ in range(9)]
     
     sum1 = sum(cpf[i] * (10 - i) for i in range(9))
@@ -69,7 +69,12 @@ def generate_cpf():
         digit2 = 0
     cpf.append(digit2)
     
-    return ''.join(map(str, cpf))
+    cpf_str = ''.join(map(str, cpf))
+    
+    if len(cpf_str) != 11:
+        raise ValueError(f"Generated CPF has invalid length: {len(cpf_str)} (expected 11)")
+    
+    return cpf_str
 
 def generate_phone():
     """Generate a Brazilian phone number"""

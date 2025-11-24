@@ -28,7 +28,7 @@ Authenticate a user and receive a JWT access token.
 
 **Request (form-data):**
 ```
-username: 12345678901  (CPF without formatting)
+username: 11144477735  (CPF without formatting)
 password: senha123
 ```
 
@@ -36,7 +36,7 @@ password: senha123
 ```bash
 curl -X POST "http://localhost:8000/api/v1/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=12345678901&password=senha123"
+  -d "username=11144477735&password=senha123"
 ```
 
 **Response (200 OK):**
@@ -46,7 +46,7 @@ curl -X POST "http://localhost:8000/api/v1/login" \
   "user": {
     "id": 1,
     "nome_completo": "João Silva",
-    "cpf": "12345678901",
+    "cpf": "11144477735",
     "telefone": "(11) 98765-4321",
     "sexo": "Masculino",
     "data_nascimento": "1980-05-15",
@@ -122,7 +122,7 @@ curl -X GET "http://localhost:8000/api/v1/me" \
 # Login
 curl -X POST "http://localhost:8000/api/v1/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=12345678901&password=senha123"
+  -d "username=11144477735&password=senha123"
 
 # Response includes access_token
 {
@@ -196,7 +196,7 @@ curl -X POST "http://localhost:8000/api/v1/users/" \
   -H "Content-Type: application/json" \
   -d '{
     "nome_completo": "João Silva",
-    "cpf": "12345678901",
+    "cpf": "11144477735",
     "telefone": "(11) 98765-4321",
     "matricula": "GES001",
     "password": "senha123",
@@ -209,7 +209,7 @@ curl -X POST "http://localhost:8000/api/v1/users/" \
 ```bash
 curl -X POST "http://localhost:8000/api/v1/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=12345678901&password=senha123"
+  -d "username=11144477735&password=senha123"
 ```
 
 **Save the access_token from response:**
@@ -240,7 +240,7 @@ http://localhost:8000/docs
 1. Expand the **POST /api/v1/login** endpoint
 2. Click "Try it out"
 3. Enter:
-   - username: `12345678901` (your CPF)
+   - username: `11144477735` (your CPF)
    - password: `senha123` (your password)
 4. Click "Execute"
 5. Copy the `access_token` from the response
@@ -275,7 +275,7 @@ BASE_URL = "http://localhost:8000/api/v1"
 
 # 1. Login
 login_data = {
-    "username": "12345678901",
+    "username": "11144477735",
     "password": "senha123"
 }
 
@@ -350,7 +350,7 @@ async function getCurrentUser() {
 }
 
 // Usage
-login('12345678901', 'senha123')
+login('11144477735', 'senha123')
   .then(data => {
     console.log('Logged in:', data.user.nome_completo);
     return getCurrentUser();

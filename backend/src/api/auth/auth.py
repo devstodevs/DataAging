@@ -80,7 +80,7 @@ def login(
     Login endpoint - authenticate user and return JWT token.
     
     **Request Body (form-data):**
-    - username: User CPF (without formatting, e.g., "12345678901")
+    - username: User CPF (without formatting, e.g., "11144477735")
     - password: User password
     
     **Returns:**
@@ -94,7 +94,7 @@ def login(
     
     **Example:**
     ```
-    username: 12345678901
+    username: 11144477735
     password: senha123
     ```
     """

@@ -79,6 +79,23 @@ const Login: React.FC<LoginProps> = ({ onNavigateToRegister, onNavigateToPasswor
           </Subtitle>
         </div>
 
+        <div style={{ 
+          marginBottom: "24px", 
+          padding: "12px", 
+          backgroundColor: "#F0F9FF", 
+          border: "1px solid #BAE6FD", 
+          borderRadius: "8px",
+          fontSize: "14px"
+        }}>
+          <div style={{ fontWeight: "600", marginBottom: "8px", color: "#0369A1" }}>
+            Credenciais válidas para teste:
+          </div>
+          <div style={{ color: "#075985", lineHeight: "1.6" }}>
+            <div><strong>CPF:</strong> 111.444.777-35</div>
+            <div><strong>Senha:</strong> senha123</div>
+          </div>
+        </div>
+
         {/* Formulário */}
         <form onSubmit={handleSubmit}>
           {/* Campo de CPF */}

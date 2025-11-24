@@ -75,7 +75,7 @@ cp .env.example .env
 
 3. Inicie os serviços:
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Serviços disponíveis:
@@ -86,7 +86,7 @@ Serviços disponíveis:
 
 Para parar os serviços:
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ## Estrutura do Projeto

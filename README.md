@@ -58,6 +58,22 @@ Frontend disponível em: `http://localhost:5173`
 
 ## Execução com Docker
 
+### Configuração de Variáveis de Ambiente
+
+1. Copie o arquivo de exemplo de variáveis de ambiente:
+```bash
+cp .env.example .env
+```
+
+2. Edite o arquivo `.env` conforme necessário. As principais variáveis são:
+   - `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`: Configurações do banco de dados
+   - `DATABASE_URL`: URL completa de conexão com o banco
+   - `BACKEND_PORT`: Porta do backend (padrão: 8000)
+   - `FRONTEND_PORT`: Porta do frontend (padrão: 5173)
+   - `PROXY_PORT`: Porta do proxy Nginx (padrão: 80)
+   - `VITE_API_BASE_URL`: URL base da API para o frontend
+
+3. Inicie os serviços:
 ```bash
 docker-compose up -d
 ```
@@ -66,7 +82,7 @@ Serviços disponíveis:
 - Frontend: `http://localhost`
 - Backend API: `http://localhost/api`
 - Documentação: `http://localhost/api/docs`
-- PostgreSQL: `localhost:55434`
+- PostgreSQL: `localhost:55434` (ou a porta configurada em `POSTGRES_PORT`)
 
 Para parar os serviços:
 ```bash

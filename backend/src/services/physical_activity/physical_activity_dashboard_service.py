@@ -144,46 +144,63 @@ class PhysicalActivityDashboardService:
         start_date = date.today() - timedelta(days=months * 30)
         
         # Get monthly averages for diabetics using SQLite-compatible date functions
-        diabetic_trend = db.query(
-            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao).label('month'),
-            func.avg(PhysicalActivityEvaluation.sedentary_hours_per_day).label('avg_sedentary')
-        ).filter(
-            and_(
-                PhysicalActivityEvaluation.patient_id.in_(diabetic_ids) if diabetic_ids else False,
-                PhysicalActivityEvaluation.data_avaliacao >= start_date
-            )
-        ).group_by(
-            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao)
-        ).order_by('month').all()
+        diabetic_trend = []
+        if diabetic_ids:
+            diabetic_trend = db.query(
+                func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao).label('month'),
+                func.avg(PhysicalActivityEvaluation.sedentary_hours_per_day).label('avg_sedentary')
+            ).filter(
+                and_(
+                    PhysicalActivityEvaluation.patient_id.in_(diabetic_ids),
+                    PhysicalActivityEvaluation.data_avaliacao >= start_date
+                )
+            ).group_by(
+                func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao)
+            ).order_by('month').all()
         
         # Get monthly averages for hypertensives using SQLite-compatible date functions
-        hypertensive_trend = db.query(
-            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao).label('month'),
-            func.avg(PhysicalActivityEvaluation.sedentary_hours_per_day).label('avg_sedentary')
-        ).filter(
-            and_(
-                PhysicalActivityEvaluation.patient_id.in_(hypertensive_ids) if hypertensive_ids else False,
-                PhysicalActivityEvaluation.data_avaliacao >= start_date
-            )
-        ).group_by(
-            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao)
-        ).order_by('month').all()
+        hypertensive_trend = []
+        if hypertensive_ids:
+            hypertensive_trend = db.query(
+                func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao).label('month'),
+                func.avg(PhysicalActivityEvaluation.sedentary_hours_per_day).label('avg_sedentary')
+            ).filter(
+                and_(
+                    PhysicalActivityEvaluation.patient_id.in_(hypertensive_ids),
+                    PhysicalActivityEvaluation.data_avaliacao >= start_date
+                )
+            ).group_by(
+                func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao)
+            ).order_by('month').all()
+        
+        # Process results safely
+        diabetic_results = []
+        for result in diabetic_trend:
+            try:
+                avg_value = result.avg_sedentary if result.avg_sedentary is not None else 0
+                diabetic_results.append({
+                    "month": result.month,
+                    "average_sedentary_hours": round(float(avg_value), 1)
+                })
+            except (ValueError, TypeError, AttributeError):
+                # Skip invalid results
+                continue
+        
+        hypertensive_results = []
+        for result in hypertensive_trend:
+            try:
+                avg_value = result.avg_sedentary if result.avg_sedentary is not None else 0
+                hypertensive_results.append({
+                    "month": result.month,
+                    "average_sedentary_hours": round(float(avg_value), 1)
+                })
+            except (ValueError, TypeError, AttributeError):
+                # Skip invalid results
+                continue
         
         return {
-            "diabetics": [
-                {
-                    "month": result.month,
-                    "average_sedentary_hours": round(float(result.avg_sedentary), 1)
-                }
-                for result in diabetic_trend
-            ],
-            "hypertensives": [
-                {
-                    "month": result.month,
-                    "average_sedentary_hours": round(float(result.avg_sedentary), 1)
-                }
-                for result in hypertensive_trend
-            ]
+            "diabetics": diabetic_results,
+            "hypertensives": hypertensive_results
         }
     
     @staticmethod

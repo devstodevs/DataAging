@@ -197,10 +197,11 @@ export function usePhysicalActivityData(): UsePhysicalActivityDataReturn {
     }
   }, [setLoading, setError]);
 
-  // Load data on mount
+  // Load data on mount only
   useEffect(() => {
     refreshData();
-  }, [refreshData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run on mount
 
   return {
     ...state,

@@ -162,7 +162,8 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
       }, 500); // Aguarda um pouco após o carregamento inicial
       return () => clearTimeout(timer);
     }
-  }, [isInitialLoad, updateFilteredData, apiFilters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInitialLoad]); // Only run when isInitialLoad changes
 
   // Efeito para atualizar dados quando filtros mudam (apenas após carregamento inicial)
   useEffect(() => {
@@ -173,11 +174,12 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
 
       return () => clearTimeout(timeoutId);
     }
-  }, [apiFilters, updateFilteredData, isInitialLoad]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiFilters, isInitialLoad]); // updateFilteredData is stable now
 
-  // Dados processados para exibição (memoizados para evitar recálculos)
-  const radarData = useMemo(() => getRadarChartData(), [getRadarChartData]);
-  const lineData = useMemo(() => getLineChartData(), [getLineChartData]);
+  // Dados processados para exibição (funções já são estáveis do hook)
+  const radarData = getRadarChartData();
+  const lineData = getLineChartData();
   const criticalPatientsCount = criticalPatients?.total_critical || 0;
 
   // Filtragem da tabela no frontend

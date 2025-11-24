@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, validator
 from typing import Optional, List
 from datetime import date
 import re
+from utils.cpf_validator import validate_cpf, clean_cpf
 
 
 class FACTFPatientBase(BaseModel):
@@ -18,11 +19,19 @@ class FACTFPatientBase(BaseModel):
 
     @validator('cpf')
     def validate_cpf(cls, v):
-        # Remove caracteres não numéricos
-        cpf_numbers = re.sub(r'\D', '', v)
-        if len(cpf_numbers) != 11:
-            raise ValueError('CPF deve ter 11 dígitos')
-        return cpf_numbers
+        """Validate and clean CPF - must have exactly 11 digits and be valid"""
+        if not v:
+            raise ValueError('CPF é obrigatório')
+        
+        cpf_clean = clean_cpf(v)
+        
+        if len(cpf_clean) != 11:
+            raise ValueError(f'CPF deve ter exatamente 11 dígitos (recebido: {len(cpf_clean)} dígitos)')
+        
+        if not validate_cpf(cpf_clean):
+            raise ValueError('CPF inválido')
+        
+        return cpf_clean
 
     @validator('email')
     def validate_email(cls, v):

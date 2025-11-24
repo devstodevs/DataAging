@@ -9,7 +9,11 @@ from typing import List, Dict
 
 API_BASE_URL = "http://localhost:8000/api/v1"
 
-# Health units to create (based on Curitiba regions)
+TEST_USER_CPF = "11144477735"
+TEST_USER_PASSWORD = "senha123"
+
+auth_token = None
+
 HEALTH_UNITS = [
     {
         "nome": "Unidade Básica de Saúde Centro",
@@ -62,30 +66,66 @@ HEALTH_UNITS = [
 ]
 
 
+def authenticate():
+    """Authenticate and get access token"""
+    global auth_token
+    if auth_token:
+        return auth_token
+    
+    login_url = f"{API_BASE_URL}/login"
+    try:
+        response = requests.post(
+            login_url,
+            data={
+                "username": TEST_USER_CPF,
+                "password": TEST_USER_PASSWORD
+            },
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            token_data = response.json()
+            auth_token = token_data.get("access_token")
+            print("✓ Authenticated successfully")
+            return auth_token
+        else:
+            print(f"✗ Authentication failed: {response.status_code}")
+            print(f"  Error: {response.text}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"✗ Authentication error: {e}")
+        return None
+
+
 def make_api_request(method: str, endpoint: str, data: Dict = None):
-    """Make API request with error handling"""
+    """Make API request with error handling and authentication"""
+    token = authenticate()
+    if not token:
+        print("✗ Cannot make request: Authentication failed")
+        return None
+    
     if endpoint.startswith('/'):
         endpoint = endpoint[1:]
     url = f"{API_BASE_URL}/{endpoint}"
     
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}"
+    }
+    
     try:
         if method.upper() == "GET":
-            response = requests.get(url, timeout=30)
+            response = requests.get(url, headers=headers, timeout=30)
         elif method.upper() == "POST":
-            response = requests.post(
-                url, 
-                json=data, 
-                headers={"Content-Type": "application/json"}, 
-                timeout=30
-            )
+            response = requests.post(url, json=data, headers=headers, timeout=30)
         elif method.upper() == "DELETE":
-            response = requests.delete(url, timeout=30)
+            response = requests.delete(url, headers=headers, timeout=30)
         else:
             raise ValueError(f"Unsupported method: {method}")
         
         return response
     except requests.exceptions.RequestException as e:
-        print(f"❌ Network error: {e}")
+        print(f"Network error: {e}")
         return None
 
 
@@ -102,12 +142,12 @@ def create_health_unit(health_unit_data: Dict) -> bool:
     response = make_api_request("POST", "health-units/", health_unit_data)
     
     if not response:
-        print(f"❌ Failed to create health unit: {health_unit_data['nome']} - No response from server")
+        print(f"Failed to create health unit: {health_unit_data['nome']} - No response from server")
         return False
     
     if response.status_code == 201:
         created_unit = response.json()
-        print(f"✅ Created health unit: {created_unit['nome']} (ID: {created_unit['id']}) - {created_unit['bairro']}, {created_unit['regiao']}")
+        print(f"Created health unit: {created_unit['nome']} (ID: {created_unit['id']}) - {created_unit['bairro']}, {created_unit['regiao']}")
         return True
     elif response.status_code == 409:
         print(f"⚠️  Health unit already exists: {health_unit_data['nome']}")
@@ -123,7 +163,7 @@ def create_health_unit(health_unit_data: Dict) -> bool:
         except:
             error_msg = response.text[:200] if response.text else "No error message"
         
-        print(f"❌ Failed to create health unit: {health_unit_data['nome']}")
+        print(f"Failed to create health unit: {health_unit_data['nome']}")
         print(f"   Status: {response.status_code}")
         print(f"   Error: {error_msg}")
         return False
@@ -134,7 +174,6 @@ def main():
     print("🏥 HEALTH UNITS CREATOR")
     print("=" * 50)
     
-    # Check existing health units
     print("\n📋 Checking existing health units...")
     existing_units = get_existing_health_units()
     if existing_units:
@@ -144,7 +183,6 @@ def main():
     else:
         print("No existing health units found.")
     
-    # Create health units
     print(f"\n🚀 Creating {len(HEALTH_UNITS)} health units...")
     print("-" * 50)
     
@@ -156,23 +194,20 @@ def main():
         if create_health_unit(health_unit_data):
             created_count += 1
         else:
-            # Check if it's because it already exists
             existing_names = [u['nome'] for u in existing_units]
             if health_unit_data['nome'] in existing_names:
                 skipped_count += 1
             else:
                 failed_count += 1
     
-    # Summary
     print("\n" + "=" * 50)
     print("📊 SUMMARY")
     print("=" * 50)
-    print(f"✅ Created: {created_count}")
+    print(f"Created: {created_count}")
     print(f"⚠️  Skipped (already exists): {skipped_count}")
-    print(f"❌ Failed: {failed_count}")
+    print(f"Failed: {failed_count}")
     print(f"📋 Total: {len(HEALTH_UNITS)}")
     
-    # List all health units
     print("\n📋 All health units in database:")
     all_units = get_existing_health_units()
     if all_units:
@@ -181,7 +216,7 @@ def main():
     else:
         print("  No health units found.")
     
-    print("\n✅ Done!")
+    print("\nDone!")
 
 
 if __name__ == "__main__":

@@ -8,6 +8,8 @@ from schemas.health_unit import (
     HealthUnitResponse
 )
 from services.health_unit_service import HealthUnitService
+from api.auth.auth import get_current_user
+from models.user.user import User
 
 router = APIRouter()
 
@@ -15,7 +17,8 @@ router = APIRouter()
 @router.post("/health-units/", response_model=HealthUnitResponse, status_code=status.HTTP_201_CREATED)
 def create_health_unit(
     health_unit: HealthUnitCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Create a new health unit.
@@ -41,7 +44,8 @@ def list_health_units(
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(100, ge=1, le=100, description="Maximum number of records to return"),
     active_only: bool = Query(True, description="Filter only active units"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     List all health units with pagination.
@@ -60,7 +64,8 @@ def list_health_units(
 @router.get("/health-units/{health_unit_id}", response_model=HealthUnitResponse)
 def get_health_unit(
     health_unit_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get a specific health unit by ID.
@@ -80,7 +85,8 @@ def get_health_unit(
 @router.get("/health-units/region/{regiao}", response_model=List[HealthUnitResponse])
 def get_health_units_by_region(
     regiao: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get health units by region.
@@ -98,7 +104,8 @@ def get_health_units_by_region(
 def update_health_unit(
     health_unit_id: int,
     health_unit_update: HealthUnitUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Update an existing health unit.
@@ -122,7 +129,8 @@ def update_health_unit(
 @router.delete("/health-units/{health_unit_id}", status_code=status.HTTP_200_OK)
 def delete_health_unit(
     health_unit_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Delete a health unit (soft delete).

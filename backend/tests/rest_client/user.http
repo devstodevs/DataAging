@@ -1,9 +1,29 @@
 ### DataAging API - Testes de Usuários
 @baseUrl = http://localhost:8000/api/v1
 
+### ============================================
+### AUTENTICAÇÃO - Faça login primeiro e copie o token
+### ============================================
+
+### Login - Usuário de Teste (CPF: 11144477735)
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=11144477735&password=senha123
+
+### ============================================
+### VARIÁVEIS - Cole o token obtido acima aqui
+### ============================================
+@token = YOUR_TOKEN_HERE
+
+### ============================================
+### TESTES DE USUÁRIOS (requerem autenticação)
+### ============================================
+
 ### 1. Criar Usuário Gestor (Credenciais da página de login)
 POST {{baseUrl}}/users/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "profile_type": "gestor",
@@ -27,6 +47,7 @@ Content-Type: application/json
 ### 1.1. Criar Usuário Gestor (Alternativo)
 POST {{baseUrl}}/users/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "profile_type": "gestor",
@@ -50,6 +71,7 @@ Content-Type: application/json
 ### 2. Criar Usuário Técnico
 POST {{baseUrl}}/users/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "profile_type": "tecnico",
@@ -75,6 +97,7 @@ Content-Type: application/json
 ### 3. Criar Usuário com CPF Duplicado (deve falhar)
 POST {{baseUrl}}/users/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "profile_type": "gestor",
@@ -89,6 +112,7 @@ Content-Type: application/json
 ### 4. Criar Gestor com Matrícula Duplicada (deve falhar)
 POST {{baseUrl}}/users/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "profile_type": "gestor",
@@ -102,19 +126,24 @@ Content-Type: application/json
 
 ### 5. Listar Todos os Usuários
 GET {{baseUrl}}/users/
+Authorization: Bearer {{token}}
 
 ### 6. Listar Usuários com Paginação
 GET {{baseUrl}}/users/?skip=0&limit=2
+Authorization: Bearer {{token}}
 
 ### 7. Buscar Usuário por ID
 GET {{baseUrl}}/users/3
+Authorization: Bearer {{token}}
 
 ### 8. Buscar Usuário Inexistente (deve falhar)
 GET {{baseUrl}}/users/999
+Authorization: Bearer {{token}}
 
 ### 9. Atualizar Usuário
 PUT {{baseUrl}}/users/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "João Silva Gestor",
@@ -125,6 +154,7 @@ Content-Type: application/json
 ### 10. Atualizar Senha do Usuário
 PUT {{baseUrl}}/users/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "password": "senha123"
@@ -133,6 +163,7 @@ Content-Type: application/json
 ### 11. Atualizar Usuário Inexistente (deve falhar)
 PUT {{baseUrl}}/users/999
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Usuário Inexistente"
@@ -140,9 +171,11 @@ Content-Type: application/json
 
 ### 12. Deletar Usuário
 DELETE {{baseUrl}}/users/3
+Authorization: Bearer {{token}}
 
 ### 13. Deletar Usuário Inexistente (deve falhar)
 DELETE {{baseUrl}}/users/999
+Authorization: Bearer {{token}}
 
 ### 14. Login com usuário criado (Credenciais da página de login)
 POST {{baseUrl}}/login

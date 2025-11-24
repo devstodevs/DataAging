@@ -1,22 +1,21 @@
 services:
   # Database Service
-  pgtecnoaging:
+  pgdataaging:
     image: postgres:16-alpine
     container_name: pgdataaging
-    hostname: pgdataaging
+    hostname: ${POSTGRES_HOST:-pgdataaging}
     environment:
-      PGPORT: 5434
-      POSTGRES_DB: pgdataaging
-      POSTGRES_USER: pgdataaging
-      POSTGRES_PASSWORD: "testing"
+      POSTGRES_DB: ${POSTGRES_DB:-pgdataaging}
+      POSTGRES_USER: ${POSTGRES_USER:-pgdataaging}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-testing}
     ports:
-      - "55434:5434"
+      - "${POSTGRES_EXTERNAL_PORT:-55434}:5432"
     volumes:
       - dataaging-volume:/var/lib/postgresql/data
     networks:
       - dataaging-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pgdataaging -d pgdataaging -p 5434"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pgdataaging} -d ${POSTGRES_DB:-pgdataaging}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -26,16 +25,16 @@ services:
     build: ./backend
     container_name: backend
     ports:
-      - "8000:8000"
+      - "${BACKEND_EXTERNAL_PORT:-8000}:8000"
     environment:
-      DATABASE_URL: postgresql://pgdataaging:testing@pgtecnoaging:5434/pgdataaging
+      DATABASE_URL: ${DATABASE_URL:-postgresql://pgdataaging:testing@pgdataaging:5432/pgdataaging}
     volumes:
       - ./backend/src:/app
       - ./backend/requirements.txt:/app/requirements.txt
     networks:
       - dataaging-network
     depends_on:
-      pgtecnoaging:
+      pgdataaging:
         condition: service_healthy
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
@@ -46,7 +45,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: frontend
     ports:
-      - "5173:5173"
+      - "${FRONTEND_EXTERNAL_PORT:-5173}:5173"
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/index.html:/app/index.html
@@ -64,15 +63,15 @@ services:
     depends_on:
       - backend
     environment:
-      - VITE_API_URL=http://backend:8000
-      - VITE_API_BASE_URL=/api/v1
+      - VITE_API_URL=${VITE_API_URL:-http://backend:8000}
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL:-/api/v1}
 
   # Reverse Proxy Service
   proxy:
     build: ./proxy
     container_name: proxy
     ports:
-      - "80:80"
+      - "${PROXY_EXTERNAL_PORT:-80}:80"
     networks:
       - dataaging-network
     depends_on:
@@ -82,7 +81,6 @@ services:
 volumes:
   dataaging-volume:
     driver: local
-    name: dataaging-volume
 
 networks:
   dataaging-network:

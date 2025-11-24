@@ -2,9 +2,29 @@
 
 @baseUrl = http://localhost:8000/api/v1
 
+### ============================================
+### AUTENTICAÇÃO - Faça login primeiro e copie o token
+### ============================================
+
+### Login - Usuário de Teste (CPF: 11144477735)
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=11144477735&password=senha123
+
+### ============================================
+### VARIÁVEIS - Cole o token obtido acima aqui
+### ============================================
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTE0NDQ3NzczNSIsInVzZXJfaWQiOjEsInByb2ZpbGVfdHlwZSI6Imdlc3RvciIsImV4cCI6MTc2Mzk2MTA0M30.--_aRIA0saXK3a6s27nYo6xv9MH3H1VI1WLR3OvXKRg
+
+### ============================================
+### TESTES DE USUÁRIOS (requerem autenticação)
+### ============================================
+
 ### Create Gestor User
 POST {{baseUrl}}/users/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "cpf": "12345678901",
@@ -27,6 +47,7 @@ Content-Type: application/json
 ### Create Tecnico User
 POST {{baseUrl}}/users/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "cpf": "98765432100",
@@ -48,13 +69,16 @@ Content-Type: application/json
 
 ### List All Users
 GET {{baseUrl}}/users/
+Authorization: Bearer {{token}}
 
 ### Get User by ID
 GET {{baseUrl}}/users/1
+Authorization: Bearer {{token}}
 
 ### Update User
 PUT {{baseUrl}}/users/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "telefone": "41999999998",
@@ -63,16 +87,11 @@ Content-Type: application/json
 
 ### Delete User
 DELETE {{baseUrl}}/users/1
+Authorization: Bearer {{token}}
 
-### Test Login with Created User
-POST {{baseUrl}}/login
-Content-Type: application/x-www-form-urlencoded
-
-username=12345678901&password=senha123
-
-### Get Current User Info (requires token from login)
+### Get Current User Info
 GET {{baseUrl}}/me
-Authorization: Bearer YOUR_TOKEN_HERE
+Authorization: Bearer {{token}}
 
 ### ============================================
 ### Error Test Cases
@@ -81,6 +100,7 @@ Authorization: Bearer YOUR_TOKEN_HERE
 ### Test Invalid CPF (should fail)
 POST {{baseUrl}}/users/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "cpf": "12345678900",
@@ -93,6 +113,7 @@ Content-Type: application/json
 ### Test CPF with all same digits (should fail)
 POST {{baseUrl}}/users/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "cpf": "11111111111",
@@ -105,6 +126,7 @@ Content-Type: application/json
 ### Test Duplicate CPF (should fail after first user is created)
 POST {{baseUrl}}/users/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "cpf": "12345678901",
@@ -116,6 +138,7 @@ Content-Type: application/json
 ### Test Valid CPF with formatting
 POST {{baseUrl}}/users/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "cpf": "123.456.789-09",

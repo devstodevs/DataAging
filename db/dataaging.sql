@@ -7,7 +7,7 @@ CREATE TYPE enum_estados_brasil AS ENUM (
 );
 
 CREATE TYPE enum_tipo_teste AS ENUM (
-    'SEDENTARISMO', 'IVCF20', 'PFS', 'MINIMENTAL', 'FACTF'
+    'SEDENTARISMO', 'IVCF20', 'FACTF'
 );
 
 drop table endereco;

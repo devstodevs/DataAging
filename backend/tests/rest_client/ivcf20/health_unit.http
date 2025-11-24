@@ -2,9 +2,29 @@
 
 @baseUrl = http://localhost:8000/api/v1
 
+### ============================================
+### AUTENTICAÇÃO - Faça login primeiro e copie o token
+### ============================================
+
+### Login - Usuário de Teste (CPF: 11144477735)
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=11144477735&password=senha123
+
+### ============================================
+### VARIÁVEIS - Cole o token obtido acima aqui
+### ============================================
+@token = YOUR_TOKEN_HERE
+
+### ============================================
+### TESTES DE HEALTH UNITS (requerem autenticação)
+### ============================================
+
 ### Create Health Unit
 POST {{baseUrl}}/health-units/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome": "UBS Centro",
@@ -16,6 +36,7 @@ Content-Type: application/json
 ### Create Another Health Unit
 POST {{baseUrl}}/health-units/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome": "UBS Norte",
@@ -27,6 +48,7 @@ Content-Type: application/json
 ### Create Health Unit in South Region
 POST {{baseUrl}}/health-units/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome": "UBS Sul",
@@ -37,25 +59,32 @@ Content-Type: application/json
 
 ### List All Health Units
 GET {{baseUrl}}/health-units/
+Authorization: Bearer {{token}}
 
 ### List Health Units with Pagination
 GET {{baseUrl}}/health-units/?skip=0&limit=2
+Authorization: Bearer {{token}}
 
 ### List Only Active Health Units
 GET {{baseUrl}}/health-units/?active_only=true
+Authorization: Bearer {{token}}
 
 ### Get Health Unit by ID
 GET {{baseUrl}}/health-units/1
+Authorization: Bearer {{token}}
 
 ### Get Health Units by Region
 GET {{baseUrl}}/health-units/region/Centro
+Authorization: Bearer {{token}}
 
 ### Get Health Units by Region (Norte)
 GET {{baseUrl}}/health-units/region/Norte
+Authorization: Bearer {{token}}
 
 ### Update Health Unit
 PUT {{baseUrl}}/health-units/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome": "UBS Centro Atualizada",
@@ -66,6 +95,7 @@ Content-Type: application/json
 ### Update Health Unit Status
 PUT {{baseUrl}}/health-units/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "ativo": false
@@ -74,6 +104,7 @@ Content-Type: application/json
 ### Try to Create Duplicate Health Unit Name (Should Fail)
 POST {{baseUrl}}/health-units/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome": "UBS Centro",
@@ -84,10 +115,12 @@ Content-Type: application/json
 
 ### Get Non-existent Health Unit (Should Fail)
 GET {{baseUrl}}/health-units/999
+Authorization: Bearer {{token}}
 
 ### Update Non-existent Health Unit (Should Fail)
 PUT {{baseUrl}}/health-units/999
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome": "Teste"
@@ -95,9 +128,12 @@ Content-Type: application/json
 
 ### Delete Health Unit (Soft Delete)
 DELETE {{baseUrl}}/health-units/1
+Authorization: Bearer {{token}}
 
 ### Verify Health Unit is Soft Deleted
 GET {{baseUrl}}/health-units/1
+Authorization: Bearer {{token}}
 
 ### List Health Units Including Inactive
 GET {{baseUrl}}/health-units/?active_only=false
+Authorization: Bearer {{token}}

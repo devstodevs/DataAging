@@ -143,11 +143,11 @@ class PhysicalActivityDashboardService:
         # Calculate trends for each condition
         start_date = date.today() - timedelta(days=months * 30)
         
-        # Get monthly averages for diabetics using SQLite-compatible date functions
+        # Get monthly averages for diabetics
         diabetic_trend = []
         if diabetic_ids:
             diabetic_trend = db.query(
-                func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao).label('month'),
+                func.to_char(PhysicalActivityEvaluation.data_avaliacao, 'YYYY-MM').label('month'),
                 func.avg(PhysicalActivityEvaluation.sedentary_hours_per_day).label('avg_sedentary')
             ).filter(
                 and_(
@@ -155,14 +155,14 @@ class PhysicalActivityDashboardService:
                     PhysicalActivityEvaluation.data_avaliacao >= start_date
                 )
             ).group_by(
-                func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao)
+                func.to_char(PhysicalActivityEvaluation.data_avaliacao, 'YYYY-MM')
             ).order_by('month').all()
         
-        # Get monthly averages for hypertensives using SQLite-compatible date functions
+        # Get monthly averages for hypertensives using PostgreSQL-compatible date functions
         hypertensive_trend = []
         if hypertensive_ids:
             hypertensive_trend = db.query(
-                func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao).label('month'),
+                func.to_char(PhysicalActivityEvaluation.data_avaliacao, 'YYYY-MM').label('month'),
                 func.avg(PhysicalActivityEvaluation.sedentary_hours_per_day).label('avg_sedentary')
             ).filter(
                 and_(
@@ -170,7 +170,7 @@ class PhysicalActivityDashboardService:
                     PhysicalActivityEvaluation.data_avaliacao >= start_date
                 )
             ).group_by(
-                func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao)
+                func.to_char(PhysicalActivityEvaluation.data_avaliacao, 'YYYY-MM')
             ).order_by('month').all()
         
         # Process results safely

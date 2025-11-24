@@ -1,11 +1,31 @@
 ### DataAging API - Endpoints Globais
 @baseUrl = http://localhost:8000
 
-### 1. Endpoint Raiz
+### ============================================
+### AUTENTICAÇÃO - Faça login primeiro e copie o token
+### ============================================
+
+### Login - Usuário de Teste (CPF: 11144477735)
+POST {{baseUrl}}/api/v1/login
+Content-Type: application/x-www-form-urlencoded
+
+username=11144477735&password=senha123
+
+### ============================================
+### VARIÁVEIS - Cole o token obtido acima aqui
+### ============================================
+@token = YOUR_TOKEN_HERE
+
+### ============================================
+### ENDPOINTS GLOBAIS
+### ============================================
+
+### 1. Endpoint Raiz (público)
 GET {{baseUrl}}/
 
-### 2. Listar Todas as Rotas (Debug)
+### 2. Listar Todas as Rotas (Debug - requer autenticação)
 GET {{baseUrl}}/debug/routes
+Authorization: Bearer {{token}}
 
 ### 3. Documentação Swagger
 GET {{baseUrl}}/docs

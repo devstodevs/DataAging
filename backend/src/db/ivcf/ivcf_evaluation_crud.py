@@ -260,10 +260,10 @@ def get_monthly_evolution(
             else:
                 start_date = start_date.replace(month=start_date.month - 1)
     
+    month_year_expr = func.to_char(IVCFEvaluation.data_avaliacao, 'YYYY-MM')
+    
     query = db.query(
-        func.strftime('%Y-%m', IVCFEvaluation.data_avaliacao).label('month_year'),
-        func.strftime('%Y', IVCFEvaluation.data_avaliacao).label('year'),
-        func.strftime('%m', IVCFEvaluation.data_avaliacao).label('month'),
+        month_year_expr.label('month_year'),
         func.sum(case((IVCFEvaluation.classificacao == "Robusto", 1), else_=0)).label('robust'),
         func.sum(case((IVCFEvaluation.classificacao == "Em Risco", 1), else_=0)).label('risk'),
         func.sum(case((IVCFEvaluation.classificacao == "Frágil", 1), else_=0)).label('fragile'),
@@ -276,22 +276,26 @@ def get_monthly_evolution(
             IVCFEvaluation.data_avaliacao >= start_date
         )
     ).group_by(
-        func.strftime('%Y-%m', IVCFEvaluation.data_avaliacao)
+        month_year_expr
     ).order_by(
-        func.strftime('%Y-%m', IVCFEvaluation.data_avaliacao)
+        month_year_expr
     )
     
     results = []
+    month_names = {
+        "01": "Jan", "02": "Fev", "03": "Mar", "04": "Abr",
+        "05": "Mai", "06": "Jun", "07": "Jul", "08": "Ago",
+        "09": "Set", "10": "Out", "11": "Nov", "12": "Dez"
+    }
+    
     for row in query.all():
-        month_names = {
-            "01": "Jan", "02": "Fev", "03": "Mar", "04": "Abr",
-            "05": "Mai", "06": "Jun", "07": "Jul", "08": "Ago",
-            "09": "Set", "10": "Out", "11": "Nov", "12": "Dez"
-        }
+        # Extract year and month from 'YYYY-MM' format
+        month_year = row.month_year  # Format: 'YYYY-MM'
+        year_str, month_str = month_year.split('-')
         
         results.append({
-            "month": month_names.get(row.month, row.month),
-            "year": int(row.year),
+            "month": month_names.get(month_str, month_str),
+            "year": int(year_str),
             "robust": row.robust or 0,
             "risk": row.risk or 0,
             "fragile": row.fragile or 0,

@@ -2,9 +2,29 @@
 
 @baseUrl = http://localhost:8000/api/v1
 
+### ============================================
+### AUTENTICAÇÃO - Faça login primeiro e copie o token
+### ============================================
+
+### Login - Usuário de Teste (CPF: 11144477735)
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=11144477735&password=senha123
+
+### ============================================
+### VARIÁVEIS - Cole o token obtido acima aqui
+### ============================================
+@token = YOUR_TOKEN_HERE
+
+### ============================================
+### TESTES DE PACIENTES IVCF (requerem autenticação)
+### ============================================
+
 ### Create IVCF Patient
 POST {{baseUrl}}/ivcf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Maria Silva Santos",
@@ -19,6 +39,7 @@ Content-Type: application/json
 ### Create Another Patient
 POST {{baseUrl}}/ivcf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "João Oliveira",
@@ -33,6 +54,7 @@ Content-Type: application/json
 ### Create Patient in South Region
 POST {{baseUrl}}/ivcf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Ana Costa",
@@ -47,6 +69,7 @@ Content-Type: application/json
 ### Create Patient outside the minimum age range (Should Fail)
 POST {{baseUrl}}/ivcf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Pedro Santos",
@@ -60,52 +83,68 @@ Content-Type: application/json
 
 ### List All Patients
 GET {{baseUrl}}/ivcf-patients/
+Authorization: Bearer {{token}}
 
 ### List Patients with Pagination
 GET {{baseUrl}}/ivcf-patients/?skip=0&limit=2
+Authorization: Bearer {{token}}
 
 ### List Only Active Patients
 GET {{baseUrl}}/ivcf-patients/?active_only=true
+Authorization: Bearer {{token}}
 
 ### Filter Patients by Neighborhood
 GET {{baseUrl}}/ivcf-patients/?bairro=Centro
+Authorization: Bearer {{token}}
 
 ### Filter Patients by Health Unit
 GET {{baseUrl}}/ivcf-patients/?unidade_saude_id=1
+Authorization: Bearer {{token}}
 
 ### Filter Patients by Age Range
 GET {{baseUrl}}/ivcf-patients/?idade_min=70&idade_max=80
+Authorization: Bearer {{token}}
 
 ### Get Patient by ID
 GET {{baseUrl}}/ivcf-patients/1
+Authorization: Bearer {{token}}
 
 ### Get Patient with Evaluations
 GET {{baseUrl}}/ivcf-patients/1/evaluation
+Authorization: Bearer {{token}}
 
 ### Get Patients by Region
 GET {{baseUrl}}/ivcf-patients/region/Centro
+Authorization: Bearer {{token}}
 
 ### Get Patients by Region (Norte)
 GET {{baseUrl}}/ivcf-patients/region/Norte
+Authorization: Bearer {{token}}
 
 ### Get Patients by Age Range (60-70)
 GET {{baseUrl}}/ivcf-patients/age-range/60-70
+Authorization: Bearer {{token}}
 
 ### Get Patients by Age Range (71-80)
 GET {{baseUrl}}/ivcf-patients/age-range/71-80
+Authorization: Bearer {{token}}
 
 ### Get Patients by Age Range (81+)
 GET {{baseUrl}}/ivcf-patients/age-range/81+
+Authorization: Bearer {{token}}
 
 ### Get Patients Count
 GET {{baseUrl}}/ivcf-patients/stats/count
+Authorization: Bearer {{token}}
 
 ### Get Active Patients Count
 GET {{baseUrl}}/ivcf-patients/stats/count?active_only=true
+Authorization: Bearer {{token}}
 
 ### Update Patient
 PUT {{baseUrl}}/ivcf-patients/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Maria Silva Santos Atualizada",
@@ -116,6 +155,7 @@ Content-Type: application/json
 ### Update Patient Age
 PUT {{baseUrl}}/ivcf-patients/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "idade": 73
@@ -124,6 +164,7 @@ Content-Type: application/json
 ### Update Patient Health Unit
 PUT {{baseUrl}}/ivcf-patients/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "unidade_saude_id": 2
@@ -132,6 +173,7 @@ Content-Type: application/json
 ### Try to Create Patient with Duplicate CPF (Should Fail)
 POST {{baseUrl}}/ivcf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Outro Nome",
@@ -144,6 +186,7 @@ Content-Type: application/json
 ### Try to Create Patient with Invalid Age (Should Fail)
 POST {{baseUrl}}/ivcf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Paciente Jovem",
@@ -156,6 +199,7 @@ Content-Type: application/json
 ### Try to Create Patient with Non-existent Health Unit (Should Fail)
 POST {{baseUrl}}/ivcf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Paciente Teste",
@@ -167,10 +211,12 @@ Content-Type: application/json
 
 ### Get Non-existent Patient (Should Fail)
 GET {{baseUrl}}/ivcf-patients/999
+Authorization: Bearer {{token}}
 
 ### Update Non-existent Patient (Should Fail)
 PUT {{baseUrl}}/ivcf-patients/999
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Teste"
@@ -178,9 +224,12 @@ Content-Type: application/json
 
 ### Delete Patient (Soft Delete)
 DELETE {{baseUrl}}/ivcf-patients/1
+Authorization: Bearer {{token}}
 
 ### Verify Patient is Soft Deleted
 GET {{baseUrl}}/ivcf-patients/1
+Authorization: Bearer {{token}}
 
 ### List Patients Including Inactive
 GET {{baseUrl}}/ivcf-patients/?active_only=false
+Authorization: Bearer {{token}}

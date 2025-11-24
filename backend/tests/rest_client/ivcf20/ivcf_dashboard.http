@@ -1,144 +1,210 @@
 ### IVCF Dashboard API Tests
 
-@baseUrl = http://localhost:8000/api/v1/ivcf-dashboard
+@baseUrl = http://localhost:8000/api/v1
+
+### ============================================
+### AUTENTICAÇÃO - Faça login primeiro e copie o token
+### ============================================
+
+### Login - Usuário de Teste (CPF: 11144477735)
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=11144477735&password=senha123
+
+### ============================================
+### VARIÁVEIS - Cole o token obtido acima aqui
+### ============================================
+@token = YOUR_TOKEN_HERE
+
+### ============================================
+### TESTES DE DASHBOARD IVCF (requerem autenticação)
+### ============================================
 
 ### Get IVCF Summary
-GET {{baseUrl}}/ivcf-summary
+GET {{baseUrl}}/ivcf-dashboard/ivcf-summary
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution (No Filters)
-GET {{baseUrl}}/ivcf-by-domain
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Period Filter
-GET {{baseUrl}}/ivcf-by-domain?period_from=2024-01-01&period_to=2024-02-28
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?period_from=2024-01-01&period_to=2024-02-28
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Region Filter
-GET {{baseUrl}}/ivcf-by-domain?region=Centro
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?region=Centro
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Region Filter (Norte)
-GET {{baseUrl}}/ivcf-by-domain?region=Norte
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?region=Norte
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Region Filter (Sul)
-GET {{baseUrl}}/ivcf-by-domain?region=Sul
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?region=Sul
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Health Unit Filter
-GET {{baseUrl}}/ivcf-by-domain?health_unit_id=1
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?health_unit_id=1
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Age Range Filter (60-70)
-GET {{baseUrl}}/ivcf-by-domain?age_range=60-70
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?age_range=60-70
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Age Range Filter (71-80)
-GET {{baseUrl}}/ivcf-by-domain?age_range=71-80
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?age_range=71-80
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Age Range Filter (81+)
-GET {{baseUrl}}/ivcf-by-domain?age_range=81+
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?age_range=81+
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Classification Filter (Robusto)
-GET {{baseUrl}}/ivcf-by-domain?classification=Robusto
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?classification=Robusto
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Classification Filter (Em Risco)
-GET {{baseUrl}}/ivcf-by-domain?classification=Em Risco
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?classification=Em Risco
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Classification Filter (Frágil)
-GET {{baseUrl}}/ivcf-by-domain?classification=Frágil
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?classification=Frágil
+Authorization: Bearer {{token}}
 
 ### Get Domain Distribution with Multiple Filters
-GET {{baseUrl}}/ivcf-by-domain?period_from=2024-01-01&period_to=2024-02-28&region=Centro&age_range=71-80&classification=Frágil
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?period_from=2024-01-01&period_to=2024-02-28&region=Centro&age_range=71-80&classification=Frágil
+Authorization: Bearer {{token}}
 
 ### Get Region Averages (No Filters)
-GET {{baseUrl}}/ivcf-by-region
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-region
+Authorization: Bearer {{token}}
 
 ### Get Region Averages with Period Filter
-GET {{baseUrl}}/ivcf-by-region?period_from=2024-01-01&period_to=2024-02-28
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-region?period_from=2024-01-01&period_to=2024-02-28
+Authorization: Bearer {{token}}
 
 ### Get Monthly Evolution (Default 6 months)
-GET {{baseUrl}}/ivcf-evolution
+GET {{baseUrl}}/ivcf-dashboard/ivcf-evolution
+Authorization: Bearer {{token}}
 
 ### Get Monthly Evolution (3 months)
-GET {{baseUrl}}/ivcf-evolution?months_back=3
+GET {{baseUrl}}/ivcf-dashboard/ivcf-evolution?months_back=3
+Authorization: Bearer {{token}}
 
 ### Get Monthly Evolution (12 months)
-GET {{baseUrl}}/ivcf-evolution?months_back=12
+GET {{baseUrl}}/ivcf-dashboard/ivcf-evolution?months_back=12
+Authorization: Bearer {{token}}
 
 ### Get Monthly Evolution from Last Evaluation (6 months)
-GET {{baseUrl}}/ivcf-evolution?from_last_evaluation=true
+GET {{baseUrl}}/ivcf-dashboard/ivcf-evolution?from_last_evaluation=true
+Authorization: Bearer {{token}}
 
 ### Get Monthly Evolution from Last Evaluation (3 months)
-GET {{baseUrl}}/ivcf-evolution?months_back=3&from_last_evaluation=true
+GET {{baseUrl}}/ivcf-dashboard/ivcf-evolution?months_back=3&from_last_evaluation=true
+Authorization: Bearer {{token}}
 
 ### Get Critical Patients (Default threshold 20)
-GET {{baseUrl}}/critical-patients
+GET {{baseUrl}}/ivcf-dashboard/critical-patients
+Authorization: Bearer {{token}}
 
 ### Get Critical Patients with Higher Threshold
-GET {{baseUrl}}/critical-patients?pontuacao_minima=30
+GET {{baseUrl}}/ivcf-dashboard/critical-patients?pontuacao_minima=30
+Authorization: Bearer {{token}}
 
 ### Get Critical Patients with Lower Threshold
-GET {{baseUrl}}/critical-patients?pontuacao_minima=15
+GET {{baseUrl}}/ivcf-dashboard/critical-patients?pontuacao_minima=15
+Authorization: Bearer {{token}}
 
 ### Get Fragile Elderly Percentage (No Filters)
-GET {{baseUrl}}/fragile-percentage
+GET {{baseUrl}}/ivcf-dashboard/fragile-percentage
+Authorization: Bearer {{token}}
 
 ### Get Fragile Elderly Percentage with Region Filter
-GET {{baseUrl}}/fragile-percentage?region=Centro
+GET {{baseUrl}}/ivcf-dashboard/fragile-percentage?region=Centro
+Authorization: Bearer {{token}}
 
 ### Get Fragile Elderly Percentage with Age Range Filter
-GET {{baseUrl}}/fragile-percentage?age_range=71-80
+GET {{baseUrl}}/ivcf-dashboard/fragile-percentage?age_range=71-80
+Authorization: Bearer {{token}}
 
 ### Get Fragile Elderly Percentage with Multiple Filters
-GET {{baseUrl}}/fragile-percentage?region=Norte&age_range=81+
+GET {{baseUrl}}/ivcf-dashboard/fragile-percentage?region=Norte&age_range=81+
+Authorization: Bearer {{token}}
 
 ### Get Curitiba Regions List
-GET {{baseUrl}}/curitiba-regions
+GET {{baseUrl}}/ivcf-dashboard/curitiba-regions
+Authorization: Bearer {{token}}
 
 ### Validate Filters - Valid Region
-GET {{baseUrl}}/validate-filters?region=Centro
+GET {{baseUrl}}/ivcf-dashboard/validate-filters?region=Centro
+Authorization: Bearer {{token}}
 
 ### Validate Filters - Valid Age Range
-GET {{baseUrl}}/validate-filters?age_range=60-70
+GET {{baseUrl}}/ivcf-dashboard/validate-filters?age_range=60-70
+Authorization: Bearer {{token}}
 
 ### Validate Filters - Valid Classification
-GET {{baseUrl}}/validate-filters?classificacao=Robusto
+GET {{baseUrl}}/ivcf-dashboard/validate-filters?classificacao=Robusto
+Authorization: Bearer {{token}}
 
 ### Validate Filters - Multiple Valid Filters
-GET {{baseUrl}}/validate-filters?region=Centro&age_range=71-80&classificacao=Frágil
+GET {{baseUrl}}/ivcf-dashboard/validate-filters?region=Centro&age_range=71-80&classificacao=Frágil
+Authorization: Bearer {{token}}
 
 ### Validate Filters - Invalid Region (Should Fail)
-GET {{baseUrl}}/validate-filters?region=RegiãoInexistente
+GET {{baseUrl}}/ivcf-dashboard/validate-filters?region=RegiãoInexistente
+Authorization: Bearer {{token}}
 
 ### Validate Filters - Invalid Age Range (Should Fail)
-GET {{baseUrl}}/validate-filters?age_range=50-60
+GET {{baseUrl}}/ivcf-dashboard/validate-filters?age_range=50-60
+Authorization: Bearer {{token}}
 
 ### Validate Filters - Invalid Classification (Should Fail)
-GET {{baseUrl}}/validate-filters?classificacao=ClassificaçãoInválida
+GET {{baseUrl}}/ivcf-dashboard/validate-filters?classificacao=ClassificaçãoInválida
+Authorization: Bearer {{token}}
 
 ### Validate Filters - Mixed Valid and Invalid (Should Fail)
-GET {{baseUrl}}/validate-filters?region=Centro&age_range=50-60&classificacao=Robusto
+GET {{baseUrl}}/ivcf-dashboard/validate-filters?region=Centro&age_range=50-60&classificacao=Robusto
+Authorization: Bearer {{token}}
 
 ### Try Invalid Domain Distribution Filters (Should Fail)
-GET {{baseUrl}}/ivcf-by-domain?region=RegiãoInexistente
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?region=RegiãoInexistente
+Authorization: Bearer {{token}}
 
 ### Try Invalid Domain Distribution Filters (Should Fail)
-GET {{baseUrl}}/ivcf-by-domain?age_range=50-60
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?age_range=50-60
+Authorization: Bearer {{token}}
 
 ### Try Invalid Domain Distribution Filters (Should Fail)
-GET {{baseUrl}}/ivcf-by-domain?classificacao=ClassificaçãoInválida
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?classificacao=ClassificaçãoInválida
+Authorization: Bearer {{token}}
 
 ### Try Invalid Monthly Evolution (Should Fail)
-GET {{baseUrl}}/ivcf-evolution?months_back=0
+GET {{baseUrl}}/ivcf-dashboard/ivcf-evolution?months_back=0
+Authorization: Bearer {{token}}
 
 ### Try Invalid Monthly Evolution (Should Fail)
-GET {{baseUrl}}/ivcf-evolution?months_back=25
+GET {{baseUrl}}/ivcf-dashboard/ivcf-evolution?months_back=25
+Authorization: Bearer {{token}}
 
 ### Try Invalid Critical Patients Threshold (Should Fail)
-GET {{baseUrl}}/critical-patients?pontuacao_minima=-1
+GET {{baseUrl}}/ivcf-dashboard/critical-patients?pontuacao_minima=-1
+Authorization: Bearer {{token}}
 
 ### Try Invalid Critical Patients Threshold (Should Fail)
-GET {{baseUrl}}/critical-patients?pontuacao_minima=50
+GET {{baseUrl}}/ivcf-dashboard/critical-patients?pontuacao_minima=50
+Authorization: Bearer {{token}}
 
 ### Test Edge Cases - Empty Results
-GET {{baseUrl}}/ivcf-by-domain?period_from=2025-01-01&period_to=2025-12-31
+GET {{baseUrl}}/ivcf-dashboard/ivcf-by-domain?period_from=2025-01-01&period_to=2025-12-31
+Authorization: Bearer {{token}}
 
 ### Test Edge Cases - Single Month
-GET {{baseUrl}}/ivcf-evolution?months_back=1
+GET {{baseUrl}}/ivcf-dashboard/ivcf-evolution?months_back=1
+Authorization: Bearer {{token}}
 
 ### Test Edge Cases - Maximum Period
-GET {{baseUrl}}/ivcf-evolution?months_back=24
+GET {{baseUrl}}/ivcf-dashboard/ivcf-evolution?months_back=24
+Authorization: Bearer {{token}}

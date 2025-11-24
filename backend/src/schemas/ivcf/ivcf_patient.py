@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
 from datetime import date
+from utils.cpf_validator import validate_cpf, clean_cpf
 
 
 class IVCFPatientBase(BaseModel):
@@ -15,8 +16,19 @@ class IVCFPatientBase(BaseModel):
     @field_validator('cpf')
     @classmethod
     def validate_cpf(cls, v: str) -> str:
-        """Remove non-numeric characters from CPF"""
-        return ''.join(filter(str.isdigit, v))
+        """Validate and clean CPF - must have exactly 11 digits"""
+        if not v:
+            raise ValueError('CPF é obrigatório')
+        
+        cpf_clean = clean_cpf(v)
+        
+        if len(cpf_clean) != 11:
+            raise ValueError(f'CPF deve ter exatamente 11 dígitos (recebido: {len(cpf_clean)} dígitos)')
+        
+        if not validate_cpf(cpf_clean):
+            raise ValueError('CPF inválido')
+        
+        return cpf_clean
 
 
 class IVCFPatientCreate(IVCFPatientBase):
@@ -37,8 +49,19 @@ class IVCFPatientUpdate(BaseModel):
     @field_validator('cpf')
     @classmethod
     def validate_cpf(cls, v: Optional[str]) -> Optional[str]:
-        """Remove non-numeric characters from CPF"""
-        return ''.join(filter(str.isdigit, v)) if v else None
+        """Validate and clean CPF - must have exactly 11 digits"""
+        if v is None:
+            return None
+        
+        cpf_clean = clean_cpf(v)
+        
+        if len(cpf_clean) != 11:
+            raise ValueError(f'CPF deve ter exatamente 11 dígitos (recebido: {len(cpf_clean)} dígitos)')
+        
+        if not validate_cpf(cpf_clean):
+            raise ValueError('CPF inválido')
+        
+        return cpf_clean
 
 
 class IVCFPatientResponse(IVCFPatientBase):

@@ -9,6 +9,8 @@ from schemas.ivcf.ivcf_patient import (
     IVCFPatientWithEvaluations
 )
 from services.ivcf.ivcf_patient_service import IVCFPatientService
+from api.auth.auth import get_current_user
+from models.user.user import User
 
 router = APIRouter()
 
@@ -16,7 +18,8 @@ router = APIRouter()
 @router.post("/ivcf-patients/", response_model=IVCFPatientResponse, status_code=status.HTTP_201_CREATED)
 def create_ivcf_patient(
     patient: IVCFPatientCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Create a new IVCF patient.
@@ -50,7 +53,8 @@ def list_ivcf_patients(
     unidade_saude_id: Optional[int] = Query(None, description="Filter by health unit ID"),
     idade_min: Optional[int] = Query(None, ge=60, description="Minimum age filter"),
     idade_max: Optional[int] = Query(None, le=120, description="Maximum age filter"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     List all IVCF patients with pagination and filters.
@@ -75,7 +79,8 @@ def list_ivcf_patients(
 @router.get("/ivcf-patients/{patient_id}", response_model=IVCFPatientResponse)
 def get_ivcf_patient(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get a specific IVCF patient by ID.
@@ -95,7 +100,8 @@ def get_ivcf_patient(
 @router.get("/ivcf-patients/{patient_id}/evaluation", response_model=IVCFPatientWithEvaluations)
 def get_patient_with_evaluations(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get a patient with all their evaluations.
@@ -154,7 +160,8 @@ def get_patient_with_evaluations(
 @router.get("/ivcf-patients/region/{regiao}", response_model=List[IVCFPatientResponse])
 def get_patients_by_region(
     regiao: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get patients by region.
@@ -171,7 +178,8 @@ def get_patients_by_region(
 @router.get("/ivcf-patients/age-range/{age_range}", response_model=List[IVCFPatientResponse])
 def get_patients_by_age_range(
     age_range: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get patients by age range.
@@ -198,7 +206,8 @@ def get_patients_by_age_range(
 @router.get("/ivcf-patients/stats/count")
 def get_patients_count(
     active_only: bool = Query(True, description="Count only active patients"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get total count of patients.
@@ -217,7 +226,8 @@ def get_patients_count(
 def update_ivcf_patient(
     patient_id: int,
     patient_update: IVCFPatientUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Update an existing IVCF patient.
@@ -242,7 +252,8 @@ def update_ivcf_patient(
 @router.delete("/ivcf-patients/{patient_id}", status_code=status.HTTP_200_OK)
 def delete_ivcf_patient(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Delete an IVCF patient (soft delete).

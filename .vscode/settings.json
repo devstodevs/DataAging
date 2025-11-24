@@ -1,0 +1,17 @@
+{
+  "yaml.schemas": {},
+  "yaml.validate": true,
+  "yaml.customTags": [],
+  "yaml.schemaStore.enable": true,
+  "[dockercompose]": {
+    "yaml.validate": false,
+    "yaml.schemaStore.enable": false
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "files.associations": {
+    "docker-compose.yml": "dockercompose",
+    "docker-compose.yaml": "dockercompose"
+  }
+}

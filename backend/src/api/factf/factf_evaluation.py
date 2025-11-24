@@ -9,6 +9,8 @@ from schemas.factf.factf_evaluation import (
     FACTFEvaluationList
 )
 from services.factf.factf_evaluation_service import FACTFEvaluationService
+from api.auth.auth import get_current_user
+from models.user.user import User
 
 router = APIRouter()
 
@@ -17,7 +19,8 @@ router = APIRouter()
 def create_factf_evaluation(
     patient_id: int,
     evaluation: FACTFEvaluationCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Create a new FACT-F evaluation for a patient.
@@ -52,7 +55,8 @@ def create_factf_evaluation(
 @router.get("/factf-evaluations/{evaluation_id}", response_model=FACTFEvaluationResponse)
 def get_factf_evaluation(
     evaluation_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get a specific FACT-F evaluation by ID.
@@ -74,7 +78,8 @@ def list_patient_evaluations(
     patient_id: int,
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(100, ge=1, le=100, description="Maximum number of records to return"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     List all evaluations for a specific patient.
@@ -98,7 +103,8 @@ def list_patient_evaluations(
 def update_factf_evaluation(
     evaluation_id: int,
     evaluation_update: FACTFEvaluationUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Update a FACT-F evaluation with automatic recalculation of scores.
@@ -123,7 +129,8 @@ def update_factf_evaluation(
 @router.delete("/factf-evaluations/{evaluation_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_factf_evaluation(
     evaluation_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Delete a FACT-F evaluation.
@@ -143,7 +150,8 @@ def delete_factf_evaluation(
 @router.get("/factf-patients/{patient_id}/evaluations/latest", response_model=FACTFEvaluationResponse)
 def get_latest_patient_evaluation(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get the latest evaluation for a specific patient.

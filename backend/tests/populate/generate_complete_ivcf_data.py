@@ -14,7 +14,12 @@ from typing import List, Dict, Any
 fake = Faker('pt_BR')
 
 API_BASE_URL = "http://localhost:8000/api/v1"
-NUM_PATIENTS = 50  # Number of patients to generate
+NUM_PATIENTS = 50 
+
+TEST_USER_CPF = "11144477735"
+TEST_USER_PASSWORD = "senha123"
+
+auth_token = None
 
 CURITIBA_NEIGHBORHOODS = [
     "Centro", "Centro Histórico", "Boa Vista", "Portão", "Santa Felicidade", 
@@ -49,7 +54,7 @@ COMORBIDITIES = [
 ]
 
 def generate_cpf():
-    """Generate a valid Brazilian CPF number"""
+    """Generate a valid Brazilian CPF number with exactly 11 digits"""
     cpf = [random.randint(0, 9) for _ in range(9)]
     
     sum1 = sum(cpf[i] * (10 - i) for i in range(9))
@@ -64,7 +69,12 @@ def generate_cpf():
         digit2 = 0
     cpf.append(digit2)
     
-    return ''.join(map(str, cpf))
+    cpf_str = ''.join(map(str, cpf))
+    
+    if len(cpf_str) != 11:
+        raise ValueError(f"Generated CPF has invalid length: {len(cpf_str)} (expected 11)")
+    
+    return cpf_str
 
 def generate_phone():
     """Generate a Brazilian phone number"""
@@ -169,9 +179,9 @@ def generate_patient():
 def generate_evaluation(patient_id: int, registration_date: date):
     """Generate an IVCF evaluation for a patient"""
     classification_weights = [
-        ("Robusto", 0.3),      # 30% robust
-        ("Em Risco", 0.45),    # 45% at risk  
-        ("Frágil", 0.25)       # 25% fragile
+        ("Robusto", 0.3),      # 30% robusto
+        ("Em Risco", 0.45),    # 45% em risco  
+        ("Frágil", 0.25)       # 25% frágil
     ]
     
     classification = random.choices(
@@ -206,25 +216,66 @@ def generate_evaluation(patient_id: int, registration_date: date):
     
     return evaluation
 
+def authenticate():
+    """Authenticate and get access token"""
+    global auth_token
+    if auth_token:
+        return auth_token
+    
+    login_url = f"{API_BASE_URL}/login"
+    try:
+        response = requests.post(
+            login_url,
+            data={
+                "username": TEST_USER_CPF,
+                "password": TEST_USER_PASSWORD
+            },
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            token_data = response.json()
+            auth_token = token_data.get("access_token")
+            print("✓ Authenticated successfully")
+            return auth_token
+        else:
+            print(f"✗ Authentication failed: {response.status_code}")
+            print(f"  Error: {response.text}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"✗ Authentication error: {e}")
+        return None
+
+
 def make_api_request(method: str, endpoint: str, data: Dict = None):
-    """Make API request with error handling"""
+    """Make API request with error handling and authentication"""
+    token = authenticate()
+    if not token:
+        print("✗ Cannot make request: Authentication failed")
+        return None
+    
     if endpoint.startswith('/'):
         endpoint = endpoint[1:]
     url = f"{API_BASE_URL}/{endpoint}"
     
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}"
+    }
+    
     try:
         if method.upper() == "GET":
-            response = requests.get(url, timeout=30)
+            response = requests.get(url, headers=headers, timeout=30)
         elif method.upper() == "POST":
-            response = requests.post(url, json=data, headers={"Content-Type": "application/json"}, timeout=30)
+            response = requests.post(url, json=data, headers=headers, timeout=30)
         elif method.upper() == "DELETE":
-            response = requests.delete(url, timeout=30)
+            response = requests.delete(url, headers=headers, timeout=30)
         else:
             raise ValueError(f"Unsupported method: {method}")
         
         return response
     except requests.exceptions.RequestException as e:
-        print(f"❌ Network error: {e}")
+        print(f"Network error: {e}")
         return None
 
 def get_available_health_units():
@@ -236,7 +287,7 @@ def get_available_health_units():
             health_units = response.json()
             if health_units:
                 HEALTH_UNIT_IDS = [unit['id'] for unit in health_units]
-                print(f"✅ Found {len(HEALTH_UNIT_IDS)} health units: {HEALTH_UNIT_IDS}")
+                print(f"Found {len(HEALTH_UNIT_IDS)} health units: {HEALTH_UNIT_IDS}")
                 return True
             else:
                 print("⚠️  No health units found in database")
@@ -258,7 +309,7 @@ def cleanup_existing_data():
     
     response = make_api_request("GET", "ivcf-patients/")
     if not response or response.status_code != 200:
-        print("❌ Failed to get existing patients")
+        print("Failed to get existing patients")
         return False
     
     patients = response.json()
@@ -269,9 +320,9 @@ def cleanup_existing_data():
         response = make_api_request("DELETE", f"ivcf-patients/{patient['id']}")
         if response and response.status_code in [200, 204]:
             deleted_count += 1
-            print(f"✅ Deleted patient {patient['id']}: {patient['nome_completo']}")
+            print(f"Deleted patient {patient['id']}: {patient['nome_completo']}")
         else:
-            print(f"❌ Failed to delete patient {patient['id']}: {patient['nome_completo']}")
+            print(f"Failed to delete patient {patient['id']}: {patient['nome_completo']}")
     
     print(f"🗑️  Deleted {deleted_count} patients")
     return True
@@ -280,7 +331,7 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
     """Create a patient and their evaluation"""
     response = make_api_request("POST", "ivcf-patients/", patient_data)
     if not response:
-        print(f"❌ Failed to create patient: {patient_data['nome_completo']} - No response from server")
+        print(f"Failed to create patient: {patient_data['nome_completo']} - No response from server")
         return None
     
     if response.status_code != 201:
@@ -294,7 +345,7 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
         except:
             error_msg = response.text[:200] if response.text else "No error message"
         
-        print(f"❌ Failed to create patient: {patient_data['nome_completo']}")
+        print(f"Failed to create patient: {patient_data['nome_completo']}")
         print(f"   Status: {response.status_code}")
         print(f"   Error: {error_msg}")
         print(f"   Data sent: {patient_data}")
@@ -302,12 +353,12 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
     
     created_patient = response.json()
     patient_id = created_patient['id']
-    print(f"✅ Created patient {patient_id}: {patient_data['nome_completo']}")
+    print(f"Created patient {patient_id}: {patient_data['nome_completo']}")
     
     evaluation_data = generate_evaluation(patient_id, registration_date)
     response = make_api_request("POST", "ivcf-evaluations/", evaluation_data)
     if not response:
-        print(f"❌ Failed to create evaluation for patient {patient_id} - No response from server")
+        print(f"Failed to create evaluation for patient {patient_id} - No response from server")
         return {"patient": created_patient}
     
     if response.status_code != 201:
@@ -321,13 +372,13 @@ def create_patient_with_evaluation(patient_data: Dict, registration_date: date):
         except:
             error_msg = response.text[:200] if response.text else "No error message"
         
-        print(f"❌ Failed to create evaluation for patient {patient_id}")
+        print(f"Failed to create evaluation for patient {patient_id}")
         print(f"   Status: {response.status_code}")
         print(f"   Error: {error_msg}")
         return {"patient": created_patient}
     
     created_evaluation = response.json()
-    print(f"✅ Created evaluation for patient {patient_id}: {evaluation_data['classificacao']} (Score: {evaluation_data['pontuacao_total']})")
+    print(f"Created evaluation for patient {patient_id}: {evaluation_data['classificacao']} (Score: {evaluation_data['pontuacao_total']})")
     
     return {
         "patient": created_patient,
@@ -339,19 +390,17 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
     print(f"🚀 Starting complete IVCF data generation...")
     print(f"Target: {num_patients} patients with evaluations")
     
-    # Get available health units
     print("\n🏥 Checking available health units...")
     if not get_available_health_units():
         print("⚠️  Warning: Could not verify health units. Proceeding with default IDs.")
     
     if not HEALTH_UNIT_IDS:
-        print("❌ No health units available. Cannot create patients.")
+        print("No health units available. Cannot create patients.")
         print("   Please create health units first using the API or database.")
         return False
     
-    # Cleanup existing data
     if not cleanup_existing_data():
-        print("❌ Failed to cleanup existing data")
+        print("Failed to cleanup existing data")
         return False
     
     print(f"\n📊 Generating {num_patients} new patients with evaluations...")
@@ -370,8 +419,8 @@ def generate_complete_dataset(num_patients: int = NUM_PATIENTS):
             success_count += 1
     
     print(f"\n📈 Generation Complete!")
-    print(f"✅ Successfully created: {success_count} patients with evaluations")
-    print(f"❌ Failed: {num_patients - success_count}")
+    print(f"Successfully created: {success_count} patients with evaluations")
+    print(f"Failed: {num_patients - success_count}")
     
     if created_patients:
         classifications = {}

@@ -127,12 +127,12 @@ class PhysicalActivityEvaluationService:
         start_date = date.today() - timedelta(days=months * 30)
         
         results = db.query(
-            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao).label('month'),
+            func.to_char(PhysicalActivityEvaluation.data_avaliacao, 'YYYY-MM').label('month'),
             func.count(PhysicalActivityEvaluation.id).label('count')
         ).filter(
             PhysicalActivityEvaluation.data_avaliacao >= start_date
         ).group_by(
-            func.strftime('%Y-%m', PhysicalActivityEvaluation.data_avaliacao)
+            func.to_char(PhysicalActivityEvaluation.data_avaliacao, 'YYYY-MM')
         ).order_by('month').all()
         
         return [{'month': result.month, 'count': result.count} for result in results]

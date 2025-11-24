@@ -3,12 +3,17 @@ from sqlalchemy.orm import Session
 from typing import List, Dict
 from db.base import get_db
 from services.factf.factf_dashboard_service import FACTFDashboardService
+from api.auth.auth import get_current_user
+from models.user.user import User
 
 router = APIRouter()
 
 
 @router.get("/factf-dashboard/summary")
-def get_factf_summary(db: Session = Depends(get_db)) -> Dict:
+def get_factf_summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+) -> Dict:
     """
     Get FACT-F dashboard summary statistics.
     
@@ -44,7 +49,8 @@ def get_factf_summary(db: Session = Depends(get_db)) -> Dict:
 @router.get("/factf-dashboard/critical-patients")
 def get_critical_patients(
     min_score: float = Query(30.0, ge=0, le=52, description="Minimum fatigue score threshold"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
     Get patients with critical fatigue levels.
@@ -83,7 +89,10 @@ def get_critical_patients(
 
 
 @router.get("/factf-dashboard/fatigue-distribution")
-def get_fatigue_distribution(db: Session = Depends(get_db)) -> Dict:
+def get_fatigue_distribution(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+) -> Dict:
     """
     Get fatigue level distribution by health conditions.
     
@@ -113,7 +122,8 @@ def get_fatigue_distribution(db: Session = Depends(get_db)) -> Dict:
 @router.get("/factf-dashboard/monthly-evolution")
 def get_monthly_evolution(
     months_back: int = Query(12, ge=1, le=24, description="Number of months to look back"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
     Get monthly evolution of FACT-F scores.
@@ -152,7 +162,10 @@ def get_monthly_evolution(
 
 
 @router.get("/factf-dashboard/domain-distribution")
-def get_domain_distribution(db: Session = Depends(get_db)) -> Dict:
+def get_domain_distribution(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+) -> Dict:
     """
     Get average scores distribution by domains for radar chart.
     
@@ -198,7 +211,8 @@ def get_domain_distribution(db: Session = Depends(get_db)) -> Dict:
 @router.get("/factf-dashboard/patient-domain-distribution/{patient_id}")
 def get_patient_domain_distribution(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
     Get individual patient domain scores compared with regional average.
@@ -251,7 +265,10 @@ def get_patient_domain_distribution(
 
 
 @router.get("/factf-dashboard/all-patients")
-def get_all_patients_summary(db: Session = Depends(get_db)) -> Dict:
+def get_all_patients_summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+) -> Dict:
     """
     Get summary of all patients with their latest evaluation data.
     

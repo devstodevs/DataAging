@@ -1,10 +1,30 @@
 ### FACT-F Patient API Tests
 
-@baseUrl = http://localhost:8001/api/v1
+@baseUrl = http://localhost:8000/api/v1
+
+### ============================================
+### AUTENTICAÇÃO - Faça login primeiro e copie o token
+### ============================================
+
+### Login - Usuário de Teste (CPF: 11144477735)
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=11144477735&password=senha123
+
+### ============================================
+### VARIÁVEIS - Cole o token obtido acima aqui
+### ============================================
+@token = YOUR_TOKEN_HERE
+
+### ============================================
+### TESTES DE PACIENTES FACTF (requerem autenticação)
+### ============================================
 
 ### Create FACT-F Patient
 POST {{baseUrl}}/factf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Maria Silva Santos",
@@ -23,6 +43,7 @@ Content-Type: application/json
 ### Create Another Patient (Younger)
 POST {{baseUrl}}/factf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "João Oliveira",
@@ -41,6 +62,7 @@ Content-Type: application/json
 ### Create Elderly Patient
 POST {{baseUrl}}/factf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Ana Costa",
@@ -59,6 +81,7 @@ Content-Type: application/json
 ### Create Patient with Minimal Data
 POST {{baseUrl}}/factf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Pedro Santos",
@@ -72,6 +95,7 @@ Content-Type: application/json
 ### Create Patient under minimum age (Should Fail)
 POST {{baseUrl}}/factf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Paciente Jovem",
@@ -84,34 +108,44 @@ Content-Type: application/json
 
 ### List All Patients
 GET {{baseUrl}}/factf-patients/
+Authorization: Bearer {{token}}
 
 ### List Patients with Pagination
 GET {{baseUrl}}/factf-patients/?skip=0&limit=2
+Authorization: Bearer {{token}}
 
 ### List Only Active Patients
 GET {{baseUrl}}/factf-patients/?active_only=true
+Authorization: Bearer {{token}}
 
 ### Filter Patients by Neighborhood
 GET {{baseUrl}}/factf-patients/?bairro=Centro
+Authorization: Bearer {{token}}
 
 ### Filter Patients by Health Unit
 GET {{baseUrl}}/factf-patients/?unidade_saude_id=1
+Authorization: Bearer {{token}}
 
 ### Filter Patients by Age Range
 GET {{baseUrl}}/factf-patients/?idade_min=30&idade_max=50
+Authorization: Bearer {{token}}
 
 ### Filter Patients by Fatigue Classification
 GET {{baseUrl}}/factf-patients/?classificacao_fadiga=Fadiga Grave
+Authorization: Bearer {{token}}
 
 ### Get Patient by ID
 GET {{baseUrl}}/factf-patients/1
+Authorization: Bearer {{token}}
 
 ### Get Patient Evaluations
 GET {{baseUrl}}/factf-patients/1/evaluations
+Authorization: Bearer {{token}}
 
 ### Update Patient
 PUT {{baseUrl}}/factf-patients/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Maria Silva Santos Atualizada",
@@ -124,6 +158,7 @@ Content-Type: application/json
 ### Update Patient Medical Info
 PUT {{baseUrl}}/factf-patients/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "comorbidades": "Hipertensão arterial sistêmica, Ansiedade",
@@ -133,6 +168,7 @@ Content-Type: application/json
 ### Try to Create Patient with Duplicate CPF (Should Fail)
 POST {{baseUrl}}/factf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Outro Nome",
@@ -146,6 +182,7 @@ Content-Type: application/json
 ### Try to Create Patient with Invalid Email (Should Fail)
 POST {{baseUrl}}/factf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Paciente Email Inválido",
@@ -160,6 +197,7 @@ Content-Type: application/json
 ### Try to Create Patient with Non-existent Health Unit (Should Fail)
 POST {{baseUrl}}/factf-patients/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Paciente Teste",
@@ -172,10 +210,12 @@ Content-Type: application/json
 
 ### Get Non-existent Patient (Should Fail)
 GET {{baseUrl}}/factf-patients/999
+Authorization: Bearer {{token}}
 
 ### Update Non-existent Patient (Should Fail)
 PUT {{baseUrl}}/factf-patients/999
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "nome_completo": "Teste"
@@ -183,9 +223,12 @@ Content-Type: application/json
 
 ### Delete Patient (Soft Delete)
 DELETE {{baseUrl}}/factf-patients/1
+Authorization: Bearer {{token}}
 
 ### Verify Patient is Soft Deleted
 GET {{baseUrl}}/factf-patients/1
+Authorization: Bearer {{token}}
 
 ### List Patients Including Inactive
 GET {{baseUrl}}/factf-patients/?active_only=false
+Authorization: Bearer {{token}}

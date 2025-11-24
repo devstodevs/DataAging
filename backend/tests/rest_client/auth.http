@@ -1,7 +1,7 @@
 ### DataAging API - Testes de Autenticação
 @baseUrl = http://localhost:8000/api/v1
 @tokenGestor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwMSIsInVzZXJfaWQiOjEsInByb2ZpbGVfdHlwZSI6Imdlc3RvciIsImV4cCI6MTc2MDkwNDU2N30.fqDQ0FwcENFv4bIx8Er_H1ijZRIl-BHq6tjE4ihOpS4
-@tokenTecnico = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODc2NTQzMjEwMCIsInVzZXJfaWQiOjIsInByb2ZpbGVfdHlwZSI6InRlY25pY28iLCJleHAiOjE3NjA5MDQ1OTJ9.GdyPf-L5apVsSTB-W5dOuGqqDCq2JAgeQkhQ-DG7mJ8
+@tokenTecnico = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTE0NDQ3NzczNSIsInVzZXJfaWQiOjEsInByb2ZpbGVfdHlwZSI6Imdlc3RvciIsImV4cCI6MTc2Mzk2MDc2MX0.sLDSZFW0_9tlTVcq7L5rDjwIfMDaffApih0W5O0vBlE
 
 ### 1. Login - Gestor
 POST {{baseUrl}}/login
@@ -13,7 +13,7 @@ username=12345678901&password=senha123
 POST {{baseUrl}}/login
 Content-Type: application/x-www-form-urlencoded
 
-username=98765432100&password=senha456
+username=11144477735&password=senha123
 
 ### 3. Login - CPF Inválido
 POST {{baseUrl}}/login

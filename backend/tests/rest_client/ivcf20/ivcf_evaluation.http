@@ -2,9 +2,29 @@
 
 @baseUrl = http://localhost:8000/api/v1
 
+### ============================================
+### AUTENTICAÇÃO - Faça login primeiro e copie o token
+### ============================================
+
+### Login - Usuário de Teste (CPF: 11144477735)
+POST {{baseUrl}}/login
+Content-Type: application/x-www-form-urlencoded
+
+username=11144477735&password=senha123
+
+### ============================================
+### VARIÁVEIS - Cole o token obtido acima aqui
+### ============================================
+@token = YOUR_TOKEN_HERE
+
+### ============================================
+### TESTES DE AVALIAÇÕES IVCF (requerem autenticação)
+### ============================================
+
 ### Create IVCF Evaluation - Robusto (Score 8)
 POST {{baseUrl}}/ivcf-evaluations/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "patient_id": 1,
@@ -26,6 +46,7 @@ Content-Type: application/json
 ### Create IVCF Evaluation - Em Risco (Score 15)
 POST {{baseUrl}}/ivcf-evaluations/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "patient_id": 2,
@@ -47,6 +68,7 @@ Content-Type: application/json
 ### Create IVCF Evaluation - Frágil (Score 25)
 POST {{baseUrl}}/ivcf-evaluations/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "patient_id": 3,
@@ -68,6 +90,7 @@ Content-Type: application/json
 ### Create IVCF Evaluation - Critical Patient (Score 35)
 POST {{baseUrl}}/ivcf-evaluations/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "patient_id": 4,
@@ -89,6 +112,7 @@ Content-Type: application/json
 ### Create Another Evaluation for Same Patient (Historical)
 POST {{baseUrl}}/ivcf-evaluations/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "patient_id": 1,
@@ -109,33 +133,43 @@ Content-Type: application/json
 
 ### List All Evaluations
 GET {{baseUrl}}/ivcf-evaluations/
+Authorization: Bearer {{token}}
 
 ### List Evaluations with Pagination
-GET {{baseUrl}}/ivcf-evaluations/?skip=0&limit=3
+GET {{baseUrl}}/ivcf-evaluations/
+Authorization: Bearer {{token}}?skip=0&limit=3
 
 ### Filter Evaluations by Patient
-GET {{baseUrl}}/ivcf-evaluations/?patient_id=1
+GET {{baseUrl}}/ivcf-evaluations/
+Authorization: Bearer {{token}}?patient_id=1
 
 ### Filter Evaluations by Period
-GET {{baseUrl}}/ivcf-evaluations/?period_from=2024-01-01&period_to=2024-01-31
+GET {{baseUrl}}/ivcf-evaluations/
+Authorization: Bearer {{token}}?period_from=2024-01-01&period_to=2024-01-31
 
 ### Filter Evaluations by Classification
-GET {{baseUrl}}/ivcf-evaluations/?classificacao=Frágil
+GET {{baseUrl}}/ivcf-evaluations/
+Authorization: Bearer {{token}}?classificacao=Frágil
 
 ### Filter Evaluations by Classification (Robusto)
-GET {{baseUrl}}/ivcf-evaluations/?classificacao=Robusto
+GET {{baseUrl}}/ivcf-evaluations/
+Authorization: Bearer {{token}}?classificacao=Robusto
 
 ### Filter Evaluations by Classification (Em Risco)
-GET {{baseUrl}}/ivcf-evaluations/?classificacao=Em Risco
+GET {{baseUrl}}/ivcf-evaluations/
+Authorization: Bearer {{token}}?classificacao=Em Risco
 
 ### Get Evaluation by ID
-GET {{baseUrl}}/ivcf-evaluations/1
+GET {{baseUrl}}/ivcf-evaluations/
+Authorization: Bearer {{token}}1
 
 ### Get Critical Patients
-GET {{baseUrl}}/ivcf-evaluations/critical-patients
+GET {{baseUrl}}/ivcf-evaluations/
+Authorization: Bearer {{token}}critical-patients
 
 ### Get Critical Patients with Higher Threshold
-GET {{baseUrl}}/ivcf-evaluations/critical-patients?pontuacao_minima=30
+GET {{baseUrl}}/ivcf-evaluations/
+Authorization: Bearer {{token}}critical-patients?pontuacao_minima=30
 
 ### Update Evaluation
 PUT {{baseUrl}}/ivcf-evaluations/1
@@ -171,6 +205,7 @@ Content-Type: application/json
 ### Try to Create Evaluation with Score Mismatch (Should Fail)
 POST {{baseUrl}}/ivcf-evaluations/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "patient_id": 1,
@@ -190,6 +225,7 @@ Content-Type: application/json
 ### Try to Create Evaluation with Invalid Classification (Should Fail)
 POST {{baseUrl}}/ivcf-evaluations/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "patient_id": 1,
@@ -209,6 +245,7 @@ Content-Type: application/json
 ### Try to Create Evaluation with Future Date (Should Fail)
 POST {{baseUrl}}/ivcf-evaluations/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "patient_id": 1,
@@ -228,6 +265,7 @@ Content-Type: application/json
 ### Try to Create Evaluation for Non-existent Patient (Should Fail)
 POST {{baseUrl}}/ivcf-evaluations/
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "patient_id": 999,
@@ -246,10 +284,12 @@ Content-Type: application/json
 
 ### Get Non-existent Evaluation (Should Fail)
 GET {{baseUrl}}/ivcf-evaluations/999
+Authorization: Bearer {{token}}
 
 ### Update Non-existent Evaluation (Should Fail)
 PUT {{baseUrl}}/ivcf-evaluations/2
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "observacoes": "Paciente em risco"
@@ -257,6 +297,8 @@ Content-Type: application/json
 
 ### Delete Evaluation
 DELETE {{baseUrl}}/ivcf-evaluations/1
+Authorization: Bearer {{token}}
 
 ### Verify Evaluation is Deleted
 GET {{baseUrl}}/ivcf-evaluations/1
+Authorization: Bearer {{token}}

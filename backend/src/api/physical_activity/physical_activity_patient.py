@@ -9,6 +9,8 @@ from schemas.physical_activity.physical_activity_patient import (
     PhysicalActivityPatientResponse,
     PhysicalActivityPatientList
 )
+from api.auth.auth import get_current_user
+from models.user.user import User
 
 router = APIRouter()
 
@@ -16,7 +18,8 @@ router = APIRouter()
 @router.post("/", response_model=PhysicalActivityPatientResponse)
 def create_physical_activity_patient(
     patient_data: PhysicalActivityPatientCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new physical activity patient"""
     return PhysicalActivityPatientService.create_patient(db, patient_data)
@@ -31,7 +34,8 @@ def get_physical_activity_patients(
     unidade_saude_id: Optional[int] = Query(None, description="Filtrar por unidade de saúde"),
     idade_min: Optional[int] = Query(None, ge=60, description="Idade mínima"),
     idade_max: Optional[int] = Query(None, le=120, description="Idade máxima"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Get paginated list of physical activity patients"""
     return PhysicalActivityPatientService.get_patients(
@@ -49,7 +53,8 @@ def get_physical_activity_patients(
 @router.get("/{patient_id}", response_model=PhysicalActivityPatientResponse)
 def get_physical_activity_patient(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Get a physical activity patient by ID"""
     return PhysicalActivityPatientService.get_patient(db, patient_id)
@@ -59,7 +64,8 @@ def get_physical_activity_patient(
 def update_physical_activity_patient(
     patient_id: int,
     patient_data: PhysicalActivityPatientUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Update a physical activity patient"""
     return PhysicalActivityPatientService.update_patient(db, patient_id, patient_data)
@@ -68,7 +74,8 @@ def update_physical_activity_patient(
 @router.delete("/{patient_id}")
 def delete_physical_activity_patient(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a physical activity patient (soft delete)"""
     return PhysicalActivityPatientService.delete_patient(db, patient_id)
@@ -77,7 +84,8 @@ def delete_physical_activity_patient(
 @router.get("/{patient_id}/evaluations")
 def get_patient_evaluations(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Get all evaluations for a patient"""
     return PhysicalActivityPatientService.get_patient_evaluations(db, patient_id)

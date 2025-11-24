@@ -9,6 +9,8 @@ from schemas.factf.factf_patient import (
     FACTFPatientList
 )
 from services.factf.factf_patient_service import FACTFPatientService
+from api.auth.auth import get_current_user
+from models.user.user import User
 
 router = APIRouter()
 
@@ -16,7 +18,8 @@ router = APIRouter()
 @router.post("/factf-patients/", response_model=FACTFPatientResponse, status_code=status.HTTP_201_CREATED)
 def create_factf_patient(
     patient: FACTFPatientCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Create a new FACT-F patient.
@@ -55,7 +58,8 @@ def list_factf_patients(
     idade_min: Optional[int] = Query(None, ge=18, description="Minimum age filter"),
     idade_max: Optional[int] = Query(None, le=120, description="Maximum age filter"),
     classificacao_fadiga: Optional[str] = Query(None, description="Filter by fatigue classification"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     List FACT-F patients with pagination and filters.
@@ -81,7 +85,8 @@ def list_factf_patients(
 @router.get("/factf-patients/{patient_id}", response_model=FACTFPatientResponse)
 def get_factf_patient(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get a specific FACT-F patient by ID.
@@ -102,7 +107,8 @@ def get_factf_patient(
 def update_factf_patient(
     patient_id: int,
     patient_update: FACTFPatientUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Update a FACT-F patient.
@@ -126,7 +132,8 @@ def update_factf_patient(
 @router.delete("/factf-patients/{patient_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_factf_patient(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Delete a FACT-F patient (soft delete).
@@ -146,7 +153,8 @@ def delete_factf_patient(
 @router.get("/factf-patients/{patient_id}/evaluations")
 def get_patient_evaluations(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get all evaluations for a specific patient.

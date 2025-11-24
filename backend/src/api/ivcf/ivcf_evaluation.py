@@ -11,6 +11,8 @@ from schemas.ivcf.ivcf_evaluation import (
     IVCFEvaluationWithPatient
 )
 from services.ivcf.ivcf_evaluation_service import IVCFEvaluationService
+from api.auth.auth import get_current_user
+from models.user.user import User
 
 router = APIRouter()
 
@@ -18,7 +20,8 @@ router = APIRouter()
 @router.post("/ivcf-evaluations/", response_model=IVCFEvaluationResponse, status_code=status.HTTP_201_CREATED)
 def create_ivcf_evaluation(
     evaluation: IVCFEvaluationCreateSimple,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Create a new IVCF evaluation with automatic score calculation.
@@ -50,7 +53,8 @@ def list_ivcf_evaluations(
     period_from: Optional[date] = Query(None, description="Filter by start date"),
     period_to: Optional[date] = Query(None, description="Filter by end date"),
     classificacao: Optional[str] = Query(None, description="Filter by classification"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     List all IVCF evaluations with pagination and filters.
@@ -74,7 +78,8 @@ def list_ivcf_evaluations(
 @router.get("/ivcf-evaluations/{evaluation_id}", response_model=IVCFEvaluationResponse)
 def get_ivcf_evaluation(
     evaluation_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get a specific IVCF evaluation by ID.
@@ -94,7 +99,8 @@ def get_ivcf_evaluation(
 @router.get("/ivcf-evaluations/patient/{patient_id}/latest", response_model=IVCFEvaluationResponse)
 def get_latest_evaluation_by_patient(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get the latest evaluation for a patient.
@@ -124,7 +130,8 @@ def get_latest_evaluation_by_patient(
 def update_ivcf_evaluation(
     evaluation_id: int,
     evaluation_update: IVCFEvaluationUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Update an existing IVCF evaluation.
@@ -148,7 +155,8 @@ def update_ivcf_evaluation(
 @router.delete("/ivcf-evaluations/{evaluation_id}", status_code=status.HTTP_200_OK)
 def delete_ivcf_evaluation(
     evaluation_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Delete an IVCF evaluation.

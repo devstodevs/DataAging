@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from api.auth import auth_router
+from api.auth.auth import get_current_user
 from api.user import user_router
 from api.health_unit import router as health_unit_router
 from api.ivcf import ivcf_patient_router, ivcf_evaluation_router, ivcf_dashboard_router
@@ -9,6 +10,7 @@ from api.physical_activity import physical_activity_patient_router, physical_act
 from config import settings
 from db.base import engine, Base, ensure_schema
 from models import user, ivcf, factf, physical_activity  # Import models to register them
+from models.user.user import User
 from init_data import create_test_user
 
 Base.metadata.create_all(bind=engine)
@@ -51,7 +53,7 @@ app.include_router(physical_activity_dashboard_router, prefix=f"{settings.API_V1
 
 #DEBUG
 @app.get("/debug/routes")
-async def list_routes():
+async def list_routes(current_user: User = Depends(get_current_user)):
     routes = [
         {
             "path": route.path,

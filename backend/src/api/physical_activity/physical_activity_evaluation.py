@@ -8,6 +8,8 @@ from schemas.physical_activity.physical_activity_evaluation import (
     PhysicalActivityEvaluationUpdate,
     PhysicalActivityEvaluationResponse
 )
+from api.auth.auth import get_current_user
+from models.user.user import User
 
 router = APIRouter()
 
@@ -16,7 +18,8 @@ router = APIRouter()
 def create_physical_activity_evaluation(
     patient_id: int,
     evaluation_data: PhysicalActivityEvaluationCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new physical activity evaluation for a patient"""
     # Add patient_id to evaluation data
@@ -28,7 +31,8 @@ def create_physical_activity_evaluation(
 @router.get("/physical-activity-evaluations/{evaluation_id}", response_model=PhysicalActivityEvaluationResponse)
 def get_physical_activity_evaluation(
     evaluation_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Get a physical activity evaluation by ID"""
     return PhysicalActivityEvaluationService.get_evaluation(db, evaluation_id)
@@ -39,7 +43,8 @@ def get_patient_evaluations(
     patient_id: int,
     skip: int = Query(0, ge=0, description="Número de registros para pular"),
     limit: int = Query(100, ge=1, le=1000, description="Limite de registros"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Get all evaluations for a patient"""
     return PhysicalActivityEvaluationService.get_evaluations_by_patient(db, patient_id, skip, limit)
@@ -48,7 +53,8 @@ def get_patient_evaluations(
 @router.get("/physical-activity-patients/{patient_id}/evaluations/latest", response_model=Optional[PhysicalActivityEvaluationResponse])
 def get_latest_patient_evaluation(
     patient_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Get the latest evaluation for a patient"""
     return PhysicalActivityEvaluationService.get_latest_evaluation_by_patient(db, patient_id)
@@ -58,7 +64,8 @@ def get_latest_patient_evaluation(
 def update_physical_activity_evaluation(
     evaluation_id: int,
     evaluation_data: PhysicalActivityEvaluationUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Update a physical activity evaluation"""
     update_dict = evaluation_data.model_dump(exclude_unset=True)
@@ -68,7 +75,8 @@ def update_physical_activity_evaluation(
 @router.delete("/physical-activity-evaluations/{evaluation_id}")
 def delete_physical_activity_evaluation(
     evaluation_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a physical activity evaluation"""
     return PhysicalActivityEvaluationService.delete_evaluation(db, evaluation_id)

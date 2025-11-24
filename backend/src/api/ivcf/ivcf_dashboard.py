@@ -12,12 +12,17 @@ from schemas.ivcf.ivcf_dashboard import (
     FragileElderlyPercentageResponse
 )
 from services.ivcf.ivcf_dashboard_service import IVCFDashboardService
+from api.auth.auth import get_current_user
+from models.user.user import User
 
 router = APIRouter()
 
 
 @router.get("/ivcf-dashboard/ivcf-summary", response_model=IVCFSummary)
-def get_ivcf_summary(db: Session = Depends(get_db)):
+def get_ivcf_summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """
     Get IVCF summary statistics.
     
@@ -35,7 +40,8 @@ def get_domain_distribution(
     health_unit_id: Optional[int] = Query(None, description="Health unit ID filter"),
     age_range: Optional[str] = Query(None, description="Age range filter (60-70, 71-80, 81+)"),
     classification: Optional[str] = Query(None, description="Classification filter (Robusto, Em Risco, Frágil)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get domain distribution for spider chart.
@@ -63,7 +69,8 @@ def get_domain_distribution(
 def get_region_averages(
     period_from: Optional[date] = Query(None, description="Start date filter"),
     period_to: Optional[date] = Query(None, description="End date filter"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get average scores by region.
@@ -82,7 +89,8 @@ def get_region_averages(
 def get_monthly_evolution(
     months_back: int = Query(6, ge=1, le=24, description="Number of months to look back"),
     from_last_evaluation: bool = Query(False, description="Start from the last evaluation date"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get monthly evolution for the last N months.
@@ -103,7 +111,8 @@ def get_monthly_evolution(
 @router.get("/ivcf-dashboard/critical-patients", response_model=CriticalPatientsResponse)
 def get_critical_patients(
     pontuacao_minima: int = Query(20, ge=0, le=40, description="Minimum score for critical patients"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get patients with critical scores.
@@ -121,7 +130,10 @@ def get_critical_patients(
 
 
 @router.get("/ivcf-dashboard/all-patients", response_model=CriticalPatientsResponse)
-def get_all_patients(db: Session = Depends(get_db)):
+def get_all_patients(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """
     Get all patients with their evaluations.
     
@@ -132,7 +144,9 @@ def get_all_patients(db: Session = Depends(get_db)):
 
 
 @router.get("/ivcf-dashboard/curitiba-regions")
-def get_curitiba_regions():
+def get_curitiba_regions(
+    current_user: User = Depends(get_current_user)
+):
     """
     Get list of valid Curitiba regions.
     
@@ -150,7 +164,8 @@ def get_fragile_elderly_percentage(
     region: Optional[str] = Query(None, description="Region filter"),
     health_unit_id: Optional[int] = Query(None, description="Health unit ID filter"),
     age_range: Optional[str] = Query(None, description="Age range filter (60-70, 71-80, 81+)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get percentage of fragile elderly with filters.
@@ -177,7 +192,8 @@ def get_fragile_elderly_percentage(
 def validate_filters(
     region: Optional[str] = Query(None, description="Region to validate"),
     age_range: Optional[str] = Query(None, description="Age range to validate"),
-    classification: Optional[str] = Query(None, description="Classification to validate")
+    classification: Optional[str] = Query(None, description="Classification to validate"),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Validate dashboard filters.

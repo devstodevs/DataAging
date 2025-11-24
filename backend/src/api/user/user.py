@@ -9,6 +9,8 @@ from schemas.user import (
     UserResponse
 )
 from services.user import UserService
+from api.auth.auth import get_current_user
+from models.user.user import User
 
 router = APIRouter()
 
@@ -16,7 +18,8 @@ router = APIRouter()
 @router.post("/users/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(
     user: Union[UserCreateGestor, UserCreateTecnico] = Body(..., discriminator='profile_type'),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Create a new user (Gestor or Tecnico).
@@ -39,7 +42,8 @@ def create_user(
 def list_users(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     List all users with pagination.
@@ -59,7 +63,8 @@ def list_users(
 @router.get("/users/{user_id}", response_model=UserResponse)
 def get_user(
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get a specific user by ID.
@@ -80,7 +85,8 @@ def get_user(
 def update_user(
     user_id: int,
     user_update: UserUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Update an existing user.
@@ -105,7 +111,8 @@ def update_user(
 @router.delete("/users/{user_id}", status_code=status.HTTP_200_OK)
 def delete_user(
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Delete a user.

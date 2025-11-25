@@ -1,5 +1,5 @@
 import React from "react";
-import { Activity, Battery, User, Brain, BarChart3 } from "lucide-react";
+import { Activity, Battery, User } from "lucide-react";
 import Title from "../../components/base/Title/Title";
 import Subtitle from "../../components/base/Subtitle/Subtitle";
 import TestCard from "../../components/compound/TestCard/TestCard";
@@ -36,20 +36,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
       title: "iVCF-20",
       description: "Índice de vulnerabilidade clínico-funcional para idosos",
       link: "/teste/ivcf-20",
-    },
-    {
-      id: "meem",
-      icon: Brain,
-      title: "MEEM",
-      description: "Mini exame do estado mental para avaliação cognitiva",
-      link: "/teste/meem",
-    },
-    {
-      id: "pfs",
-      icon: BarChart3,
-      title: "PFS",
-      description: "Escala de fadiga de Pittsburgh para avaliação",
-      link: "/teste/pfs",
     },
   ];
 

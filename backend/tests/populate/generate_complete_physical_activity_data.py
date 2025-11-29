@@ -407,6 +407,40 @@ def get_available_health_units():
         print("   Using default IDs: [1, 2, 3, 4]")
         return False
 
+def get_available_health_units():
+    """Get available health units from API"""
+    global HEALTH_UNIT_IDS
+    try:
+        response = make_api_request("GET", "/health-units/")
+        if response and not (isinstance(response, dict) and response.get('error')):
+            # Response can be a list or a single dict
+            if isinstance(response, list):
+                health_units = response
+            elif isinstance(response, dict) and 'id' in response:
+                health_units = [response]
+            else:
+                health_units = []
+            
+            if health_units:
+                HEALTH_UNIT_IDS = [unit['id'] for unit in health_units if 'id' in unit]
+                print(f"✅ Found {len(HEALTH_UNIT_IDS)} health units: {HEALTH_UNIT_IDS}")
+                return True
+            else:
+                print("⚠️  No health units found in database")
+                print("   Please create health units first or update HEALTH_UNIT_IDS in the script")
+                return False
+        else:
+            print("⚠️  Could not fetch health units from API")
+            if isinstance(response, dict):
+                print(f"   Status: {response.get('status_code', 'N/A')}")
+                print(f"   Error: {response.get('detail', 'Unknown error')}")
+            print("   Using default IDs: [1, 2, 3, 4]")
+            return False
+    except Exception as e:
+        print(f"⚠️  Error fetching health units: {e}")
+        print("   Using default IDs: [1, 2, 3, 4]")
+        return False
+
 def cleanup_existing_data():
     """Clean up existing physical activity data using SQLite directly"""
     print("🧹 Cleaning up existing physical activity data...")

@@ -31,7 +31,7 @@ CURITIBA_NEIGHBORHOODS = [
     "Pinheirinho", "Santa Cândida", "Seminário", "Tarumã", "Uberaba"
 ]
 
-HEALTH_UNIT_IDS = [1, 2, 3, 4]
+HEALTH_UNIT_IDS = [1, 2, 3, 4]  # Will be populated from API if available
 
 COMORBIDITIES = [
     "Hipertensão arterial sistêmica",

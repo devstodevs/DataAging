@@ -199,7 +199,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
-    description="DataAging API - Sistema de Gerenciamento"
+    description="DataAging API - Sistema de Visualização"
 )
 
 # Include routers

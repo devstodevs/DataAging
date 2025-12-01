@@ -118,7 +118,7 @@ const TitleExamples: React.FC = () => {
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <Title size="large" align="center">
-            Sistema de Gerenciamento Completo de Dados e Relatórios
+            Sistema de Visualização de Dados e Relatórios
           </Title>
           <Title size="medium" align="center">
             Painel de Controle e Monitoramento em Tempo Real

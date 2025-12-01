@@ -25,7 +25,7 @@ create_test_user()
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
-    description="API DataAging - Sistema de Gerenciamento de Dados de Envelhecimento"
+    description="API DataAging - Sistema de Visualização de Dados de Saúde de Idosos"
 )
 
 # Configure CORS

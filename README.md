@@ -1,6 +1,6 @@
 # DataAging
 
-Sistema de gerenciamento e visualização de dados para avaliações de saúde em idosos, desenvolvido como Trabalho de Conclusão de Curso do TADS. O sistema permite o cadastro e acompanhamento de pacientes através de avaliações IVCF-20 (Índice de Vulnerabilidade Clínico-Funcional), FACTF (Functional Assessment of Chronic Illness Therapy - Fatigue) e Atividade Física.
+Sistema de visualização de dados para avaliações de saúde em idosos, desenvolvido como Trabalho de Conclusão de Curso do TADS. O sistema permite o cadastro e acompanhamento de pacientes através de avaliações IVCF-20 (Índice de Vulnerabilidade Clínico-Funcional), FACTF (Functional Assessment of Chronic Illness Therapy - Fatigue) e Atividade Física.
 
 ## Tecnologias
 

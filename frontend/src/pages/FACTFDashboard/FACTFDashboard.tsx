@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Download, Users, Activity, TrendingUp } from "lucide-react";
+import { ArrowLeft, Download, Users, Activity, TrendingUp, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,7 +52,6 @@ interface FACTFDashboardProps {
 const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
   const [selectedPeriod, setSelectedPeriod] = useState<string>();
   const [selectedAgeRange, setSelectedAgeRange] = useState<string>();
-  const [selectedCondition, setSelectedCondition] = useState<string>("all");
   const [selectedPatientId, setSelectedPatientId] = useState<string>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [patientsPerPage] = useState<number>(20); // Mostrar 20 pacientes por página
@@ -77,7 +76,7 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
     // TODO: aplicar filtros específicos
     refetchDashboard();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPeriod, selectedAgeRange, selectedCondition]); // refetchDashboard is stable now
+  }, [selectedPeriod, selectedAgeRange]); // refetchDashboard is stable now
 
   // Processar dados para os gráficos
   const processedSummary = getProcessedSummary();
@@ -159,6 +158,15 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
         </div>
 
         <div className="header-right">
+          <Button
+            className="mr-4"
+            variant="outline"
+            onClick={refetchDashboard}
+            disabled={isLoading}
+          >
+            <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+            Atualizar
+          </Button>
           <Button onClick={handleExportReport}>
             <Download />
             Exportar Relatório
@@ -223,21 +231,6 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
                   <SelectItem value="60-70">60-70 anos</SelectItem>
                   <SelectItem value="71-80">71-80 anos</SelectItem>
                   <SelectItem value="81+">81+ anos</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="filter-item">
-              <label className="filter-label">Condição de Saúde</label>
-              <Select value={selectedCondition} onValueChange={setSelectedCondition}>
-                <SelectTrigger className="filter-select">
-                  <SelectValue placeholder="Todas as condições" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas as condições</SelectItem>
-                  <SelectItem value="diabetes">Diabetes</SelectItem>
-                  <SelectItem value="hipertensao">Hipertensão</SelectItem>
-                  <SelectItem value="artrite">Artrite</SelectItem>
                 </SelectContent>
               </Select>
             </div>

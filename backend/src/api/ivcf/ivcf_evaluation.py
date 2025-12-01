@@ -24,51 +24,51 @@ def create_ivcf_evaluation(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Create a new IVCF evaluation with automatic score calculation.
+    Cria uma nova avaliação IVCF com cálculo automático de pontuação.
     
-    **Request Body:**
-    - patient_id: Patient ID
-    - data_avaliacao: Evaluation date (cannot be future)
-    - dominio_*: Individual domain scores (0-5 each) - only these are required
-    - comorbidades: Identified comorbidities (optional)
-    - observacoes: Observations (optional)
+    **Corpo da Requisição:**
+    - patient_id: ID do paciente
+    - data_avaliacao: Data da avaliação (não pode ser futura)
+    - dominio_*: Pontuações individuais dos domínios (0-5 cada) - apenas estes são obrigatórios
+    - comorbidades: Comorbidades identificadas (opcional)
+    - observacoes: Observações (opcional)
     
-    **Note:** Total score and classification are calculated automatically based on domain scores.
+    **Nota:** A pontuação total e a classificação são calculadas automaticamente com base nas pontuações dos domínios.
     
-    **Returns:**
-    - Created evaluation data with calculated total score and classification
+    **Retorna:**
+    - Dados da avaliação criada com pontuação total e classificação calculadas
     
     **Raises:**
-    - 404: Patient not found
-    - 422: Validation error
+    - 404: Paciente não encontrado
+    - 422: Erro de validação
     """
     return IVCFEvaluationService.create_ivcf_evaluation(db, evaluation)
 
 
 @router.get("/ivcf-evaluations/", response_model=List[IVCFEvaluationResponse])
 def list_ivcf_evaluations(
-    skip: int = Query(0, ge=0, description="Number of records to skip"),
-    limit: int = Query(100, ge=1, le=100, description="Maximum number of records to return"),
-    patient_id: Optional[int] = Query(None, description="Filter by patient ID"),
-    period_from: Optional[date] = Query(None, description="Filter by start date"),
-    period_to: Optional[date] = Query(None, description="Filter by end date"),
-    classificacao: Optional[str] = Query(None, description="Filter by classification"),
+    skip: int = Query(0, ge=0, description="Número de registros para pular"),
+    limit: int = Query(100, ge=1, le=100, description="Número máximo de registros para retornar"),
+    patient_id: Optional[int] = Query(None, description="Filtrar por ID do paciente"),
+    period_from: Optional[date] = Query(None, description="Filtrar por data inicial"),
+    period_to: Optional[date] = Query(None, description="Filtrar por data final"),
+    classificacao: Optional[str] = Query(None, description="Filtrar por classificação"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    List all IVCF evaluations with pagination and filters.
+    Lista todas as avaliações IVCF com paginação e filtros.
     
-    **Query Parameters:**
-    - skip: Number of records to skip (default: 0)
-    - limit: Maximum number of records to return (default: 100, max: 100)
-    - patient_id: Filter by patient ID
-    - period_from: Filter by start date
-    - period_to: Filter by end date
-    - classificacao: Filter by classification (Robusto, Em Risco, Frágil)
+    **Parâmetros de Query:**
+    - skip: Número de registros para pular (padrão: 0)
+    - limit: Número máximo de registros para retornar (padrão: 100, máximo: 100)
+    - patient_id: Filtrar por ID do paciente
+    - period_from: Filtrar por data inicial
+    - period_to: Filtrar por data final
+    - classificacao: Filtrar por classificação (Robusto, Em Risco, Frágil)
     
-    **Returns:**
-    - List of evaluations
+    **Retorna:**
+    - Lista de avaliações
     """
     return IVCFEvaluationService.get_all_ivcf_evaluations(
         db, skip, limit, patient_id, period_from, period_to, classificacao
@@ -82,16 +82,16 @@ def get_ivcf_evaluation(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get a specific IVCF evaluation by ID.
+    Obtém uma avaliação IVCF específica por ID.
     
-    **Path Parameters:**
-    - evaluation_id: Evaluation ID
+    **Parâmetros de Caminho:**
+    - evaluation_id: ID da avaliação
     
-    **Returns:**
-    - Evaluation data
+    **Retorna:**
+    - Dados da avaliação
     
     **Raises:**
-    - 404: Evaluation not found
+    - 404: Avaliação não encontrada
     """
     return IVCFEvaluationService.get_ivcf_evaluation_by_id(db, evaluation_id)
 
@@ -103,16 +103,16 @@ def get_latest_evaluation_by_patient(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get the latest evaluation for a patient.
+    Obtém a avaliação mais recente de um paciente.
     
-    **Path Parameters:**
-    - patient_id: Patient ID
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente
     
-    **Returns:**
-    - Latest evaluation data
+    **Retorna:**
+    - Dados da avaliação mais recente
     
     **Raises:**
-    - 404: Patient not found or no evaluations
+    - 404: Paciente não encontrado ou sem avaliações
     """
     evaluation = IVCFEvaluationService.get_latest_evaluation_by_patient(db, patient_id)
     if not evaluation:
@@ -134,20 +134,20 @@ def update_ivcf_evaluation(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Update an existing IVCF evaluation.
+    Atualiza uma avaliação IVCF existente.
     
-    **Path Parameters:**
-    - evaluation_id: Evaluation ID to update
+    **Parâmetros de Caminho:**
+    - evaluation_id: ID da avaliação para atualizar
     
-    **Request Body:**
-    - Any evaluation fields to update (all optional)
-    - If updating domain scores, total score and classification will be recalculated
+    **Corpo da Requisição:**
+    - Qualquer campo da avaliação para atualizar (todos opcionais)
+    - Se atualizando pontuações dos domínios, a pontuação total e a classificação serão recalculadas
     
-    **Returns:**
-    - Updated evaluation data
+    **Retorna:**
+    - Dados da avaliação atualizada
     
     **Raises:**
-    - 404: Evaluation not found
+    - 404: Avaliação não encontrada
     """
     return IVCFEvaluationService.update_ivcf_evaluation(db, evaluation_id, evaluation_update)
 
@@ -159,16 +159,16 @@ def delete_ivcf_evaluation(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Delete an IVCF evaluation.
+    Deleta uma avaliação IVCF.
     
-    **Path Parameters:**
-    - evaluation_id: Evaluation ID to delete
+    **Parâmetros de Caminho:**
+    - evaluation_id: ID da avaliação para deletar
     
-    **Returns:**
-    - Success message
+    **Retorna:**
+    - Mensagem de sucesso
     
     **Raises:**
-    - 404: Evaluation not found
+    - 404: Avaliação não encontrada
     """
     IVCFEvaluationService.delete_ivcf_evaluation(db, evaluation_id)
-    return {"detail": "Evaluation deleted"}
+    return {"detail": "Avaliação deletada"}

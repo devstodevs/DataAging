@@ -24,41 +24,41 @@ def get_ivcf_summary(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get IVCF summary statistics.
+    Obtém estatísticas resumidas do IVCF.
     
-    **Returns:**
-    - Summary data including total elderly, percentages, average score, and critical patients
+    **Retorna:**
+    - Dados resumidos incluindo total de idosos, percentuais, pontuação média e pacientes críticos
     """
     return IVCFDashboardService.get_ivcf_summary(db)
 
 
 @router.get("/ivcf-dashboard/ivcf-by-domain", response_model=DomainDistributionResponse)
 def get_domain_distribution(
-    period_from: Optional[date] = Query(None, description="Start date filter"),
-    period_to: Optional[date] = Query(None, description="End date filter"),
-    region: Optional[str] = Query(None, description="Region filter"),
-    health_unit_id: Optional[int] = Query(None, description="Health unit ID filter"),
-    age_range: Optional[str] = Query(None, description="Age range filter (60-70, 71-80, 81+)"),
-    classification: Optional[str] = Query(None, description="Classification filter (Robusto, Em Risco, Frágil)"),
+    period_from: Optional[date] = Query(None, description="Filtro de data inicial"),
+    period_to: Optional[date] = Query(None, description="Filtro de data final"),
+    region: Optional[str] = Query(None, description="Filtro de região"),
+    health_unit_id: Optional[int] = Query(None, description="Filtro de ID da unidade de saúde"),
+    age_range: Optional[str] = Query(None, description="Filtro de faixa etária (60-70, 71-80, 81+)"),
+    classification: Optional[str] = Query(None, description="Filtro de classificação (Robusto, Em Risco, Frágil)"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get domain distribution for spider chart.
+    Obtém a distribuição por domínios para gráfico de aranha.
     
-    **Query Parameters:**
-    - period_from: Start date filter
-    - period_to: End date filter
-    - region: Region filter (must be valid Curitiba region)
-    - health_unit_id: Health unit ID filter
-    - age_range: Age range filter (60-70, 71-80, 81+)
-    - classification: Classification filter (Robusto, Em Risco, Frágil)
+    **Parâmetros de Query:**
+    - period_from: Filtro de data inicial
+    - period_to: Filtro de data final
+    - region: Filtro de região (deve ser uma região válida de Curitiba)
+    - health_unit_id: Filtro de ID da unidade de saúde
+    - age_range: Filtro de faixa etária (60-70, 71-80, 81+)
+    - classification: Filtro de classificação (Robusto, Em Risco, Frágil)
     
-    **Returns:**
-    - Domain distribution data with chart configuration and applied filters
+    **Retorna:**
+    - Dados de distribuição por domínios com configuração do gráfico e filtros aplicados
     
     **Raises:**
-    - 422: Invalid filters provided
+    - 422: Filtros inválidos fornecidos
     """
     return IVCFDashboardService.get_domain_distribution(
         db, period_from, period_to, region, health_unit_id, age_range, classification
@@ -67,43 +67,43 @@ def get_domain_distribution(
 
 @router.get("/ivcf-dashboard/ivcf-by-region", response_model=RegionAverageResponse)
 def get_region_averages(
-    period_from: Optional[date] = Query(None, description="Start date filter"),
-    period_to: Optional[date] = Query(None, description="End date filter"),
+    period_from: Optional[date] = Query(None, description="Filtro de data inicial"),
+    period_to: Optional[date] = Query(None, description="Filtro de data final"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get average scores by region.
+    Obtém pontuações médias por região.
     
-    **Query Parameters:**
-    - period_from: Start date filter
-    - period_to: End date filter
+    **Parâmetros de Query:**
+    - period_from: Filtro de data inicial
+    - period_to: Filtro de data final
     
-    **Returns:**
-    - Region average data with applied filters
+    **Retorna:**
+    - Dados de médias por região com filtros aplicados
     """
     return IVCFDashboardService.get_region_averages(db, period_from, period_to)
 
 
 @router.get("/ivcf-dashboard/ivcf-evolution", response_model=MonthlyEvolutionResponse)
 def get_monthly_evolution(
-    months_back: int = Query(6, ge=1, le=24, description="Number of months to look back"),
-    from_last_evaluation: bool = Query(False, description="Start from the last evaluation date"),
+    months_back: int = Query(6, ge=1, le=24, description="Número de meses para retroceder"),
+    from_last_evaluation: bool = Query(False, description="Iniciar a partir da data da última avaliação"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get monthly evolution for the last N months.
+    Obtém a evolução mensal dos últimos N meses.
     
-    **Query Parameters:**
-    - months_back: Number of months to look back (default: 6, range: 1-24)
-    - from_last_evaluation: Start from the last evaluation date (default: False)
+    **Parâmetros de Query:**
+    - months_back: Número de meses para retroceder (padrão: 6, intervalo: 1-24)
+    - from_last_evaluation: Iniciar a partir da data da última avaliação (padrão: False)
     
-    **Returns:**
-    - Monthly evolution data with applied filters
+    **Retorna:**
+    - Dados de evolução mensal com filtros aplicados
     
     **Raises:**
-    - 422: Invalid months_back value
+    - 422: Valor inválido de months_back
     """
     return IVCFDashboardService.get_monthly_evolution(db, months_back, from_last_evaluation)
 

@@ -22,18 +22,18 @@ def create_user(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Create a new user (Gestor or Tecnico).
+    Cria um novo usuário (Gestor ou Técnico).
     
-    **Request Body:**
-    - For Gestor: Include `profile_type: "gestor"` and `matricula`
-    - For Tecnico: Include `profile_type: "tecnico"` and optional `registro_profissional`, `especialidade`
+    **Corpo da Requisição:**
+    - Para Gestor: Incluir `profile_type: "gestor"` e `matricula`
+    - Para Técnico: Incluir `profile_type: "tecnico"` e opcionalmente `registro_profissional`, `especialidade`
     
-    **Returns:**
-    - Created user data (without password)
+    **Retorna:**
+    - Dados do usuário criado (sem senha)
     
     **Raises:**
-    - 409: CPF or matricula already exists
-    - 422: Validation error
+    - 409: CPF ou matrícula já existem
+    - 422: Erro de validação
     """
     return UserService.create_new_user(db, user)
 
@@ -46,14 +46,14 @@ def list_users(
     current_user: User = Depends(get_current_user)
 ):
     """
-    List all users with pagination.
+    Lista todos os usuários com paginação.
     
-    **Query Parameters:**
-    - skip: Number of records to skip (default: 0)
-    - limit: Maximum number of records to return (default: 100, max: 100)
+    **Parâmetros de Query:**
+    - skip: Número de registros para pular (padrão: 0)
+    - limit: Número máximo de registros para retornar (padrão: 100, máximo: 100)
     
-    **Returns:**
-    - List of users (without passwords)
+    **Retorna:**
+    - Lista de usuários (sem senhas)
     """
     if limit > 100:
         limit = 100
@@ -67,16 +67,16 @@ def get_user(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get a specific user by ID.
+    Obtém um usuário específico por ID.
     
-    **Path Parameters:**
-    - user_id: User ID
+    **Parâmetros de Caminho:**
+    - user_id: ID do usuário
     
-    **Returns:**
-    - User data (without password)
+    **Retorna:**
+    - Dados do usuário (sem senha)
     
     **Raises:**
-    - 404: User not found
+    - 404: Usuário não encontrado
     """
     return UserService.get_user_by_id(db, user_id)
 
@@ -89,21 +89,21 @@ def update_user(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Update an existing user.
+    Atualiza um usuário existente.
     
-    **Path Parameters:**
-    - user_id: User ID to update
+    **Parâmetros de Caminho:**
+    - user_id: ID do usuário para atualizar
     
-    **Request Body:**
-    - Any user fields to update (all optional)
-    - If updating password, provide new password (will be hashed)
+    **Corpo da Requisição:**
+    - Qualquer campo do usuário para atualizar (todos opcionais)
+    - Se atualizando senha, fornecer nova senha (será criptografada)
     
-    **Returns:**
-    - Updated user data (without password)
+    **Retorna:**
+    - Dados do usuário atualizado (sem senha)
     
     **Raises:**
-    - 404: User not found
-    - 409: CPF or matricula already exists (if updating these fields)
+    - 404: Usuário não encontrado
+    - 409: CPF ou matrícula já existem (se atualizando esses campos)
     """
     return UserService.update_user(db, user_id, user_update)
 
@@ -115,16 +115,16 @@ def delete_user(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Delete a user.
+    Deleta um usuário.
     
-    **Path Parameters:**
-    - user_id: User ID to delete
+    **Parâmetros de Caminho:**
+    - user_id: ID do usuário para deletar
     
-    **Returns:**
-    - Success message
+    **Retorna:**
+    - Mensagem de sucesso
     
     **Raises:**
-    - 404: User not found
+    - 404: Usuário não encontrado
     """
     UserService.delete_user(db, user_id)
-    return {"detail": "User deleted"}
+    return {"detail": "Usuário deletado"}

@@ -15,17 +15,17 @@ def get_factf_summary(
     current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
-    Get FACT-F dashboard summary statistics.
+    Obtém estatísticas resumidas do dashboard FACT-F.
     
-    **Returns:**
-    - total_patients: Total number of active patients
-    - severe_fatigue_percentage: Percentage of patients with severe fatigue
-    - critical_patients_count: Number of patients with critical fatigue levels
-    - average_total_score: Average total FACT-F score
-    - monthly_growth_percentage: Growth percentage compared to previous month
-    - domain_averages: Average scores by domain
+    **Retorna:**
+    - total_patients: Número total de pacientes ativos
+    - severe_fatigue_percentage: Percentual de pacientes com fadiga severa
+    - critical_patients_count: Número de pacientes com níveis críticos de fadiga
+    - average_total_score: Pontuação total média FACT-F
+    - monthly_growth_percentage: Percentual de crescimento comparado ao mês anterior
+    - domain_averages: Pontuações médias por domínio
     
-    **Example Response:**
+    **Exemplo de Resposta:**
     ```json
     {
         "total_patients": 245,
@@ -48,20 +48,20 @@ def get_factf_summary(
 
 @router.get("/factf-dashboard/critical-patients")
 def get_critical_patients(
-    min_score: float = Query(30.0, ge=0, le=52, description="Minimum fatigue score threshold"),
+    min_score: float = Query(30.0, ge=0, le=52, description="Limite mínimo de pontuação de fadiga"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
-    Get patients with critical fatigue levels.
+    Obtém pacientes com níveis críticos de fadiga.
     
-    **Query Parameters:**
-    - min_score: Minimum fatigue score to be considered critical (default: 30.0)
+    **Parâmetros de Query:**
+    - min_score: Pontuação mínima de fadiga para ser considerada crítica (padrão: 30.0)
     
-    **Returns:**
-    - List of patients with critical fatigue levels
+    **Retorna:**
+    - Lista de pacientes com níveis críticos de fadiga
     
-    **Example Response:**
+    **Exemplo de Resposta:**
     ```json
     {
         "critical_patients": [
@@ -94,12 +94,12 @@ def get_fatigue_distribution(
     current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
-    Get fatigue level distribution by health conditions.
+    Obtém distribuição de níveis de fadiga por condições de saúde.
     
-    **Returns:**
-    - Distribution of fatigue levels across different health conditions
+    **Retorna:**
+    - Distribuição de níveis de fadiga em diferentes condições de saúde
     
-    **Example Response:**
+    **Exemplo de Resposta:**
     ```json
     {
         "distribution": [
@@ -121,20 +121,20 @@ def get_fatigue_distribution(
 
 @router.get("/factf-dashboard/monthly-evolution")
 def get_monthly_evolution(
-    months_back: int = Query(12, ge=1, le=24, description="Number of months to look back"),
+    months_back: int = Query(12, ge=1, le=24, description="Número de meses para retroceder"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
-    Get monthly evolution of FACT-F scores.
+    Obtém evolução mensal das pontuações FACT-F.
     
-    **Query Parameters:**
-    - months_back: Number of months to analyze (default: 12, max: 24)
+    **Parâmetros de Query:**
+    - months_back: Número de meses para analisar (padrão: 12, máximo: 24)
     
-    **Returns:**
-    - Monthly evolution data for trend analysis
+    **Retorna:**
+    - Dados de evolução mensal para análise de tendências
     
-    **Example Response:**
+    **Exemplo de Resposta:**
     ```json
     {
         "evolution": [
@@ -167,12 +167,12 @@ def get_domain_distribution(
     current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
-    Get average scores distribution by domains for radar chart.
+    Obtém distribuição de pontuações médias por domínios para gráfico de radar.
     
-    **Returns:**
-    - Domain averages for radar chart visualization
+    **Retorna:**
+    - Médias por domínio para visualização em gráfico de radar
     
-    **Example Response:**
+    **Exemplo de Resposta:**
     ```json
     {
         "domains": [
@@ -215,15 +215,15 @@ def get_patient_domain_distribution(
     current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
-    Get individual patient domain scores compared with regional average.
+    Obtém pontuações de domínios individuais do paciente comparadas com a média regional.
     
-    **Parameters:**
-    - patient_id: ID of the patient to get individual scores
+    **Parâmetros:**
+    - patient_id: ID do paciente para obter pontuações individuais
     
-    **Returns:**
-    - Individual patient domain scores and regional averages for comparison
+    **Retorna:**
+    - Pontuações de domínios individuais do paciente e médias regionais para comparação
     
-    **Example Response:**
+    **Exemplo de Resposta:**
     ```json
     {
         "domains": [
@@ -270,12 +270,12 @@ def get_all_patients_summary(
     current_user: User = Depends(get_current_user)
 ) -> Dict:
     """
-    Get summary of all patients with their latest evaluation data.
+    Obtém resumo de todos os pacientes com seus dados da última avaliação.
     
-    **Returns:**
-    - List of all patients with basic info and latest evaluation
+    **Retorna:**
+    - Lista de todos os pacientes com informações básicas e última avaliação
     
-    **Example Response:**
+    **Exemplo de Resposta:**
     ```json
     {
         "patients": [

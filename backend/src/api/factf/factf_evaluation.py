@@ -76,26 +76,26 @@ def get_factf_evaluation(
 @router.get("/factf-patients/{patient_id}/evaluations", response_model=List[FACTFEvaluationList])
 def list_patient_evaluations(
     patient_id: int,
-    skip: int = Query(0, ge=0, description="Number of records to skip"),
-    limit: int = Query(100, ge=1, le=100, description="Maximum number of records to return"),
+    skip: int = Query(0, ge=0, description="Número de registros para pular"),
+    limit: int = Query(100, ge=1, le=100, description="Número máximo de registros para retornar"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    List all evaluations for a specific patient.
+    Lista todas as avaliações de um paciente específico.
     
-    **Path Parameters:**
-    - patient_id: Patient ID
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente
     
-    **Query Parameters:**
-    - skip: Number of records to skip (pagination)
-    - limit: Maximum records to return (max 100)
+    **Parâmetros de Query:**
+    - skip: Número de registros para pular (paginação)
+    - limit: Número máximo de registros para retornar (máximo 100)
     
-    **Returns:**
-    - List of evaluations for the patient
+    **Retorna:**
+    - Lista de avaliações do paciente
     
     **Raises:**
-    - 404: Patient not found
+    - 404: Paciente não encontrado
     """
     return FACTFEvaluationService.get_evaluations_by_patient(db, patient_id, skip, limit)
 
@@ -107,21 +107,21 @@ def update_factf_evaluation(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Update a FACT-F evaluation with automatic recalculation of scores.
+    Atualiza uma avaliação FACT-F com recálculo automático de pontuações.
     
-    **Path Parameters:**
-    - evaluation_id: Evaluation ID to update
+    **Parâmetros de Caminho:**
+    - evaluation_id: ID da avaliação para atualizar
     
-    **Request Body:**
-    - Any fields from FACTFEvaluationUpdate schema
+    **Corpo da Requisição:**
+    - Qualquer campo do esquema FACTFEvaluationUpdate
     
-    **Returns:**
-    - Updated evaluation with recalculated scores
+    **Retorna:**
+    - Avaliação atualizada com pontuações recalculadas
     
     **Raises:**
-    - 404: Evaluation not found
-    - 400: Invalid domain scores
-    - 422: Validation error
+    - 404: Avaliação não encontrada
+    - 400: Pontuações de domínio inválidas
+    - 422: Erro de validação
     """
     return FACTFEvaluationService.update_factf_evaluation(db, evaluation_id, evaluation_update)
 
@@ -133,16 +133,16 @@ def delete_factf_evaluation(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Delete a FACT-F evaluation.
+    Deleta uma avaliação FACT-F.
     
-    **Path Parameters:**
-    - evaluation_id: Evaluation ID to delete
+    **Parâmetros de Caminho:**
+    - evaluation_id: ID da avaliação para deletar
     
-    **Returns:**
-    - No content (204)
+    **Retorna:**
+    - Sem conteúdo (204)
     
     **Raises:**
-    - 404: Evaluation not found
+    - 404: Avaliação não encontrada
     """
     FACTFEvaluationService.delete_factf_evaluation(db, evaluation_id)
 
@@ -154,16 +154,16 @@ def get_latest_patient_evaluation(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get the latest evaluation for a specific patient.
+    Obtém a avaliação mais recente de um paciente específico.
     
-    **Path Parameters:**
-    - patient_id: Patient ID
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente
     
-    **Returns:**
-    - Latest evaluation data or 404 if no evaluations found
+    **Retorna:**
+    - Dados da avaliação mais recente ou 404 se nenhuma avaliação encontrada
     
     **Raises:**
-    - 404: Patient not found or no evaluations found
+    - 404: Paciente não encontrado ou nenhuma avaliação encontrada
     """
     evaluation = FACTFEvaluationService.get_latest_evaluation_by_patient(db, patient_id)
     if not evaluation:

@@ -14,7 +14,7 @@ def get_dashboard_summary(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
-    """Get general dashboard summary (total evaluated, % WHO compliance, average sedentary hours)"""
+    """Obtém resumo geral do dashboard (total avaliado, % conformidade OMS, média de horas sedentárias)"""
     return PhysicalActivityDashboardService.get_summary(db)
 
 
@@ -23,7 +23,7 @@ def get_critical_patients(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> List[Dict[str, Any]]:
-    """Get patients with critical sedentary risk (>10 hours/day)"""
+    """Obtém pacientes com risco sedentário crítico (>10 horas/dia)"""
     return PhysicalActivityDashboardService.get_critical_patients(db)
 
 
@@ -32,7 +32,7 @@ def get_activity_distribution(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
-    """Get distribution by activity intensity (light, moderate, vigorous)"""
+    """Obtém distribuição por intensidade de atividade (leve, moderada, vigorosa)"""
     return PhysicalActivityDashboardService.get_activity_distribution(db)
 
 
@@ -41,7 +41,7 @@ def get_sedentary_by_age(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> List[Dict[str, Any]]:
-    """Get sedentary hours by age range (60-70, 71-80, 81+)"""
+    """Obtém horas sedentárias por faixa etária (60-70, 71-80, 81+)"""
     return PhysicalActivityDashboardService.get_sedentary_by_age(db)
 
 
@@ -51,7 +51,7 @@ def get_sedentary_trend(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> Dict[str, List[Dict[str, Any]]]:
-    """Get sedentary trend over time for diabetics and hypertensives"""
+    """Obtém tendência sedentária ao longo do tempo para diabéticos e hipertensos"""
     return PhysicalActivityDashboardService.get_sedentary_trend(db, months)
 
 
@@ -60,7 +60,7 @@ def get_who_compliance(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
-    """Get WHO compliance data (compliant vs non-compliant)"""
+    """Obtém dados de conformidade OMS (conformes vs não conformes)"""
     return PhysicalActivityDashboardService.get_who_compliance(db)
 
 
@@ -69,5 +69,5 @@ def get_all_patients_summary(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> List[Dict[str, Any]]:
-    """Get summary of all patients with their latest evaluation"""
+    """Obtém resumo de todos os pacientes com sua última avaliação"""
     return PhysicalActivityDashboardService.get_all_patients_summary(db)

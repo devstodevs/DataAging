@@ -21,42 +21,42 @@ def create_health_unit(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Create a new health unit.
+    Cria uma nova unidade de saúde.
     
-    **Request Body:**
-    - nome: Health unit name
-    - bairro: Neighborhood
-    - regiao: Region
-    - ativo: Active status (default: True)
+    **Corpo da Requisição:**
+    - nome: Nome da unidade de saúde
+    - bairro: Bairro
+    - regiao: Região
+    - ativo: Status ativo (padrão: True)
     
-    **Returns:**
-    - Created health unit data
+    **Retorna:**
+    - Dados da unidade de saúde criada
     
     **Raises:**
-    - 409: Health unit name already exists
-    - 422: Validation error
+    - 409: Nome da unidade de saúde já existe
+    - 422: Erro de validação
     """
     return HealthUnitService.create_health_unit(db, health_unit)
 
 
 @router.get("/health-units/", response_model=List[HealthUnitResponse])
 def list_health_units(
-    skip: int = Query(0, ge=0, description="Number of records to skip"),
-    limit: int = Query(100, ge=1, le=100, description="Maximum number of records to return"),
-    active_only: bool = Query(True, description="Filter only active units"),
+    skip: int = Query(0, ge=0, description="Número de registros para pular"),
+    limit: int = Query(100, ge=1, le=100, description="Número máximo de registros para retornar"),
+    active_only: bool = Query(True, description="Filtrar apenas unidades ativas"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    List all health units with pagination.
+    Lista todas as unidades de saúde com paginação.
     
-    **Query Parameters:**
-    - skip: Number of records to skip (default: 0)
-    - limit: Maximum number of records to return (default: 100, max: 100)
-    - active_only: Filter only active units (default: True)
+    **Parâmetros de Query:**
+    - skip: Número de registros para pular (padrão: 0)
+    - limit: Número máximo de registros para retornar (padrão: 100, máximo: 100)
+    - active_only: Filtrar apenas unidades ativas (padrão: True)
     
-    **Returns:**
-    - List of health units
+    **Retorna:**
+    - Lista de unidades de saúde
     """
     return HealthUnitService.get_all_health_units(db, skip, limit, active_only)
 
@@ -68,16 +68,16 @@ def get_health_unit(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get a specific health unit by ID.
+    Obtém uma unidade de saúde específica por ID.
     
-    **Path Parameters:**
-    - health_unit_id: Health unit ID
+    **Parâmetros de Caminho:**
+    - health_unit_id: ID da unidade de saúde
     
-    **Returns:**
-    - Health unit data
+    **Retorna:**
+    - Dados da unidade de saúde
     
     **Raises:**
-    - 404: Health unit not found
+    - 404: Unidade de saúde não encontrada
     """
     return HealthUnitService.get_health_unit_by_id(db, health_unit_id)
 
@@ -89,13 +89,13 @@ def get_health_units_by_region(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get health units by region.
+    Obtém unidades de saúde por região.
     
-    **Path Parameters:**
-    - regiao: Region name
+    **Parâmetros de Caminho:**
+    - regiao: Nome da região
     
-    **Returns:**
-    - List of health units in the region
+    **Retorna:**
+    - Lista de unidades de saúde na região
     """
     return HealthUnitService.get_health_units_by_region(db, regiao)
 
@@ -108,20 +108,20 @@ def update_health_unit(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Update an existing health unit.
+    Atualiza uma unidade de saúde existente.
     
-    **Path Parameters:**
-    - health_unit_id: Health unit ID to update
+    **Parâmetros de Caminho:**
+    - health_unit_id: ID da unidade de saúde para atualizar
     
-    **Request Body:**
-    - Any health unit fields to update (all optional)
+    **Corpo da Requisição:**
+    - Qualquer campo da unidade de saúde para atualizar (todos opcionais)
     
-    **Returns:**
-    - Updated health unit data
+    **Retorna:**
+    - Dados da unidade de saúde atualizada
     
     **Raises:**
-    - 404: Health unit not found
-    - 409: Health unit name already exists (if updating name)
+    - 404: Unidade de saúde não encontrada
+    - 409: Nome da unidade de saúde já existe (se atualizando o nome)
     """
     return HealthUnitService.update_health_unit(db, health_unit_id, health_unit_update)
 
@@ -133,16 +133,16 @@ def delete_health_unit(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Delete a health unit (soft delete).
+    Deleta uma unidade de saúde (exclusão lógica).
     
-    **Path Parameters:**
-    - health_unit_id: Health unit ID to delete
+    **Parâmetros de Caminho:**
+    - health_unit_id: ID da unidade de saúde para deletar
     
-    **Returns:**
-    - Success message
+    **Retorna:**
+    - Mensagem de sucesso
     
     **Raises:**
-    - 404: Health unit not found
+    - 404: Unidade de saúde não encontrada
     """
     HealthUnitService.delete_health_unit(db, health_unit_id)
-    return {"detail": "Health unit deleted"}
+    return {"detail": "Unidade de saúde deletada"}

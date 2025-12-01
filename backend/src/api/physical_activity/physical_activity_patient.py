@@ -21,7 +21,7 @@ def create_physical_activity_patient(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Create a new physical activity patient"""
+    """Cria um novo paciente de atividade física"""
     return PhysicalActivityPatientService.create_patient(db, patient_data)
 
 
@@ -37,7 +37,7 @@ def get_physical_activity_patients(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get paginated list of physical activity patients"""
+    """Obtém lista paginada de pacientes de atividade física"""
     return PhysicalActivityPatientService.get_patients(
         db=db,
         page=page,
@@ -56,7 +56,7 @@ def get_physical_activity_patient(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get a physical activity patient by ID"""
+    """Obtém um paciente de atividade física por ID"""
     return PhysicalActivityPatientService.get_patient(db, patient_id)
 
 
@@ -67,7 +67,7 @@ def update_physical_activity_patient(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Update a physical activity patient"""
+    """Atualiza um paciente de atividade física"""
     return PhysicalActivityPatientService.update_patient(db, patient_id, patient_data)
 
 
@@ -77,7 +77,7 @@ def delete_physical_activity_patient(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Delete a physical activity patient (soft delete)"""
+    """Deleta um paciente de atividade física (exclusão lógica)"""
     return PhysicalActivityPatientService.delete_patient(db, patient_id)
 
 
@@ -87,5 +87,5 @@ def get_patient_evaluations(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get all evaluations for a patient"""
+    """Obtém todas as avaliações de um paciente"""
     return PhysicalActivityPatientService.get_patient_evaluations(db, patient_id)

@@ -151,7 +151,7 @@ class FACTFDashboardService:
         
         # If no specific conditions found, return example data for demonstration
         if not result:
-            # Return example data showing the three conditions with realistic distributions
+            # Return example data
             result = [
                 {
                     "condition": "Diabetes",

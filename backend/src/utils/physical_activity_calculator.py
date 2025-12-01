@@ -29,19 +29,33 @@ def calculate_who_compliance(total_weekly_moderate: int, total_weekly_vigorous: 
 
 def calculate_sedentary_risk_level(sedentary_hours_per_day: float) -> str:
     """
-    Calculate sedentary risk level based on daily sedentary hours
+    Calculate sedentary risk level based on daily sedentary hours.
     
-    Risk levels:
-    - Baixo: <6 hours/day
-    - Moderado: 6-8 hours/day  
-    - Alto: 8-10 hours/day
-    - Crítico: >10 hours/day
+    IMPORTANT: The WHO does not establish specific daily hour limits for sedentary behavior.
+    However, scientific evidence indicates that excessive sedentary time is associated with
+    increased health risks, particularly cardiovascular disease, diabetes type 2, and cancer.
+    
+    Evidence-based thresholds:
+    - Studies show that >10 hours/day significantly increases cardiovascular risk and mortality,
+      even in physically active individuals
+    - The WHO recommends limiting sedentary time and increasing physical activity, but does not
+      specify exact hour thresholds
+    
+    Risk levels (based on clinical practice and available evidence):
+    - Baixo: <6 hours/day - Lower risk, within acceptable range
+    - Moderado: 6-8 hours/day - Moderate risk, attention recommended
+    - Alto: 8-10 hours/day - High risk, intervention recommended
+    - Crítico: >10 hours/day - Critical risk, significant health concerns
+    
+    References:
+    - WHO Guidelines on Physical Activity and Sedentary Behaviour (2020)
+    - Studies linking >10h/day sedentary time to increased cardiovascular risk
     
     Args:
-        sedentary_hours_per_day: Daily sedentary hours
+        sedentary_hours_per_day: Daily sedentary hours (0-24)
         
     Returns:
-        str: Risk level classification
+        str: Risk level classification ("Baixo", "Moderado", "Alto", or "Crítico")
     """
     if sedentary_hours_per_day < 6:
         return "Baixo"

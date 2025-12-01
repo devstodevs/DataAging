@@ -220,6 +220,11 @@ class PhysicalActivityApiService {
     return moderateMinutes >= 150 || vigorousMinutes >= 75;
   }
 
+  /**
+   * Calculate sedentary risk level based on daily sedentary hours
+   * Classification: Baixo (<6h), Moderado (6-8h), Alto (8-10h), Crítico (>10h)
+   * Note: WHO doesn't specify exact thresholds, but evidence shows >10h/day increases cardiovascular risk
+   */
   static calculateSedentaryRiskLevel(sedentaryHours: number): string {
     if (sedentaryHours < 6) return 'Baixo';
     if (sedentaryHours < 8) return 'Moderado';

@@ -109,7 +109,19 @@ export const calculateWHOCompliance = (moderateMinutes: number, vigorousMinutes:
 };
 
 /**
- * Calcular nível de risco sedentário
+ * Calcular nível de risco sedentário baseado em horas sedentárias por dia
+ * 
+ * IMPORTANTE: A OMS não estabelece limites específicos de horas sedentárias por dia.
+ * Evidências científicas indicam que >10h/dia aumenta significativamente riscos
+ * cardiovasculares, mesmo em pessoas fisicamente ativas.
+ * 
+ * Classificação:
+ * - Baixo: <6h/dia - Risco menor
+ * - Moderado: 6-8h/dia - Risco moderado
+ * - Alto: 8-10h/dia - Risco alto
+ * - Crítico: >10h/dia - Risco crítico (evidências de aumento significativo de risco cardiovascular)
+ * 
+ * Referências: WHO Guidelines on Physical Activity and Sedentary Behaviour (2020)
  */
 export const calculateSedentaryRiskLevel = (sedentaryHours: number): SedentaryRiskLevel => {
   if (sedentaryHours < 6) return 'Baixo';

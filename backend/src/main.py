@@ -25,7 +25,7 @@ create_test_user()
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
-    description="DataAging API - Sistema de Gerenciamento"
+    description="API DataAging - Sistema de Gerenciamento de Dados de Envelhecimento"
 )
 
 # Configure CORS
@@ -54,6 +54,7 @@ app.include_router(physical_activity_dashboard_router, prefix=f"{settings.API_V1
 #DEBUG
 @app.get("/debug/routes")
 async def list_routes(current_user: User = Depends(get_current_user)):
+    """Lista todas as rotas disponíveis na API"""
     routes = [
         {
             "path": route.path,
@@ -68,9 +69,9 @@ async def list_routes(current_user: User = Depends(get_current_user)):
 
 @app.get("/")
 def root():
-    """Root endpoint"""
+    """Endpoint raiz da API"""
     return {
-        "message": "Welcome to DataAging API",
+        "message": "Bem-vindo à API DataAging",
         "version": "1.0.0",
         "docs": "/docs"
     }

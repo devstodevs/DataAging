@@ -22,13 +22,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_PREFIX}/login")
 
 
 class Token(BaseModel):
-    """Token response schema"""
+    """Esquema de resposta do token"""
     access_token: str
     user: UserResponse
 
 
 class TokenData(BaseModel):
-    """Token data schema"""
+    """Esquema de dados do token"""
     cpf: Optional[str] = None
 
 
@@ -37,21 +37,21 @@ def get_current_user(
     db: Session = Depends(get_db)
 ) -> User:
     """
-    Get the current authenticated user from JWT token.
+    Obtém o usuário autenticado atual a partir do token JWT.
     
     Args:
-        token: JWT token from Authorization header
-        db: Database session
+        token: Token JWT do cabeçalho Authorization
+        db: Sessão do banco de dados
         
     Returns:
-        Current User object
+        Objeto User atual
         
     Raises:
-        HTTPException: If token is invalid or user not found
+        HTTPException: Se o token for inválido ou o usuário não for encontrado
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail="Não foi possível validar as credenciais",
         headers={"WWW-Authenticate": "Bearer"},
     )
     
@@ -77,22 +77,22 @@ def login(
     db: Session = Depends(get_db)
 ):
     """
-    Login endpoint - authenticate user and return JWT token.
+    Endpoint de login - autentica o usuário e retorna token JWT.
     
-    **Request Body (form-data):**
-    - username: User CPF (without formatting, e.g., "11144477735")
-    - password: User password
+    **Corpo da Requisição (form-data):**
+    - username: CPF do usuário (sem formatação, ex: "11144477735")
+    - password: Senha do usuário
     
-    **Returns:**
-    - access_token: JWT token for authentication
-    - user: User information (without password)
+    **Retorna:**
+    - access_token: Token JWT para autenticação
+    - user: Informações do usuário (sem senha)
     
     **Raises:**
-    - 401: Incorrect CPF or password
+    - 401: CPF ou senha incorretos
     
-    **Note:** Use CPF as username in the login form.
+    **Nota:** Use o CPF como username no formulário de login.
     
-    **Example:**
+    **Exemplo:**
     ```
     username: 11144477735
     password: senha123
@@ -105,16 +105,16 @@ def login(
 @router.get("/me", response_model=UserResponse)
 def get_current_user_info(current_user: User = Depends(get_current_user)):
     """
-    Get current authenticated user information.
+    Obtém informações do usuário autenticado atual.
     
-    **Headers:**
+    **Cabeçalhos:**
     - Authorization: Bearer {token}
     
-    **Returns:**
-    - Current user information
+    **Retorna:**
+    - Informações do usuário atual
     
     **Raises:**
-    - 401: Invalid or missing token
+    - 401: Token inválido ou ausente
     """
     return current_user
 
@@ -125,27 +125,27 @@ def recover_password(
     db: Session = Depends(get_db)
 ):
     """
-    Recover/change user password by verifying current password.
+    Recupera/altera a senha do usuário verificando a senha atual.
     
-    **Request Body:**
-    - cpf: User CPF (without formatting, e.g., "12345678901")
-    - current_password: Current password for verification
-    - new_password: New password (minimum 6 characters)
+    **Corpo da Requisição:**
+    - cpf: CPF do usuário (sem formatação, ex: "12345678901")
+    - recovery_password: Senha atual para verificação
+    - new_password: Nova senha (mínimo 6 caracteres)
     
-    **Returns:**
-    - message: Success message
-    - success: Operation success status
+    **Retorna:**
+    - message: Mensagem de sucesso
+    - success: Status de sucesso da operação
     
     **Raises:**
-    - 404: User not found
-    - 401: Incorrect current password
-    - 500: Internal server error
+    - 404: Usuário não encontrado
+    - 401: Senha atual incorreta
+    - 500: Erro interno do servidor
     
-    **Example:**
+    **Exemplo:**
     ```json
     {
         "cpf": "12345678901",
-        "current_password": "senhaAtual123",
+        "recovery_password": "senhaAtual123",
         "new_password": "novaSenha456"
     }
     ```

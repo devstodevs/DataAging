@@ -21,7 +21,7 @@ def create_physical_activity_evaluation(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Create a new physical activity evaluation for a patient"""
+    """Cria uma nova avaliação de atividade física para um paciente"""
     # Add patient_id to evaluation data
     evaluation_dict = evaluation_data.model_dump()
     evaluation_dict['patient_id'] = patient_id
@@ -34,7 +34,7 @@ def get_physical_activity_evaluation(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get a physical activity evaluation by ID"""
+    """Obtém uma avaliação de atividade física por ID"""
     return PhysicalActivityEvaluationService.get_evaluation(db, evaluation_id)
 
 
@@ -46,7 +46,7 @@ def get_patient_evaluations(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get all evaluations for a patient"""
+    """Obtém todas as avaliações de um paciente"""
     return PhysicalActivityEvaluationService.get_evaluations_by_patient(db, patient_id, skip, limit)
 
 
@@ -56,7 +56,7 @@ def get_latest_patient_evaluation(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get the latest evaluation for a patient"""
+    """Obtém a avaliação mais recente de um paciente"""
     return PhysicalActivityEvaluationService.get_latest_evaluation_by_patient(db, patient_id)
 
 
@@ -67,7 +67,7 @@ def update_physical_activity_evaluation(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Update a physical activity evaluation"""
+    """Atualiza uma avaliação de atividade física"""
     update_dict = evaluation_data.model_dump(exclude_unset=True)
     return PhysicalActivityEvaluationService.update_evaluation(db, evaluation_id, update_dict)
 
@@ -78,5 +78,5 @@ def delete_physical_activity_evaluation(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Delete a physical activity evaluation"""
+    """Deleta uma avaliação de atividade física"""
     return PhysicalActivityEvaluationService.delete_evaluation(db, evaluation_id)

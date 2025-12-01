@@ -22,54 +22,54 @@ def create_ivcf_patient(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Create a new IVCF patient.
+    Cria um novo paciente IVCF.
     
-    **Request Body:**
-    - nome_completo: Full name
-    - cpf: CPF (11-14 characters)
-    - idade: Age (minimum 60)
-    - telefone: Phone number (optional)
-    - bairro: Neighborhood
-    - unidade_saude_id: Health unit ID
-    - data_cadastro: Registration date (default: today)
+    **Corpo da Requisição:**
+    - nome_completo: Nome completo
+    - cpf: CPF (11-14 caracteres)
+    - idade: Idade (mínimo 60)
+    - telefone: Número de telefone (opcional)
+    - bairro: Bairro
+    - unidade_saude_id: ID da unidade de saúde
+    - data_cadastro: Data de cadastro (padrão: hoje)
     
-    **Returns:**
-    - Created patient data
+    **Retorna:**
+    - Dados do paciente criado
     
     **Raises:**
-    - 409: CPF already exists
-    - 404: Health unit not found
-    - 422: Validation error
+    - 409: CPF já existe
+    - 404: Unidade de saúde não encontrada
+    - 422: Erro de validação
     """
     return IVCFPatientService.create_ivcf_patient(db, patient)
 
 
 @router.get("/ivcf-patients/", response_model=List[IVCFPatientResponse])
 def list_ivcf_patients(
-    skip: int = Query(0, ge=0, description="Number of records to skip"),
-    limit: int = Query(100, ge=1, le=100, description="Maximum number of records to return"),
-    active_only: bool = Query(True, description="Filter only active patients"),
-    bairro: Optional[str] = Query(None, description="Filter by neighborhood"),
-    unidade_saude_id: Optional[int] = Query(None, description="Filter by health unit ID"),
-    idade_min: Optional[int] = Query(None, ge=60, description="Minimum age filter"),
-    idade_max: Optional[int] = Query(None, le=120, description="Maximum age filter"),
+    skip: int = Query(0, ge=0, description="Número de registros para pular"),
+    limit: int = Query(100, ge=1, le=100, description="Número máximo de registros para retornar"),
+    active_only: bool = Query(True, description="Filtrar apenas pacientes ativos"),
+    bairro: Optional[str] = Query(None, description="Filtrar por bairro"),
+    unidade_saude_id: Optional[int] = Query(None, description="Filtrar por ID da unidade de saúde"),
+    idade_min: Optional[int] = Query(None, ge=60, description="Filtro de idade mínima"),
+    idade_max: Optional[int] = Query(None, le=120, description="Filtro de idade máxima"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    List all IVCF patients with pagination and filters.
+    Lista todos os pacientes IVCF com paginação e filtros.
     
-    **Query Parameters:**
-    - skip: Number of records to skip (default: 0)
-    - limit: Maximum number of records to return (default: 100, max: 100)
-    - active_only: Filter only active patients (default: True)
-    - bairro: Filter by neighborhood
-    - unidade_saude_id: Filter by health unit ID
-    - idade_min: Minimum age filter (minimum: 60)
-    - idade_max: Maximum age filter (maximum: 120)
+    **Parâmetros de Query:**
+    - skip: Número de registros para pular (padrão: 0)
+    - limit: Número máximo de registros para retornar (padrão: 100, máximo: 100)
+    - active_only: Filtrar apenas pacientes ativos (padrão: True)
+    - bairro: Filtrar por bairro
+    - unidade_saude_id: Filtrar por ID da unidade de saúde
+    - idade_min: Filtro de idade mínima (mínimo: 60)
+    - idade_max: Filtro de idade máxima (máximo: 120)
     
-    **Returns:**
-    - List of patients
+    **Retorna:**
+    - Lista de pacientes
     """
     return IVCFPatientService.get_all_ivcf_patients(
         db, skip, limit, active_only, bairro, unidade_saude_id, idade_min, idade_max
@@ -83,16 +83,16 @@ def get_ivcf_patient(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get a specific IVCF patient by ID.
+    Obtém um paciente IVCF específico por ID.
     
-    **Path Parameters:**
-    - patient_id: Patient ID
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente
     
-    **Returns:**
-    - Patient data
+    **Retorna:**
+    - Dados do paciente
     
     **Raises:**
-    - 404: Patient not found
+    - 404: Paciente não encontrado
     """
     return IVCFPatientService.get_ivcf_patient_by_id(db, patient_id)
 
@@ -104,16 +104,16 @@ def get_patient_with_evaluations(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get a patient with all their evaluations.
+    Obtém um paciente com todas as suas avaliações.
     
-    **Path Parameters:**
-    - patient_id: Patient ID
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente
     
-    **Returns:**
-    - Patient data with evaluations
+    **Retorna:**
+    - Dados do paciente com avaliações
     
     **Raises:**
-    - 404: Patient not found
+    - 404: Paciente não encontrado
     """
     patient = IVCFPatientService.get_ivcf_patient_by_id(db, patient_id)
     evaluations = IVCFPatientService.get_patient_evaluations(db, patient_id)
@@ -164,13 +164,13 @@ def get_patients_by_region(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get patients by region.
+    Obtém pacientes por região.
     
-    **Path Parameters:**
-    - regiao: Region name
+    **Parâmetros de Caminho:**
+    - regiao: Nome da região
     
-    **Returns:**
-    - List of patients in the region
+    **Retorna:**
+    - Lista de pacientes na região
     """
     return IVCFPatientService.get_patients_by_region(db, regiao)
 
@@ -182,16 +182,16 @@ def get_patients_by_age_range(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get patients by age range.
+    Obtém pacientes por faixa etária.
     
-    **Path Parameters:**
-    - age_range: Age range (60-70, 71-80, 81+)
+    **Parâmetros de Caminho:**
+    - age_range: Faixa etária (60-70, 71-80, 81+)
     
-    **Returns:**
-    - List of patients in the age range
+    **Retorna:**
+    - Lista de pacientes na faixa etária
     
     **Raises:**
-    - 422: Invalid age range
+    - 422: Faixa etária inválida
     """
     valid_ranges = ["60-70", "71-80", "81+"]
     if age_range not in valid_ranges:
@@ -205,18 +205,18 @@ def get_patients_by_age_range(
 
 @router.get("/ivcf-patients/stats/count")
 def get_patients_count(
-    active_only: bool = Query(True, description="Count only active patients"),
+    active_only: bool = Query(True, description="Contar apenas pacientes ativos"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get total count of patients.
+    Obtém o total de pacientes.
     
-    **Query Parameters:**
-    - active_only: Count only active patients (default: True)
+    **Parâmetros de Query:**
+    - active_only: Contar apenas pacientes ativos (padrão: True)
     
-    **Returns:**
-    - Total count of patients
+    **Retorna:**
+    - Total de pacientes
     """
     count = IVCFPatientService.count_patients(db, active_only)
     return {"total_patients": count}
@@ -230,21 +230,21 @@ def update_ivcf_patient(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Update an existing IVCF patient.
+    Atualiza um paciente IVCF existente.
     
-    **Path Parameters:**
-    - patient_id: Patient ID to update
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente para atualizar
     
-    **Request Body:**
-    - Any patient fields to update (all optional)
+    **Corpo da Requisição:**
+    - Qualquer campo do paciente para atualizar (todos opcionais)
     
-    **Returns:**
-    - Updated patient data
+    **Retorna:**
+    - Dados do paciente atualizado
     
     **Raises:**
-    - 404: Patient not found
-    - 409: CPF already exists (if updating CPF)
-    - 404: Health unit not found (if updating health unit)
+    - 404: Paciente não encontrado
+    - 409: CPF já existe (se atualizando CPF)
+    - 404: Unidade de saúde não encontrada (se atualizando unidade de saúde)
     """
     return IVCFPatientService.update_ivcf_patient(db, patient_id, patient_update)
 
@@ -256,16 +256,16 @@ def delete_ivcf_patient(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Delete an IVCF patient (soft delete).
+    Deleta um paciente IVCF (exclusão lógica).
     
-    **Path Parameters:**
-    - patient_id: Patient ID to delete
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente para deletar
     
-    **Returns:**
-    - Success message
+    **Retorna:**
+    - Mensagem de sucesso
     
     **Raises:**
-    - 404: Patient not found
+    - 404: Paciente não encontrado
     """
     IVCFPatientService.delete_ivcf_patient(db, patient_id)
-    return {"detail": "Patient deleted"}
+    return {"detail": "Paciente deletado"}

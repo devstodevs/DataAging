@@ -3,6 +3,7 @@ from sqlalchemy import and_, desc, func
 from typing import List, Optional
 from datetime import date, datetime, timedelta
 from models.physical_activity.physical_activity_evaluation import PhysicalActivityEvaluation
+from utils.physical_activity_calculator import calculate_evaluation_metrics
 
 
 class PhysicalActivityEvaluationService:
@@ -10,7 +11,24 @@ class PhysicalActivityEvaluationService:
     
     @staticmethod
     def create_evaluation(db: Session, evaluation_data: dict) -> PhysicalActivityEvaluation:
-        """Create a new Physical Activity evaluation"""
+        """Create a new Physical Activity evaluation with automatic calculations"""
+        # Always calculate metrics from activity data (ignore any manually provided values)
+        # This ensures consistency and prevents incorrect data
+        total_moderate, total_vigorous, who_compliance, sedentary_risk = calculate_evaluation_metrics(
+            light_minutes_per_day=evaluation_data.get('light_activity_minutes_per_day', 0),
+            light_days_per_week=evaluation_data.get('light_activity_days_per_week', 0),
+            moderate_minutes_per_day=evaluation_data.get('moderate_activity_minutes_per_day', 0),
+            moderate_days_per_week=evaluation_data.get('moderate_activity_days_per_week', 0),
+            vigorous_minutes_per_day=evaluation_data.get('vigorous_activity_minutes_per_day', 0),
+            vigorous_days_per_week=evaluation_data.get('vigorous_activity_days_per_week', 0),
+            sedentary_hours_per_day=evaluation_data.get('sedentary_hours_per_day', 0.0)
+        )
+        
+        evaluation_data['total_weekly_moderate_minutes'] = total_moderate
+        evaluation_data['total_weekly_vigorous_minutes'] = total_vigorous
+        evaluation_data['who_compliance'] = who_compliance
+        evaluation_data['sedentary_risk_level'] = sedentary_risk
+        
         db_evaluation = PhysicalActivityEvaluation(**evaluation_data)
         db.add(db_evaluation)
         db.commit()
@@ -47,7 +65,7 @@ class PhysicalActivityEvaluationService:
         evaluation_id: int, 
         evaluation_data: dict
     ) -> Optional[PhysicalActivityEvaluation]:
-        """Update a Physical Activity evaluation"""
+        """Update a Physical Activity evaluation with automatic recalculation"""
         db_evaluation = db.query(PhysicalActivityEvaluation).filter(
             PhysicalActivityEvaluation.id == evaluation_id
         ).first()
@@ -55,9 +73,35 @@ class PhysicalActivityEvaluationService:
         if not db_evaluation:
             return None
         
+        # Check if any activity or sedentary fields are being updated
+        activity_fields_updated = any(key in evaluation_data for key in [
+            'light_activity_minutes_per_day', 'light_activity_days_per_week',
+            'moderate_activity_minutes_per_day', 'moderate_activity_days_per_week',
+            'vigorous_activity_minutes_per_day', 'vigorous_activity_days_per_week',
+            'sedentary_hours_per_day'
+        ])
+        
+        # Update fields
         for key, value in evaluation_data.items():
             if value is not None:
                 setattr(db_evaluation, key, value)
+        
+        # Recalculate metrics if activity fields were updated
+        if activity_fields_updated:
+            total_moderate, total_vigorous, who_compliance, sedentary_risk = calculate_evaluation_metrics(
+                light_minutes_per_day=db_evaluation.light_activity_minutes_per_day,
+                light_days_per_week=db_evaluation.light_activity_days_per_week,
+                moderate_minutes_per_day=db_evaluation.moderate_activity_minutes_per_day,
+                moderate_days_per_week=db_evaluation.moderate_activity_days_per_week,
+                vigorous_minutes_per_day=db_evaluation.vigorous_activity_minutes_per_day,
+                vigorous_days_per_week=db_evaluation.vigorous_activity_days_per_week,
+                sedentary_hours_per_day=db_evaluation.sedentary_hours_per_day
+            )
+            
+            db_evaluation.total_weekly_moderate_minutes = total_moderate
+            db_evaluation.total_weekly_vigorous_minutes = total_vigorous
+            db_evaluation.who_compliance = who_compliance
+            db_evaluation.sedentary_risk_level = sedentary_risk
         
         db.commit()
         db.refresh(db_evaluation)

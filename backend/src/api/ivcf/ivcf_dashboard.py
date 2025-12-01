@@ -110,21 +110,21 @@ def get_monthly_evolution(
 
 @router.get("/ivcf-dashboard/critical-patients", response_model=CriticalPatientsResponse)
 def get_critical_patients(
-    pontuacao_minima: int = Query(20, ge=0, le=40, description="Minimum score for critical patients"),
+    pontuacao_minima: int = Query(20, ge=0, le=40, description="Pontuação mínima para pacientes críticos"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get patients with critical scores.
+    Obtém pacientes com pontuações críticas.
     
-    **Query Parameters:**
-    - pontuacao_minima: Minimum score for critical patients (default: 20, range: 0-40)
+    **Parâmetros de Query:**
+    - pontuacao_minima: Pontuação mínima para pacientes críticos (padrão: 20, intervalo: 0-40)
     
-    **Returns:**
-    - Critical patients data with applied filters
+    **Retorna:**
+    - Dados de pacientes críticos com filtros aplicados
     
     **Raises:**
-    - 422: Invalid pontuacao_minima value
+    - 422: Valor inválido de pontuacao_minima
     """
     return IVCFDashboardService.get_critical_patients(db, pontuacao_minima)
 
@@ -135,10 +135,10 @@ def get_all_patients(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get all patients with their evaluations.
+    Obtém todos os pacientes com suas avaliações.
     
-    **Returns:**
-    - All patients data
+    **Retorna:**
+    - Dados de todos os pacientes
     """
     return IVCFDashboardService.get_all_patients(db)
 
@@ -148,10 +148,10 @@ def get_curitiba_regions(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get list of valid Curitiba regions.
+    Obtém lista de regiões válidas de Curitiba.
     
-    **Returns:**
-    - List of valid region names
+    **Retorna:**
+    - Lista de nomes de regiões válidas
     """
     regions = IVCFDashboardService.get_curitiba_regions()
     return {"regions": regions}
@@ -159,29 +159,29 @@ def get_curitiba_regions(
 
 @router.get("/ivcf-dashboard/fragile-percentage", response_model=FragileElderlyPercentageResponse)
 def get_fragile_elderly_percentage(
-    period_from: Optional[date] = Query(None, description="Start date filter"),
-    period_to: Optional[date] = Query(None, description="End date filter"),
-    region: Optional[str] = Query(None, description="Region filter"),
-    health_unit_id: Optional[int] = Query(None, description="Health unit ID filter"),
-    age_range: Optional[str] = Query(None, description="Age range filter (60-70, 71-80, 81+)"),
+    period_from: Optional[date] = Query(None, description="Filtro de data inicial"),
+    period_to: Optional[date] = Query(None, description="Filtro de data final"),
+    region: Optional[str] = Query(None, description="Filtro de região"),
+    health_unit_id: Optional[int] = Query(None, description="Filtro de ID da unidade de saúde"),
+    age_range: Optional[str] = Query(None, description="Filtro de faixa etária (60-70, 71-80, 81+)"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get percentage of fragile elderly with filters.
+    Obtém percentual de idosos frágeis com filtros.
     
-    **Query Parameters:**
-    - period_from: Start date filter
-    - period_to: End date filter
-    - region: Region filter (must be valid Curitiba region)
-    - health_unit_id: Health unit ID filter
-    - age_range: Age range filter (60-70, 71-80, 81+)
+    **Parâmetros de Query:**
+    - period_from: Filtro de data inicial
+    - period_to: Filtro de data final
+    - region: Filtro de região (deve ser uma região válida de Curitiba)
+    - health_unit_id: Filtro de ID da unidade de saúde
+    - age_range: Filtro de faixa etária (60-70, 71-80, 81+)
     
-    **Returns:**
-    - Fragile elderly percentage data with applied filters
+    **Retorna:**
+    - Dados de percentual de idosos frágeis com filtros aplicados
     
     **Raises:**
-    - 422: Invalid filters provided
+    - 422: Filtros inválidos fornecidos
     """
     return IVCFDashboardService.get_fragile_elderly_percentage(
         db, period_from, period_to, region, health_unit_id, age_range
@@ -190,21 +190,21 @@ def get_fragile_elderly_percentage(
 
 @router.get("/ivcf-dashboard/validate-filters")
 def validate_filters(
-    region: Optional[str] = Query(None, description="Region to validate"),
-    age_range: Optional[str] = Query(None, description="Age range to validate"),
-    classification: Optional[str] = Query(None, description="Classification to validate"),
+    region: Optional[str] = Query(None, description="Região para validar"),
+    age_range: Optional[str] = Query(None, description="Faixa etária para validar"),
+    classification: Optional[str] = Query(None, description="Classificação para validar"),
     current_user: User = Depends(get_current_user)
 ):
     """
-    Validate dashboard filters.
+    Valida filtros do dashboard.
     
-    **Query Parameters:**
-    - region: Region to validate
-    - age_range: Age range to validate
-    - classification: Classification to validate
+    **Parâmetros de Query:**
+    - region: Região para validar
+    - age_range: Faixa etária para validar
+    - classification: Classificação para validar
     
-    **Returns:**
-    - Validation results
+    **Retorna:**
+    - Resultados da validação
     """
     errors = IVCFDashboardService.validate_filters(region, age_range, classification)
     

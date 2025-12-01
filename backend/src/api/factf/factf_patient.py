@@ -22,60 +22,60 @@ def create_factf_patient(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Create a new FACT-F patient.
+    Cria um novo paciente FACT-F.
     
-    **Request Body:**
-    - nome_completo: Full name
-    - cpf: CPF (11-14 characters)
-    - idade: Age (minimum 18)
-    - telefone: Phone number (optional)
-    - email: Email address (optional)
-    - bairro: Neighborhood
-    - unidade_saude_id: Health unit ID
-    - diagnostico_principal: Main diagnosis (optional)
-    - comorbidades: Comorbidities (optional)
-    - tratamento_atual: Current treatment (optional)
-    - data_cadastro: Registration date (default: today)
+    **Corpo da Requisição:**
+    - nome_completo: Nome completo
+    - cpf: CPF (11-14 caracteres)
+    - idade: Idade (mínimo 18)
+    - telefone: Número de telefone (opcional)
+    - email: Endereço de email (opcional)
+    - bairro: Bairro
+    - unidade_saude_id: ID da unidade de saúde
+    - diagnostico_principal: Diagnóstico principal (opcional)
+    - comorbidades: Comorbidades (opcional)
+    - tratamento_atual: Tratamento atual (opcional)
+    - data_cadastro: Data de cadastro (padrão: hoje)
     
-    **Returns:**
-    - Created patient data
+    **Retorna:**
+    - Dados do paciente criado
     
     **Raises:**
-    - 409: CPF already exists
-    - 404: Health unit not found
-    - 422: Validation error
+    - 409: CPF já existe
+    - 404: Unidade de saúde não encontrada
+    - 422: Erro de validação
     """
     return FACTFPatientService.create_factf_patient(db, patient)
 
 
 @router.get("/factf-patients/", response_model=List[FACTFPatientList])
 def list_factf_patients(
-    skip: int = Query(0, ge=0, description="Number of records to skip"),
-    limit: int = Query(100, ge=1, le=100, description="Maximum number of records to return"),
-    active_only: bool = Query(True, description="Filter only active patients"),
-    bairro: Optional[str] = Query(None, description="Filter by neighborhood"),
-    unidade_saude_id: Optional[int] = Query(None, description="Filter by health unit ID"),
-    idade_min: Optional[int] = Query(None, ge=18, description="Minimum age filter"),
-    idade_max: Optional[int] = Query(None, le=120, description="Maximum age filter"),
-    classificacao_fadiga: Optional[str] = Query(None, description="Filter by fatigue classification"),
+    skip: int = Query(0, ge=0, description="Número de registros para pular"),
+    limit: int = Query(100, ge=1, le=100, description="Número máximo de registros para retornar"),
+    active_only: bool = Query(True, description="Filtrar apenas pacientes ativos"),
+    bairro: Optional[str] = Query(None, description="Filtrar por bairro"),
+    unidade_saude_id: Optional[int] = Query(None, description="Filtrar por ID da unidade de saúde"),
+    idade_min: Optional[int] = Query(None, ge=18, description="Filtro de idade mínima"),
+    idade_max: Optional[int] = Query(None, le=120, description="Filtro de idade máxima"),
+    classificacao_fadiga: Optional[str] = Query(None, description="Filtrar por classificação de fadiga"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    List FACT-F patients with pagination and filters.
+    Lista pacientes FACT-F com paginação e filtros.
     
-    **Query Parameters:**
-    - skip: Number of records to skip (pagination)
-    - limit: Maximum records to return (max 100)
-    - active_only: Show only active patients
-    - bairro: Filter by neighborhood
-    - unidade_saude_id: Filter by health unit
-    - idade_min: Minimum age
-    - idade_max: Maximum age
-    - classificacao_fadiga: Filter by fatigue classification
+    **Parâmetros de Query:**
+    - skip: Número de registros para pular (paginação)
+    - limit: Número máximo de registros para retornar (máximo 100)
+    - active_only: Mostrar apenas pacientes ativos
+    - bairro: Filtrar por bairro
+    - unidade_saude_id: Filtrar por unidade de saúde
+    - idade_min: Idade mínima
+    - idade_max: Idade máxima
+    - classificacao_fadiga: Filtrar por classificação de fadiga
     
-    **Returns:**
-    - List of patients with basic info and latest evaluation data
+    **Retorna:**
+    - Lista de pacientes com informações básicas e dados da última avaliação
     """
     return FACTFPatientService.get_all_factf_patients(
         db, skip, limit, active_only, bairro, unidade_saude_id,
@@ -89,16 +89,16 @@ def get_factf_patient(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get a specific FACT-F patient by ID.
+    Obtém um paciente FACT-F específico por ID.
     
-    **Path Parameters:**
-    - patient_id: Patient ID
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente
     
-    **Returns:**
-    - Patient data
+    **Retorna:**
+    - Dados do paciente
     
     **Raises:**
-    - 404: Patient not found
+    - 404: Paciente não encontrado
     """
     return FACTFPatientService.get_factf_patient_by_id(db, patient_id)
 
@@ -111,20 +111,20 @@ def update_factf_patient(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Update a FACT-F patient.
+    Atualiza um paciente FACT-F.
     
-    **Path Parameters:**
-    - patient_id: Patient ID to update
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente para atualizar
     
-    **Request Body:**
-    - Any fields from FACTFPatientUpdate schema
+    **Corpo da Requisição:**
+    - Qualquer campo do esquema FACTFPatientUpdate
     
-    **Returns:**
-    - Updated patient data
+    **Retorna:**
+    - Dados do paciente atualizado
     
     **Raises:**
-    - 404: Patient not found or health unit not found
-    - 422: Validation error
+    - 404: Paciente não encontrado ou unidade de saúde não encontrada
+    - 422: Erro de validação
     """
     return FACTFPatientService.update_factf_patient(db, patient_id, patient_update)
 
@@ -136,16 +136,16 @@ def delete_factf_patient(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Delete a FACT-F patient (soft delete).
+    Deleta um paciente FACT-F (exclusão lógica).
     
-    **Path Parameters:**
-    - patient_id: Patient ID to delete
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente para deletar
     
-    **Returns:**
-    - No content (204)
+    **Retorna:**
+    - Sem conteúdo (204)
     
     **Raises:**
-    - 404: Patient not found
+    - 404: Paciente não encontrado
     """
     FACTFPatientService.delete_factf_patient(db, patient_id)
 
@@ -157,15 +157,15 @@ def get_patient_evaluations(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get all evaluations for a specific patient.
+    Obtém todas as avaliações de um paciente específico.
     
-    **Path Parameters:**
-    - patient_id: Patient ID
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente
     
-    **Returns:**
-    - List of patient evaluations
+    **Retorna:**
+    - Lista de avaliações do paciente
     
     **Raises:**
-    - 404: Patient not found
+    - 404: Paciente não encontrado
     """
     return FACTFPatientService.get_patient_evaluations(db, patient_id)

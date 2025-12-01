@@ -23,29 +23,29 @@ def create_factf_evaluation(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Create a new FACT-F evaluation for a patient.
+    Cria uma nova avaliação FACT-F para um paciente.
     
-    **Path Parameters:**
-    - patient_id: Patient ID
+    **Parâmetros de Caminho:**
+    - patient_id: ID do paciente
     
-    **Request Body:**
-    - data_avaliacao: Evaluation date
-    - bem_estar_fisico: Physical well-being score (0-28)
-    - bem_estar_social: Social well-being score (0-28)
-    - bem_estar_emocional: Emotional well-being score (0-24)
-    - bem_estar_funcional: Functional well-being score (0-28)
-    - subescala_fadiga: Fatigue subscale score (0-52)
-    - respostas_detalhadas: Detailed responses (optional JSON)
-    - observacoes: Observations (optional)
-    - profissional_responsavel: Responsible professional (optional)
+    **Corpo da Requisição:**
+    - data_avaliacao: Data da avaliação
+    - bem_estar_fisico: Pontuação de bem-estar físico (0-28)
+    - bem_estar_social: Pontuação de bem-estar social (0-28)
+    - bem_estar_emocional: Pontuação de bem-estar emocional (0-24)
+    - bem_estar_funcional: Pontuação de bem-estar funcional (0-28)
+    - subescala_fadiga: Pontuação da subescala de fadiga (0-52)
+    - respostas_detalhadas: Respostas detalhadas (JSON opcional)
+    - observacoes: Observações (opcional)
+    - profissional_responsavel: Profissional responsável (opcional)
     
-    **Returns:**
-    - Created evaluation with calculated total scores and classification
+    **Retorna:**
+    - Avaliação criada com pontuações totais e classificação calculadas
     
     **Raises:**
-    - 404: Patient not found
-    - 400: Invalid domain scores
-    - 422: Validation error
+    - 404: Paciente não encontrado
+    - 400: Pontuações de domínio inválidas
+    - 422: Erro de validação
     """
     # Set patient_id from path parameter
     evaluation.patient_id = patient_id
@@ -59,16 +59,16 @@ def get_factf_evaluation(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Get a specific FACT-F evaluation by ID.
+    Obtém uma avaliação FACT-F específica por ID.
     
-    **Path Parameters:**
-    - evaluation_id: Evaluation ID
+    **Parâmetros de Caminho:**
+    - evaluation_id: ID da avaliação
     
-    **Returns:**
-    - Evaluation data
+    **Retorna:**
+    - Dados da avaliação
     
     **Raises:**
-    - 404: Evaluation not found
+    - 404: Avaliação não encontrada
     """
     return FACTFEvaluationService.get_factf_evaluation_by_id(db, evaluation_id)
 

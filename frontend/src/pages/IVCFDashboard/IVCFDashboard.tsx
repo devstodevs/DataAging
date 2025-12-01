@@ -7,6 +7,7 @@ import {
   BarChart3,
   AlertTriangle,
   RefreshCw,
+  X,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
@@ -93,6 +94,11 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     hasAnyError,
   } = useIVCFData();
 
+  // Lista de regiões válidas de Curitiba (do backend)
+  const validCuritibaRegions = useMemo(() => {
+    return curitibaRegions || [];
+  }, [curitibaRegions]);
+
   // Converter filtros para formato da API (apenas para gráficos e KPIs)
   const apiFilters = useMemo((): IVCFFilters => {
     const result: IVCFFilters = {};
@@ -107,7 +113,9 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     if (filters.ageRange !== "all") {
       result.age_range = filters.ageRange as IVCFFilters['age_range'];
     }
-    if (filters.region !== "all") {
+    // Só envia região para API se for uma região válida de Curitiba
+    // Se for um bairro, não envia (a filtragem será feita no frontend)
+    if (filters.region !== "all" && validCuritibaRegions.includes(filters.region)) {
       result.region = filters.region;
     }
     if (filters.riskClassification !== "all") {
@@ -120,7 +128,7 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     }
 
     return result;
-  }, [filters]);
+  }, [filters, validCuritibaRegions]);
 
   // Função para atualizar dados quando filtros mudam (apenas gráficos e KPIs)
   const updateFilteredData = useCallback((apiFilters: IVCFFilters) => {
@@ -128,6 +136,23 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     refetchDomainDistribution(apiFilters);
     refetchFragilePercentage(apiFilters);
   }, [refetchDomainDistribution, refetchFragilePercentage]);
+
+  // Extrair bairros únicos dos pacientes cadastrados
+  const availableBairros = useMemo(() => {
+    if (!allPatients?.critical_patients || allPatients.critical_patients.length === 0) {
+      return [];
+    }
+    
+    // Extrair bairros únicos e ordenar alfabeticamente
+    const bairrosSet = new Set<string>();
+    allPatients.critical_patients.forEach(patient => {
+      if (patient.bairro && patient.bairro.trim()) {
+        bairrosSet.add(patient.bairro.trim());
+      }
+    });
+    
+    return Array.from(bairrosSet).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }, [allPatients]);
 
   // Opções de filtros
   const filterOptions = {
@@ -139,9 +164,9 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
     ],
     region: [
       { value: "all", label: "Todas" },
-      ...curitibaRegions.map(region => ({
-        value: region,
-        label: region,
+      ...availableBairros.map(bairro => ({
+        value: bairro,
+        label: bairro,
       })),
     ],
     riskClassification: [
@@ -355,12 +380,25 @@ const IVCFDashboard: React.FC<IVCFDashboardProps> = ({
           <div className="filters-grid">
             <div className="filter-item">
               <label className="filter-label">Período</label>
-              <DateRangePicker
-                value={filters.period}
-                onChange={(range) => handleFilterChange("period", range)}
-                placeholder="Selecionar período"
-                className="w-full"
-              />
+              <div className="flex items-center gap-2">
+                <DateRangePicker
+                  value={filters.period}
+                  onChange={(range) => handleFilterChange("period", range)}
+                  placeholder="Selecionar período"
+                  className="w-full"
+                />
+                {(filters.period.from || filters.period.to) && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleFilterChange("period", { from: undefined, to: undefined })}
+                    className="h-10 w-10"
+                    title="Limpar período"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
 
             <div className="filter-item">

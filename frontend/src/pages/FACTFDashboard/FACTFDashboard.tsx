@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, Download, Users, Activity, TrendingUp, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +52,7 @@ interface FACTFDashboardProps {
 const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
   const [selectedPeriod, setSelectedPeriod] = useState<string>();
   const [selectedAgeRange, setSelectedAgeRange] = useState<string>();
+  const [selectedStatus, setSelectedStatus] = useState<string>();
   const [selectedPatientId, setSelectedPatientId] = useState<string>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [patientsPerPage] = useState<number>(20); // Mostrar 20 pacientes por página
@@ -85,19 +86,101 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
   const radarData = getRadarChartData();
 
   // Usar dados reais dos pacientes
-  const patients = allPatients?.patients || [];
+  const allPatientsList = allPatients?.patients || [];
+
+  // Função helper para converter período em datas
+  const getPeriodDates = (period?: string): { from?: Date; to?: Date } => {
+    if (!period) return {};
+    
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    const from = new Date();
+    
+    switch (period) {
+      case 'last-7-days':
+        from.setDate(today.getDate() - 7);
+        from.setHours(0, 0, 0, 0);
+        return { from, to: today };
+      case 'last-30-days':
+        from.setDate(today.getDate() - 30);
+        from.setHours(0, 0, 0, 0);
+        return { from, to: today };
+      case 'last-90-days':
+        from.setDate(today.getDate() - 90);
+        from.setHours(0, 0, 0, 0);
+        return { from, to: today };
+      case 'last-year':
+        from.setFullYear(today.getFullYear() - 1);
+        from.setHours(0, 0, 0, 0);
+        return { from, to: today };
+      default:
+        return {};
+    }
+  };
+
+  // Filtrar pacientes baseado nos filtros selecionados
+  const filteredPatients = useMemo(() => {
+    if (!allPatientsList || allPatientsList.length === 0) return [];
+
+    let filtered = [...allPatientsList];
+
+    // Filtrar por período (data da última avaliação)
+    if (selectedPeriod) {
+      const { from, to } = getPeriodDates(selectedPeriod);
+      filtered = filtered.filter(patient => {
+        if (!patient.evaluation_date) return false;
+        const evalDate = new Date(patient.evaluation_date);
+        if (from && evalDate < from) return false;
+        if (to && evalDate > to) return false;
+        return true;
+      });
+    }
+
+    // Filtrar por faixa etária
+    if (selectedAgeRange) {
+      filtered = filtered.filter(patient => {
+        const age = patient.age;
+        if (age === undefined || age === null) return false;
+        
+        switch (selectedAgeRange) {
+          case '60-70':
+            return age >= 60 && age <= 70;
+          case '71-80':
+            return age >= 71 && age <= 80;
+          case '81+':
+            return age >= 81;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Filtrar por status (classificação de fadiga)
+    if (selectedStatus) {
+      filtered = filtered.filter(patient => {
+        if (!patient.classification) return false;
+        return patient.classification === selectedStatus;
+      });
+    }
+
+    return filtered;
+  }, [allPatientsList, selectedPeriod, selectedAgeRange, selectedStatus]);
+
+  // Resetar página quando filtros mudarem
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedPeriod, selectedAgeRange, selectedStatus]);
+
   const selectedPatient = selectedPatientId
-    ? patients.find((p) => p.id.toString() === selectedPatientId)
-    : patients[0];
-
-
+    ? filteredPatients.find((p) => p.id.toString() === selectedPatientId)
+    : filteredPatients[0];
 
   // Paginação
-  const totalPatients = patients.length;
+  const totalPatients = filteredPatients.length;
   const totalPages = Math.ceil(totalPatients / patientsPerPage);
   const startIndex = (currentPage - 1) * patientsPerPage;
   const endIndex = startIndex + patientsPerPage;
-  const currentPatients = patients.slice(startIndex, endIndex);
+  const currentPatients = filteredPatients.slice(startIndex, endIndex);
 
   const handleExportReport = () => {
     console.log("Exportando relatório FACT-F...");
@@ -208,11 +291,12 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
           <div className="filters-grid">
             <div className="filter-item">
               <label className="filter-label">Período</label>
-              <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+              <Select value={selectedPeriod || "all"} onValueChange={(value) => setSelectedPeriod(value === "all" ? undefined : value)}>
                 <SelectTrigger className="filter-select">
-                  <SelectValue placeholder="Selecionar data" />
+                  <SelectValue placeholder="Todos os períodos" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="all">Todos os períodos</SelectItem>
                   <SelectItem value="last-7-days">Últimos 7 dias</SelectItem>
                   <SelectItem value="last-30-days">Últimos 30 dias</SelectItem>
                   <SelectItem value="last-90-days">Últimos 90 dias</SelectItem>
@@ -223,14 +307,30 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
 
             <div className="filter-item">
               <label className="filter-label">Faixa Etária</label>
-              <Select value={selectedAgeRange} onValueChange={setSelectedAgeRange}>
+              <Select value={selectedAgeRange || "all"} onValueChange={(value) => setSelectedAgeRange(value === "all" ? undefined : value)}>
                 <SelectTrigger className="filter-select">
                   <SelectValue placeholder="Todas as faixas" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="all">Todas as faixas</SelectItem>
                   <SelectItem value="60-70">60-70 anos</SelectItem>
                   <SelectItem value="71-80">71-80 anos</SelectItem>
                   <SelectItem value="81+">81+ anos</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="filter-item">
+              <label className="filter-label">Status</label>
+              <Select value={selectedStatus || "all"} onValueChange={(value) => setSelectedStatus(value === "all" ? undefined : value)}>
+                <SelectTrigger className="filter-select">
+                  <SelectValue placeholder="Todos os status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os status</SelectItem>
+                  <SelectItem value="Sem Fadiga">Sem Fadiga</SelectItem>
+                  <SelectItem value="Fadiga Leve">Fadiga Leve</SelectItem>
+                  <SelectItem value="Fadiga Grave">Fadiga Grave</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -245,15 +345,13 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
           <KPICard
             title="Total de Pacientes Avaliados"
             value={processedSummary.totalPatients?.toString() || "0"}
-            subtitle={`${processedSummary.monthlyGrowth || "0%"} em relação ao mês anterior`}
+            subtitle={`${filteredPatients.length} pacientes filtrados`}
             icon={<Users />}
           />
           <KPICard
             title="Fadiga Grave"
             value={processedSummary.severeFatiguePercentage || "0%"}
             subtitle={`${processedSummary.criticalPatientsCount || 0} pacientes com estado crítico`}
-            trend="up"
-            trendValue={processedSummary.monthlyGrowth || "0%"}
             icon={<Activity />}
           />
           <KPICard

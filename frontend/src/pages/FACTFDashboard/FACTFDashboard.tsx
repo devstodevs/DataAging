@@ -242,19 +242,6 @@ const FACTFDashboard: React.FC<FACTFDashboardProps> = ({ onNavigate }) => {
               </Select>
             </div>
 
-            <div className="filter-item">
-              <label className="filter-label">Profissional Responsável</label>
-              <Select>
-                <SelectTrigger className="filter-select">
-                  <SelectValue placeholder="Digite para buscar" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="dr-silva">Dr. Silva</SelectItem>
-                  <SelectItem value="dra-santos">Dra. Santos</SelectItem>
-                  <SelectItem value="dr-oliveira">Dr. Oliveira</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         </CardContent>
       </Card>

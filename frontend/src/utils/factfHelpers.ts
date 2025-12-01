@@ -1,4 +1,4 @@
-import { type FatigueClassification, FACTF_DOMAIN_LIMITS } from '../types/factf';
+import { type FatigueClassification, FACTF_DOMAIN_LIMITS, type FACTFPatientSummary, type FACTFFilters } from '../types/factf';
 
 /**
  * Calculate fatigue classification based on fatigue subscale score
@@ -198,6 +198,64 @@ export const formatCPF = (cpf: string): string => {
  * Validate email format
  */
 export const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+};
+
+/**
+ * Filter FACT-F patients based on selected filters
+ */
+export const filterFACTFPatients = (
+  patients: FACTFPatientSummary[], 
+  filters: FACTFFilters & { searchTerm?: string }
+): FACTFPatientSummary[] => {
+  if (!patients || !Array.isArray(patients)) return [];
+
+  return patients.filter(patient => {
+    // Filter by age range
+    if (filters.age_range) {
+      const age = patient.age;
+      if (age === undefined || age === null) return true;
+      
+      const { min, max } = parseAgeRange(filters.age_range);
+      if (min !== undefined && age < min) return false;
+      if (max !== undefined && age > max) return false;
+    }
+
+    // Filter by fatigue classification
+    if (filters.classificacao_fadiga) {
+      if (patient.classification === undefined || patient.classification === null) {
+        return true;
+      }
+      if (patient.classification !== filters.classificacao_fadiga) return false;
+    }
+
+    // Filter by search term (name)
+    if (filters.searchTerm) {
+      const searchLower = filters.searchTerm.toLowerCase();
+      const name = (patient.name || '').toLowerCase();
+      
+      if (!name.includes(searchLower)) {
+        return false;
+      }
+    }
+
+    // Filter by last evaluation date (if period filter is applied)
+    if ((filters.period_from || filters.period_to) && patient.evaluation_date) {
+      const evalDate = new Date(patient.evaluation_date);
+      
+      if (filters.period_from) {
+        const fromDate = new Date(filters.period_from);
+        if (evalDate < fromDate) return false;
+      }
+      
+      if (filters.period_to) {
+        const toDate = new Date(filters.period_to);
+        toDate.setHours(23, 59, 59, 999);
+        if (evalDate > toDate) return false;
+      }
+    }
+
+    return true;
+  });
 };

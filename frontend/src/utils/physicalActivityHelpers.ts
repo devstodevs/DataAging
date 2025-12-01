@@ -320,7 +320,7 @@ export const filterPatients = (patients: FilterablePatient[], filters: {
     // Filtro por faixa etária
     if (filters.ageRange && filters.ageRange !== 'all') {
       const age = patient.idade ?? patient.age;
-      if (age === undefined) return false;
+      if (age === undefined || age === null) return true;
       if (filters.ageRange === '60-70' && (age < 60 || age > 70)) return false;
       if (filters.ageRange === '71-80' && (age < 71 || age > 80)) return false;
       if (filters.ageRange === '81+' && age < 81) return false;
@@ -328,11 +328,13 @@ export const filterPatients = (patients: FilterablePatient[], filters: {
 
     // Filtro por nível de risco
     if (filters.riskLevel && filters.riskLevel !== 'all') {
+      if (patient.sedentary_risk_level === undefined || patient.sedentary_risk_level === null) return true;
       if (patient.sedentary_risk_level !== filters.riskLevel) return false;
     }
 
     // Filtro por conformidade OMS
     if (filters.compliance && filters.compliance !== 'all') {
+      if (patient.who_compliance === undefined || patient.who_compliance === null) return true;
       const isCompliant = patient.who_compliance === true;
       if (filters.compliance === 'compliant' && !isCompliant) return false;
       if (filters.compliance === 'non-compliant' && isCompliant) return false;
